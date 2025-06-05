@@ -1,0 +1,236 @@
+# Ordinary exam 2022
+
+## Problem 1:
+
+Begin by setting the seed to 123.
+
+1.  Use the Acceptance-Rejection method with envelopes Exp($\lambda_1$) and Exp($\lambda_2$) to simulate data from two gamma distributions Gamma($k_1, \theta$) with parameters $(k_1, \theta) = (3,3)$ and Gamma($k_2, \theta$) with parameters $(k_2, \theta) = (1,3)$. You may set $\lambda_1 = \frac{\theta}{k_1}$, $\lambda_2 = \frac{\theta}{k_2}$ and
+    $$ c_1 = \frac{k_1^{k_1} e^{-(k_1-1)}}{\Gamma(k_1)} $$
+    $$ c_2 = \frac{k_2^{k_2} e^{-(k_2-1)}}{\Gamma(k_2)} $$
+    where $\Gamma$ is the gamma function. We wish to simulate $N=100$ samples each of length $T=1000$.
+    The density function of the Gamma distribution is
+    $$ f(x) = \frac{\theta^{k_i}}{\Gamma(k_i)} x^{k_i-1} e^{-\theta x}, \quad x > 0, \quad i=1,2 $$
+    while for the Exponential distribution it is
+    $$ g(y; \lambda) = \lambda_i e^{-\lambda_i y}, \quad y > 0, \quad i=1,2. $$
+    Use the inversion method to generate the Exponential random variables. The corresponding CDF is
+    $$ G(y) = 1 - e^{-\lambda_i y}, \quad i=1,2. $$
+    Store your Gamma random variables in vectors `vW1` and `vW2` of size $T \times N$ each.
+
+Solution:
+
+```{r}
+### Auxiliary functions ###
+
+gamma.pdf <- function(x, k, theta) {
+  return(theta^k * x^(k-1) * exp(-theta*x)/gamma(k))
+}
+
+exponential.pdf <- function(x, lambda) {
+  return(lambda * exp(-lambda*x))
+}
+
+Exponential.Simulate <- function(lambda, size = 1) {
+  V <- runif(size)
+  return(-1/lambda * log(V))
+}
+
+Gamma.Simulate <- function(k, theta, size = 1) {
+  
+  lambda <- theta/k
+  c <- k^k * exp(-k+1) / gamma(k)
+  
+  U <- rep(NA, size)
+  Y <- rep(NA, size)
+  X <- rep(NA, size)
+  Unaccepted <- rep(TRUE, size)
+  
+  while (any(Unaccepted)) {
+    
+    UnacceptedCount <- sum(Unaccepted)
+    
+    U <- runif(UnacceptedCount)
+    Y <- Exponential.Simulate(lambda, UnacceptedCount)
+    
+    Accepted_ThisTime <- Unaccepted[Unaccepted] &
+      ( U <= ( gamma.pdf(Y, k, theta) / exponential.pdf(Y, lambda)/c ) )
+    
+    X[Unaccepted][Accepted_ThisTime] <- Y[Accepted_ThisTime]
+    Unaccepted[Unaccepted] <- !Accepted_ThisTime
+    
+  }
+  
+  return(X)
+  
+}
+
+set.seed(123)
+
+iN <- 100
+iT <- 1000
+vW1 <- matrix(Gamma.Simulate(3, 3, iN * iT), iT, iN)
+vW2 <- matrix(Gamma.Simulate(1, 3, iN * iT), iT, iN)
+```
+
+2.  Note that $B(k_1, k_2) = \frac{\text{Gamma}(k_1, \theta)}{\text{Gamma}(k_1, \theta) + \text{Gamma}(k_2, \theta)}$ follows Beta distribution. Use this result and the vectors `vW1` and `vW2` generated in the problem (1) to simulate $N=100$ samples each of length $T=1000$ of random variables from Beta distribution with the parameters $k_1$ and $k_2$. Store these draws in a vector `vB` of size $T \times N$.
+
+Solution:
+
+```{r}
+vB <- matrix(vW1 / (vW1 + vW2), iT, iN)
+```
+
+
+3.  The mean of the beta distribution is given as
+    $$ \mu = \frac{k_1}{k_1+k_2} $$
+    Write a function, `fn_estimateMean`, which provides estimates $\hat{\mu}$ for each column in `mB` by calculating its empirical mean and then subtract $\mu$ calculated with the formula above, i.e. calculate $\hat{\mu} - \mu$ for each column in `mB`. Save the resulting 100 estimates in a vector `vDiffMu`.
+
+```{r}
+fn_estimateMean <- function(mInput) {
+  mOut <- apply(mInput, 2, mean)
+  return(mOut)
+}
+
+dU <- 3 / (1 + 3)
+vDiffMu <- fn_estimateMean(vB) - dU
+```
+
+4.  Create a histogram of the estimates contained in the vector `vDiffMu`. Let the title of the plot be "Distribution of error" and set the label on the x-axis to "Estimates of error".
+    Add a density plot to the histogram you have just created. Assume the error $\hat{\mu} - \mu$ is Gaussian and use it to calculate its empirical mean and standard deviation using the calculations contained in the vector `vDiffMu`. Superimpose the density plot on the histogram with `lines()` defined at these values of mean and standard deviation.
+
+```{r}
+hist(vDiffMu, breaks = 25, freq = FALSE,
+     main = "Distribution of error",
+     col = "cornflowerblue",
+     xlim = c(min(vDiffMu), max(vDiffMu)),
+     xlab = "Estimates of error")
+
+xticks = seq(min(vDiffMu), max(vDiffMu), 0.001)
+lines(xticks, dnorm(xticks, mean(vDiffMu), sd(vDiffMu)), col = "red")
+legend("topright", legend = c("Simulated", "Theoretical"), lty = c(1, 1), lwd = c(5, 1), col = c("cornflowerblue", "red"))
+```
+
+## Problem 2: (Constrained) Optimization, C++, and Packaging
+
+Note: This problem is best solved in order from 1 - 5.
+
+In this problem, you are supposed to work with the `vDATA.r` file provided with the exam. It contains the daily stock returns for the stocks of Danske Bank from 9 June 2016 to 9 March 2021 traded on the Copenhagen Stock Exchange. In the following, we denote $r_t$ as the return of Danske Bank at time period $t$.
+
+1.  Load the data file `vDATA.r` into your R workspace using `readRDS()`.
+
+```{r}
+# Ensure rugarch is installed and loaded
+# install.packages("rugarch")
+library(rugarch)
+
+# --- True parameters for new data generation (MODIFIED FOR PERSISTENCE < 1) ---
+set.seed(456) # Use a different seed
+T_obs_new <- 1500    # Number of observations for the new series
+mu_true_new <- 0.0002 # True mean
+omega_true_new <- 0.000015 # True omega
+
+# Modify alphas so their sum is slightly less than 1
+alpha1_true_gen <- 0.65
+alpha2_true_gen <- 0.349  # Sum = 0.65 + 0.349 = 0.999
+
+cat("Generating data with persistence:", alpha1_true_gen + alpha2_true_gen, "\n")
+
+# --- Simulate data using rugarch ---
+spec_gen <- ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(2, 0)), # ARCH(2)
+  mean.model = list(armaOrder = c(0, 0), include.mean = TRUE, archm = FALSE, arfima = FALSE), # Ensure no other variance affecting terms
+  distribution.model = "norm",
+  fixed.pars = list(mu = mu_true_new,
+                    omega = omega_true_new,
+                    alpha1 = alpha1_true_gen, # Use modified alpha
+                    alpha2 = alpha2_true_gen) # Use modified alpha
+)
+
+# Simulate the path
+# n.start is for burn-in; rugarchpath typically handles this well.
+# For explicit burn-in to remove: n.sim = T_obs_new + 200, then trim first 200.
+# Or use n.start within ugarchpath if it directly supports it for the path output.
+# Simpler: simulate longer and trim.
+path_sim_obj <- ugarchpath(spec_gen, n.sim = T_obs_new + 200, n.start = 0, m.sim = 1)
+vR_new <- as.numeric(fitted(path_sim_obj)[-(1:200)]) # Get returns, remove first 200 as burn-in
+
+cat("Generated vR_new with length:", length(vR_new), "\n")
+# plot(vR_new, type="l", main="Simulated ARCH(2) Returns (Persistence < 1)")
+# acf(vR_new^2, main="ACF of Squared Simulated Returns")
+```
+
+  You want to model the volatility of the stock. You assume that, for all periods $t=1, \dots, T$, the stock return $r_t$ is generated by a location scale model
+    $$ r_t = \mu + \varepsilon_t \sigma_t $$
+    with conditional variances following an ARCH(p) process
+    $$ \sigma_t^2 = \omega + \sum_{j=1}^p \alpha_j r_{t-j}^2 $$
+    Assume $\varepsilon_t$ has a standard normal distribution conditional on the information from all previous periods. Thus, the likelihood function of the returns $r_t$ is given by
+    $$ L(\mu, \omega, \alpha_1, \alpha_2, \dots, \alpha_p) = \prod_{t=1}^T \left( \frac{1}{\sigma_t} \phi\left(\frac{r_t - \mu}{\sigma_t}\right) \right). $$
+    where $\phi(\cdot)$ denotes the density of the standard normal distribution.
+
+2.  Write an R function that returns the average **negative** log-likelihood function of a **reparameterized** version of the model above for periods $t=p+1, p+2, \dots, T$ for a flexible p. It should have the following inputs:
+    (a) A vector of parameters $(\mu, \omega, \alpha_1, \alpha_2, \dots, \alpha_p)$,
+    (b) a return series of length $T$,
+    (c) the order $p$ of the ARCH process with default $p=2$,
+    and fulfill the following constraints:
+    i) $\omega > 0$
+    ii) $\sum_{j=1}^p \alpha_j = 1$
+    *Hint: You may initialize the conditional variance process at* $t=1,2,\dots,p$ *with* $\sigma_t^2$ *equal to the unconditional variance of your returns. You can use* `dnorm()` *to calculate the density of a normally distributed random variable in R.*
+
+Solution:
+
+```{r}
+fAvgNegLogLik <- function(vParams, vR, p = 2) {
+  dMu <- vParams[1]
+  dOmega <- exp(vParams[2])
+  vParams[3:length(vParams)] <- vParams[3:length(vParams)] / sum(vParams[3:length(vParams)])
+
+  iT <- length(vR)
+  vSigma2 <- numeric(iT)
+  for (j in 1:p) {
+    vSigma2[j] <- dOmega / (1 - sum(vParams[3:length(vParams)]))
+  }
+  
+  dSum <- 0
+  
+  for (t in (p + 1):iT) {
+    vSigma2[t] <- dOmega
+    
+    for (j in 1:p) {
+      vSigma2[t] <- vSigma2[t] + vParams[j + 2] * vR[t - j]^2 
+    }
+    
+    dSum <- dSum - log(sqrt(vSigma2[t])) + log(dnorm((vR[t] - dMu)/sqrt(vSigma2[t])))
+  }
+  
+  return(-dSum / (iT - p))
+}
+```
+
+3.  Set $p=2$. Use the BFGS algorithm with `optim()` to find the maximizers of the reparameterized log-likelihood function in 2). Use starting values that **correspond** to the original likelihood parameters
+    $$ \mu=0, \omega = \frac{1}{T}\sum_{t=1}^T r_t^2, \alpha_1 = 0.7, \alpha_2 = 0.3. $$
+    Retransform your results. What are the estimates for $(\mu, \omega, \alpha_1, \alpha_2)$?
+
+```{r}
+optim_res <- optim(c(0, log(mean(vR_new^2)), 0.7, 0.3), fAvgNegLogLik, vR = vR_new, method = "BFGS")
+optim_res
+
+vParams <- optim_res$par
+dMu_star <- vParams[1]
+dOmega_star <- exp(vParams[2])
+vAlphas_star <- vParams[3:length(vParams)] / sum(vParams[3:length(vParams)])
+
+dMu_star
+dOmega_star
+vAlphas_star
+
+spec_fit_rugarch <- ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(2, 0)), # ARCH(2)
+  mean.model = list(armaOrder = c(0, 0), include.mean = TRUE), # Estimate mu
+  distribution.model = "norm"
+)
+
+# Fit the model using rugarch
+fit_rugarch <- ugarchfit(spec = spec_fit_rugarch, data = vR_new, solver = "nloptr") # or "nloptr"
+
+print("--- rugarch Results ---")
+print(fit_rugarch)
+```

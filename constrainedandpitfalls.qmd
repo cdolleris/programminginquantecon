@@ -1,0 +1,724 @@
+# Constrained Optimization and Pitfalls in Optimization
+
+## Constrained Optimization
+
+Very often we have some restrictions on the input space used for optimization. Typical examples include optimization under
+
+* nonnegativity constraints $\mathbf{x} \ge \mathbf{0}$
+* $m$ linear restrictions $\mathbf{R}\mathbf{x} - \mathbf{q} = \mathbf{0}$ for some $\mathbf{R} \in \mathbb{R}^{m}\times \mathbb{R}^{d}$, $\mathbf{q} \in \mathbb{R}^d$
+* upper and lower bounds $\mathbf{a} \le \mathbf{x} \le \mathbf{b}$ for some $\mathbf{a}, \mathbf{b} \in \mathbb{R}^d$
+
+Example I: Likelihood of a stationary autoregressive AR(1) process:
+
+$$y_t = \alpha y_{t-1} + \varepsilon_t, \qquad \varepsilon_t \sim N(0, \sigma^2)$$
+
+For stationarity we need that $|\alpha| < 1$ or $-1 < \alpha < 1$.
+
+Example II: Stationary GARCH Process
+
+$$\sigma_t^2 = \omega + \alpha \varepsilon_{t-1}^2 + \beta \sigma_{t-1}^2$$
+
+For stationarity and nonnegativity we need that $\omega > 0$ and $\alpha + \beta < 1$
+
+In general the constrained optimization problem can be defined as
+
+$$\begin{cases} \min_x f(x) \\ \text{s.t.} \quad g(x) \le 0 \end{cases} \qquad (1)$$
+
+E.g.
+
+* $\mathbf{g(x)} = -\mathbf{x} \le \mathbf{0}$
+* $\mathbf{g(x)} = \begin{pmatrix} \mathbf{Rx - q} \\ -\mathbf{(Rx - q)} \end{pmatrix} \le \mathbf{0}$
+* $\mathbf{g(x)} = \begin{pmatrix} \mathbf{x - b} \\ \mathbf{a - x} \end{pmatrix} \le \mathbf{0}$
+
+The most common techniques to transform a constrained problem into an unconstrained problem are:
+
+* **Penalization functions**
+* **Barrier functions**
+
+## Penalization functions
+
+If we could, we'd like to optimize
+
+$$\min_{\mathbf{x}} (f(\mathbf{x}) + p(\mathbf{x})), \quad p(\mathbf{x}) = \begin{cases} 0 & \mathbf{g(x) \le 0} \\ \infty & \text{otherwise} \end{cases} \qquad (2)$$
+
+Not a continuous function! Instead we can do
+
+$$\min_{\mathbf{x}} \underbrace{(f(\mathbf{x}) + \gamma \cdot ||\max\{\mathbf{g(x), 0\}}||^2)}_{f_p(\mathbf{x}, \gamma)} \quad \gamma > 0 \qquad (3)$$
+
+such that every time the function exits from the boundary, its value is increased by an amount that is proportional to the distance from the admissible set. We can then solve a sequence of optimization problems
+
+$$\mathbf{x}^{*(h)} = \min_\mathbf{x} f_p(\mathbf{x}, \gamma_h)$$
+
+for an increasing sequence of positive values of $\gamma_h$. The algorithm stops when
+
+$$||\mathbf{x}^{*(h)} - \mathbf{x}^{*(h-1)}|| < \epsilon_\gamma$$
+
+## Barrier functions - (Interior-point)
+
+The objective function in this case is transformed as
+
+$$\min_\mathbf{x} \underbrace{(f(\mathbf{x}) + \gamma \cdot b(\mathbf{x}))}_{f_b(\mathbf{x}, \gamma)} \quad \gamma > 0 \qquad (4)$$
+
+where
+
+$$b(\mathbf{x}) = \begin{cases} -\sum_{i=1}^m \log(-g_i(\mathbf{x})) & \mathbf{g}(\mathbf{x}) \le \mathbf{0} \\ \infty & \text{otherwise} \end{cases}$$
+
+We impose a very large cost on feasible points that lie close to the boundary since $-\log(-g_i(\mathbf{x})) \to \infty$ as $g_i(\mathbf{x}) \to 0^-$. We can then solve a sequence of optimization problems
+
+$$\mathbf{x}^{*(h)} = \min_\mathbf{x} f_b(\mathbf{x}, \gamma_h)$$
+
+for a **decreasing** sequence of positive values of $\gamma_h$. The algorithm stops when
+
+$$||\mathbf{x}^{*(h)} - \mathbf{x}^{*(h-1)}|| < \epsilon_\gamma$$
+
+## Parameter constraints
+
+So far we have considered the case where $\mathbf{x} \in \mathbb{R}^p$, however, the most common scenario is when $\mathbf{x} \in \mathcal{X} \subset \mathbb{R}^p$.
+
+* Newton-based method (`method = "BFGS"`) doesn't know about ranges
+* Alternative optimization (`method = "L-BFGS-B"`) does but: slower/worse convergence
+
+Consider for example the problem of estimating the location $\mu$, scale $\psi$ and degree of freedom parameters of a Student's $t$ distribution. Formally let $\mathbf{y} = (y_1, ..., y_T)'$ a sample of $T$ iid observations from a Student's $t$ distribution. The ML estimator for $\mathbf{\theta} = (\mu, \psi, \nu)$ is:
+
+$$\mathbf{\theta}^{ML} = \underset{\mathbf{\theta} \in \Theta}{\operatorname{arg max}} \sum_{t=1}^T \log p_T(y_t; \mathbf{\theta}),$$
+
+where $\Theta$ is the restricted space $\mathbb{R} \times (0, \infty) \times (0, \infty)$.
+
+We have two options:
+
+1) Use a constrained optimizer like `optim` with `method = "L-BFGS-B"`.
+
+2) Reparameterize our problem and use an unrestricted optimizer.
+
+The second option is usually preferred and provides better results.
+
+## Reparameterization
+
+Let $\mathbf{\lambda} : \mathbb{R}^p \rightarrow \Omega$ a vector-valued differentiable mapping function such that $\mathbf{\lambda(\tilde{\theta})} = \mathbf{\theta}$ where $\mathbf{\tilde{\theta}}$ is a reparametrization of $\mathbf{\theta}$. In the Student's $t$ case $\mathbf{\lambda(\cdot)}$ can be chosen as:
+
+$$\mathbf{\lambda(\tilde{\theta})} = \begin{cases} \mu = \tilde{\mu} \\ \psi = \exp(\tilde{\psi}) \\ \nu = \exp(\tilde{\nu}) \end{cases}$$
+
+where $\tilde{\psi}$ and $\tilde{\nu}$ are reparameterization of $\psi$ and $\nu$, respectively.
+
+Since $\tilde{\theta} \in \mathbb{R}^3$, the original optimization problem can now be reformulated as:
+
+$$\mathbf{\tilde{\theta}}^{ML} = \underset{\tilde{\theta} \in \mathbb{R}^3}{\operatorname{arg max}} \sum_{t=1}^T \log p_T(y_t; \mathbf{\lambda(\tilde{\theta})}),$$
+
+and then $\mathbf{\theta}^{ML}=\lambda(\tilde{\mathbf{\theta}^{ML}})$. Which can be solved with an unconstrained optimizer like `optim` with `method = "BFGS"`.
+
+## Differentiation after reparameterization: Delta method
+
+Note however that the evaluation of the gradient and the hessian matrix needs to be modified after the reparameterization of the problem. We have the following identities:
+
+$$\widetilde{\nabla} f(\tilde{\mathbf{\theta}}) = \mathcal{J}(\tilde{\mathbf{\theta}})' \nabla f(\mathbf{\theta}) = \mathcal{J}(\tilde{\mathbf{\theta}})' \nabla f(\lambda(\tilde{\mathbf{\theta}}))$$
+$$\widetilde{\mathbf{H}} (\tilde{\theta}) = \mathcal{J}(\tilde{\mathbf{\theta}})' \mathbf{H}(\mathbf{\theta}) \mathcal{J}(\tilde{\mathbf{\theta}}) = \mathcal{J}(\tilde{\mathbf{\theta}})' \mathbf{H}(\lambda(\tilde{\mathbf{\theta}})) \mathcal{J}(\tilde{\mathbf{\theta}}),$$
+
+where $\mathcal{J}(\tilde{\mathbf{\theta}})$ is the Jacobian associated to the mapping $\mathbf{\lambda}(\cdot)$. In the previous example:
+
+$$\mathcal{J}(\tilde{\mathbf{\theta}}) = \begin{pmatrix} 1 & 0 & 0 \\ 0 & \exp(\tilde{\psi}) & 0 \\ 0 & 0 & \exp(\tilde{\nu}) \end{pmatrix}$$
+
+## Transforming parameters
+
+Variance parameter positive?
+Solutions:
+
+1. Use $\sigma \equiv |\theta|$ as parameter, ie forget the sign altogether (doesn't matter for optimisation, interpret negative $\sigma$ in outcome as positive value)
+
+2. Transform, optimise $\theta = \log \sigma \in (-\infty, \infty)$, no trouble for optimisation
+
+Last option most common, most robust, neatest.
+
+## Transform: Common transformations
+
+| Constraint | $\theta$ | $\tilde{\theta}$ |
+|---|---|---|
+| $[0, \infty)$ | $\exp(\tilde{\theta})$ | $\log(\theta)$ |
+| $[0, 1]$ | $\frac{\exp(\tilde{\theta})}{1 + \exp(\tilde{\theta})}$ | $\log\left(\frac{\theta}{1-\theta}\right)$ |
+
+Of course, to get a range of $[L, U]$, use a rescaled $[0, 1]$ transformation.
+
+## Code for constrained optimization
+
+::: {.callout-note collapse="true"}
+## Click to view full code associated with the first part
+
+```{r, `code-line-numbers` = "1"}
+# adapted code from last lecture ------------------------------------------
+
+#golden section 
+gsection <- function(f, dX.l, dX.r, dX.m, dTol = 1e-9, ...) {
+  
+  # golden ratio plus one
+  dGR1 <- 1 + (1 + sqrt(5))/2
+  
+  # successively refine x.l, x.r, and x.m
+  f.l <- f(dX.l, ...)
+  f.r <- f(dX.r, ...)
+  f.m <- f(dX.m, ...)
+  while ((dX.r - dX.l) > dTol) { 
+    if ((dX.r - dX.m) > (dX.m - dX.l)) { # if the right segment is wider than the left 
+      dY <- dX.m + (dX.r - dX.m)/dGR1 # put Y into the right segment according to the golden ratio
+      f.y <- f(dY, ...)
+      if (f.y >= f.m) {
+        dX.l <- dX.m
+        f.l <- f.m
+        dX.m <- dY
+        f.m <- f.y
+      } else {
+        dX.r <- dY
+        f.r <- f.y
+      }
+    } else { #if the left segment is wider than the right
+      dY <- dX.m - (dX.m - dX.l)/dGR1 # put Y into the left segment according to the golden ratio
+      f.y <- f(dY, ...)
+      if (f.y >= f.m) {
+        dX.r <- dX.m
+        f.r <- f.m
+        dX.m <- dY
+        f.m <- f.y
+      } else {
+        dX.l <- dY
+        f.l <- f.y
+      }
+    }
+  }
+  return(dX.m)
+}
+
+#line search
+line.search <- function(f, vX, vG, dTol = 1e-9, dA.max = 2^5, ...) {
+  # f is a real function that takes a vector of length d
+  # x and y are vectors of length d
+  # line.search uses gsection to find a >= 0 such that
+  # g(a) = f(x + a*y) has a local maximum at a,
+  # within a tolerance of tol
+  # if no local max is found then we use 0 or a.max for a
+  # the value returned is x + a*y
+  if (sum(abs(vG)) == 0){
+    return(vX) # +0*vG
+  } # g(a) constant
+  g <- function(dA, ...){
+    return(f(vX + dA*vG, ...)) 
+  }
+  # find a triple a.l < a.m < a.r such that
+  # g(a.l) <= g(a.m) and g(a.m) >= g(a.r)
+  
+  # choose a.l
+  dA.l <- 0
+  g.l <- g(dA.l, ...)
+  # find a.m
+  dA.m <- 1
+  g.m <- g(dA.m, ...)
+  while ((g.m < g.l) & (dA.m > dTol)) {
+    dA.m <- dA.m/2
+    g.m <- g(dA.m, ...)
+  }
+  # if a suitable a.m was not found then use 0 for a, so just return vX as the next step
+  if ((dA.m <= dTol) & (g.m < g.l)){
+    return(vX)
+  } 
+  # find a.r
+  dA.r <- 2*dA.m
+  g.r <- g(dA.r, ...)
+  while ((g.m < g.r) & (dA.r < dA.max)) {
+    dA.m <- dA.r
+    g.m <- g.r
+    dA.r <- 2*dA.m
+    g.r <- g(dA.r, ...)
+  }
+  # if a suitable a.r was not found then use a.max for a
+  if ((dA.r >= dA.max) & (g.m < g.r)){
+    return(vX + dA.max*vG)
+  } 
+  # apply golden-section algorithm to g to find a
+  dA <- gsection(g, dA.l, dA.r, dA.m, ...)
+  return(vX + dA*vG)
+}
+
+#ascent function
+ascent <- function(f, grad.f, vX0, dTol = 1e-9, n.max = 100, verbose = TRUE, ...) {
+  vX.old <- vX0
+  vG0<-grad.f(vX0, ...)
+  vX <- line.search(f, vX0, vG0, ...)
+  n <- 1
+  while ((f(vX, ...) - f(vX.old, ...) > dTol) & (n < n.max)) {
+    vX.old <- vX
+    vG <- grad.f(vX, ...)
+    vX <- line.search(f, vX, vG, ...)
+    if(verbose){
+      cat("at iteration", n, "the coordinates of x are", vX, "\n")
+    }
+    n <- n + 1
+  }
+  return(vX)
+}
+
+#function
+f <- function(vX) {
+  dOut = sin(vX[1]^2/2 - vX[2]^2/4) * cos(2*vX[1] - exp(vX[2]))
+  return(dOut)
+}
+
+
+# constrained with penalization -------------------------------------------
+
+#penalizion function
+p<-function(vX, va, vb){
+  gX<-c(vX-vb, va-vX)
+  return(sum(max(gX,0))^2)
+}
+
+#new penalized objective
+f_p<-function(vX, dGamma, ...){
+  return(f(vX)-dGamma*p(vX, ...)) #subtract the penalty since we're maximizing
+}
+
+library(numDeriv)
+grad.f_p<-function(vX, dGamma, ...){
+  return(grad(func=f_p, x=vX, dGamma=dGamma, ...)) # using numerical derivatives here because I'm lazy
+}
+
+vx1 <- seq(-0.5, 3, 0.05)
+vx2 <- seq(-0.5, 2, 0.05)
+mf <- matrix(0, length(vx1), length(vx2))
+for(i in 1:length(vx1)){
+  for(j in 1:length(vx2)){
+    mf[i,j]<-f(c(vx1[i], vx2[j]))
+  }
+}
+{
+  plot(NA,xlim=range(vx1),
+       ylim=range(vx2),xlab=expression("x"[1]),ylab=expression("x"[2]),
+       frame=FALSE)
+  levels = pretty(range(mf), 50)
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  .filled.contour(x=vx1, y=vx2, z=mf,
+                  levels=levels,
+                  col=color.palette(length(levels) - 1))
+}
+
+
+
+#choose upper and lower bounds va and vb, and draw the corresponding box constraint
+#this box doesn't contain any local minimum, so any solution will be on the border
+va=c(1,0.5)
+vb=c(2.5,1)
+rect(xleft=va[1], ybottom=va[2], xright=vb[1], ytop=vb[2])
+
+#choose a point inside the box - penalty=0
+vX=c(1.5,0.75)
+points(vX[1],vX[2], col="blue", pch=16)
+p(vX, va, vb)
+
+#point outside -  penalty>0
+vX=c(0.5,0.75)
+points(vX[1],vX[2], col="green", pch=16)
+p(vX, va, vb)
+
+
+
+#plotting the solutions for different gamma_h
+{
+  plot(NA,xlim=range(vx1),
+       ylim=range(vx2),xlab=expression("x"[1]),ylab=expression("x"[2]),
+       frame=FALSE)
+  levels = pretty(range(mf), 50)
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  .filled.contour(x=vx1, y=vx2, z=mf,
+                  levels=levels,
+                  col=color.palette(length(levels) - 1))
+  rect(xleft=va[1], ybottom=va[2], xright=vb[1], ytop=vb[2])
+}
+
+
+vX0<-c(1.5,1.5)
+points(vX0[1],vX0[2], col="blue", pch=16)
+
+
+#gamma_h=0, no penalization
+vX_star<-ascent(f_p, grad.f_p, vX0, verbose=FALSE, dGamma=0, va=va, vb=vb)
+arrows(x0=vX0[1], y0=vX0[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue")
+vX_old<-vX_star
+
+#gamma_h=1 
+vX_star<-ascent(f_p, grad.f_p, vX0=vX_old, verbose=FALSE, dGamma=1, va=va, vb=vb) #hot start: take the initial value equal to the last best guess
+arrows(x0=vX_old[1], y0=vX_old[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue") 
+vX_old<-vX_star
+
+#gamma_h=10 
+vX_star<-ascent(f_p, grad.f_p, vX0=vX_old, verbose=FALSE, dGamma=10, va=va, vb=vb)
+arrows(x0=vX_old[1], y0=vX_old[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue") 
+vX_old<-vX_star
+
+#gamma_h=100
+vX_star<-ascent(f_p, grad.f_p, vX0, verbose=FALSE, dGamma=100, va=va, vb=vb)
+arrows(x0=vX_old[1], y0=vX_old[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue")
+
+
+
+#making a function that iterates like above
+penalized_ascent<-function(f_p, grad.f_p, vX0, epsilon_h = 1e-9, h.max = 100, verbose_ = TRUE, ...){
+  #first iteration
+  vXh <- ascent(f_p, grad.f_p, vX0, verbose=FALSE, dGamma=0, ...)
+  vXh_old <- vX0
+  h <- 1
+  while( sum(abs(vXh - vXh_old)) > epsilon_h && h < h.max){
+    vXh_old <- vXh
+    vXh <- ascent(f_p, grad.f_p, vXh_old, verbose=FALSE, dGamma=10^(h-1), ...) #gamma_h gets 10x bigger with every interation
+    if(verbose_){
+      cat("at iteration", h, "the coordinates of x are", vXh, "\n")
+    }
+    h <- h + 1
+  }
+  return(vXh)
+}
+
+#test out how it works for different starting values!
+{
+  plot(NA,xlim=range(vx1),
+       ylim=range(vx2),xlab=expression("x"[1]),ylab=expression("x"[2]),
+       frame=FALSE)
+  levels = pretty(range(mf), 50)
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  .filled.contour(x=vx1, y=vx2, z=mf,
+                  levels=levels,
+                  col=color.palette(length(levels) - 1))
+  rect(xleft=va[1], ybottom=va[2], xright=vb[1], ytop=vb[2])
+}
+
+
+vX0<-c(2.5,0)
+points(vX0[1],vX0[2], col="blue", pch=16)
+vX<-penalized_ascent(f_p, grad.f_p, vX0, va=va, vb=vb)
+arrows(x0=vX0[1], y0=vX0[2], x1=vX[1], y1=vX[2], length=0.05, col="blue")
+
+# constrained with barrier ------------------------------------------------
+#barrier function
+b<-function(vX, va, vb){
+  gX<-c(vX-vb, va-vX)
+  if(all(gX<=0)){
+    return(-sum(log(-gX)))
+  }else{
+    return(Inf)
+  }
+}
+#new objective with a barrier
+f_b<-function(vX, dGamma, ...){
+  return(f(vX)-dGamma*b(vX, ...)) #subtract the penalty since we're maximizing
+}
+
+grad.f_b<-function(vX, dGamma, ...){
+  return(grad(func=f_p, x=vX, dGamma=dGamma, ...)) # using numerical derivatives here because I'm lazy
+}
+
+
+#plotting the solutions for different gamma_h
+{
+  plot(NA,xlim=range(vx1),
+       ylim=range(vx2),xlab=expression("x"[1]),ylab=expression("x"[2]),
+       frame=FALSE)
+  levels = pretty(range(mf), 50)
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  .filled.contour(x=vx1, y=vx2, z=mf,
+                  levels=levels,
+                  col=color.palette(length(levels) - 1))
+  rect(xleft=va[1], ybottom=va[2], xright=vb[1], ytop=vb[2])
+}
+
+
+vX0<-c(1.2,0.7) #start inside the box
+points(vX0[1],vX0[2], col="blue", pch=16)
+
+
+#gamma_h=1
+vX_star<-ascent(f_b, grad.f_b, vX0, verbose=FALSE, dGamma=1, va=va, vb=vb)
+arrows(x0=vX0[1], y0=vX0[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue")
+vX_old<-vX_star
+
+#gamma_h=1/10
+vX_star<-ascent(f_b, grad.f_b, vX0=vX_old, verbose=FALSE, dGamma=1/10, va=va, vb=vb) #hot start: take the initial value equal to the last best guess
+arrows(x0=vX_old[1], y0=vX_old[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue") 
+vX_old<-vX_star
+
+#gamma_h=1/100
+vX_star<-ascent(f_b, grad.f_b, vX0=vX_old, verbose=FALSE, dGamma=1/100, va=va, vb=vb)
+arrows(x0=vX_old[1], y0=vX_old[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue") 
+vX_old<-vX_star
+
+#gamma_h=1/1000
+vX_star<-ascent(f_b, grad.f_b, vX0, verbose=FALSE, dGamma=1/1000, va=va, vb=vb)
+arrows(x0=vX_old[1], y0=vX_old[2], x1=vX_star[1], y1=vX_star[2], length=0.05, col="blue")
+
+barrier_ascent<-function(f_b, grad.f_b, vX0, epsilon_h = 1e-9, h.max = 100, verbose_ = TRUE, ...){
+  #first iteration
+  vXb <- ascent(f_b, grad.f_b, vX0, verbose=FALSE, dGamma=1, ...)
+  vXb_old <- vX0
+  h <- 1
+  while( sum(abs(vXb - vXb_old)) > epsilon_h && h < h.max){
+    vXb_old <- vXb
+    vXb <- ascent(f_b, grad.f_b, vXb_old, verbose=FALSE, dGamma=10^(-h), ...) #gamma_h gets 10x smaller with every iteration
+    if(verbose_){
+      cat("at iteration", h, "the coordinates of x are", vXb, "\n")
+    }
+    h <- h + 1
+  }
+  return(vXb)
+}
+
+#test out how it works for different starting values!
+{
+  plot(NA,xlim=range(vx1),
+       ylim=range(vx2),xlab=expression("x"[1]),ylab=expression("x"[2]),
+       frame=FALSE)
+  levels = pretty(range(mf), 50)
+  color.palette = function(n) hcl.colors(n, "YlOrRd", rev = TRUE)
+  .filled.contour(x=vx1, y=vx2, z=mf,
+                  levels=levels,
+                  col=color.palette(length(levels) - 1))
+  rect(xleft=va[1], ybottom=va[2], xright=vb[1], ytop=vb[2])
+}
+
+
+vX0<-c(1.1,0.55)
+points(vX0[1],vX0[2], col="blue", pch=16)
+vX<-barrier_ascent(f_b, grad.f_b, vX0, va=va, vb=vb)
+arrows(x0=vX0[1], y0=vX0[2], x1=vX[1], y1=vX[2], length=0.05, col="blue")
+```
+
+:::
+
+## Pitfalls
+
+There are some potential pitfalls with optimization routines in empirical practice. E.g, for local optima, different starting points may lead to different optima. A possible solution to this is simulated annealing which is a probabilistic technique for approximating the global optimum of a given function.
+
+![Pitfall 1](pitfalls1.png)
+
+Another potential is related to flat surfaces: different starting points; transformation for parameter ($\theta = \log{\sigma}$ tends to optimise a lot better...)
+
+![Pitfall 2](pitfalls2.png)
+
+Noise on derivatives/function: Only smooth functions can be optimised using NR-approach. Use analytical derivatives. Robust programming of target function (optimise AVERAGE LOG likelihood, never likelihood itself).
+
+![Pitfall 3](pitfalls3.png)
+
+Non-uniqueness of optimum/indeterminacy in model specification: Optimize $\sigma$, both $\sigma = -1$, $\sigma = 1$ give same likelihood...
+
+![Pitfall 4](pitfalls4.png)
+
+Bad Taylor-approximation: Sometimes transformation of parameters helps a bit, or it is just bad luck.
+
+![Pitfall 5](pitfalls5.png)
+
+## Problematic Hessian?
+
+Algorithms based on NR need $\mathbf{H}(x_n)$.
+
+A problem with NR is that the Hessian matrix is not guaranteed to be non-singular. If it is (near) singular at any step, the search routine could either diverge or break down altogether.
+Problematic:
+
+* Taking derivatives is not stable (...)
+* Needs many function evaluations
+* $\mathbf{H}$ not guaranteed to be non-singular
+
+Problem is in step
+
+$$\mathbf{x}_{n+1} - \mathbf{x}_n = -\mathbf{H}^{-1}(\mathbf{x}_n) \nabla f(\mathbf{x}_n)$$
+
+Replace $\mathbf{H}(\mathbf{x}_n)$ by some $\mathbf{M}_n$, invertible by construction?
+
+## Recap of Newton's method in higher dimensions
+
+From last lecture we have the following quadratic approximation of the objective function $f$:
+
+$$f(\mathbf{x}_{n+1}) \approx f(\mathbf{x}_n) + \mathbf{s}_n' \nabla f(\mathbf{x}_n) + \frac{1}{2} \mathbf{s}_n' \mathbf{H}(\mathbf{x}_n) \mathbf{s}_n,$$
+
+where $\mathbf{s}_n = \mathbf{x}_{n+1} - \mathbf{x}_n$.
+
+Taking first-order partial derivatives on both sides with respect to $s_n$, we get:
+
+$$\nabla f(\mathbf{x}_{n+1}) \approx \nabla f(\mathbf{x}_n) + \mathbf{H}(\mathbf{x}_n) \mathbf{s}_n$$
+
+To solve for the next step, set $\nabla f(\mathbf{x}_{n+1}) = 0$ and rearrange:
+
+$$\mathbf{s}_n = -\mathbf{H}(\mathbf{x}_n)^{-1} \nabla f(\mathbf{x}_n)$$
+
+Instead of $\mathbf{H}(\mathbf{x}_n)$, we could use some $\mathbf{M}_n$, which has nice properties:
+
+$$\mathbf{s}_n = -\mathbf{M}_n^{-1} \nabla f(\mathbf{x}_n)$$
+
+## Broyden, Fletcher, Goldfarb and Shanno (BFGS)
+
+Choose $\mathbf{M}_{n+1}$ such that it satisfies the "secant equation"
+
+$$\mathbf{M}_{n+1}(\mathbf{x}_{n+1}-\mathbf{x}_{n}) = \nabla f(\mathbf{x}_{n+1}) - \nabla f(\mathbf{x}_{n}) \iff \mathbf{M}_{n+1} \mathbf{s}_{n} = \mathbf{y}_{n},$$
+
+where $\mathbf{y}_{n} = \nabla f(\mathbf{x}_{n+1}) - \nabla f(\mathbf{x}_{n})$
+
+When $\mathbf{x}_{n+1}$ is close to $\mathbf{x}_{n}$, then $\mathbf{H}(\mathbf{x}_{n+1}) \approx \mathbf{M}_{n+1}$
+
+To determine $\mathbf{M}_{n+1}$ uniquely, then, we impose the additional condition that among all symmetric matrices satisfying the secant equation, $\mathbf{M}_{n+1}$ is, in some sense, closest to the current matrix $\mathbf{M}_n$
+
+$$\mathbf{M}_{n+1} = \min_\mathbf{M} ||\mathbf{M} - \mathbf{M}_n||$$
+
+subject to $\mathbf{M} = \mathbf{M}'$, $\mathbf{M}\mathbf{s}_n = \mathbf{y}_n$
+
+The solution:
+
+$$\mathbf{M}_{n+1} = \mathbf{M}_n + \frac{\mathbf{y}_n \mathbf{y}_n'}{\mathbf{y}_n \mathbf{s}_n'} - \frac{\mathbf{M}_n \mathbf{s}_n \mathbf{s}_n' \mathbf{M}_n'}{\mathbf{s}_n' \mathbf{M}_n \mathbf{s}_n}$$
+
+1. Start with $n=0$ and positive definite $\mathbf{M}_0$, e.g. $\mathbf{M}_0 = I$
+2. Calculate $\mathbf{s}_n = -\mathbf{M}_n^{-1} \nabla f(\mathbf{x}_n)$
+3. Find new $\mathbf{x}_{n+1} = \mathbf{x}_n + \mathbf{s}_n$ (or with line search: $\mathbf{x}_{n+1} = \mathbf{x}_n + \alpha_n \mathbf{s}_n$)
+4. Calculate, with $\mathbf{y}_n = \nabla f(\mathbf{x}_{n+1}) - \nabla f(\mathbf{x}_n)$
+   $$\mathbf{M}_{n+1} = \mathbf{M}_n + \frac{\mathbf{y}_n \mathbf{y}_n'}{\mathbf{y}_n' \mathbf{s}_n} - \frac{\mathbf{M}_n \mathbf{s}_n \mathbf{s}_n' \mathbf{M}_n'}{\mathbf{s}_n' \mathbf{M}_n \mathbf{s}_n}$$
+5. This produces a symmetric and positive definite matrix at each step if the initialization is a symmetric and positive definite matrix, like the identity matrix.
+6. We can use the Sherman-Morrison formula to calculate $\mathbf{M}_{n+1}^{-1}$ efficiently.
+
+Result:
+* No Hessian needed
+* Still fast convergence
+* No problems with singular $H_n$
+
+## Example: Regression Likelihood
+
+$$y_i = X_i \beta + \epsilon_i \qquad \epsilon_i \sim N(0, \sigma^2)$$
+
+ML maximises likelihood (other options: Minimise sum-of-squares, optimise utility etc):
+
+$$L(y; \theta) = \prod_i \frac{1}{\sqrt{2\pi \sigma^2}} \exp \left( -\frac{(y_i - X_i \beta)^2}{2\sigma^2} \right)$$
+$$= (2\pi \sigma^2)^{-\frac{N}{2}} \exp \left( -\frac{1}{2\sigma^2} (y - X\beta)' (y - X\beta) \right)$$
+
+In this case, $\theta = (\beta, \sigma^2)$
+
+And in order to write the likelihood:
+
+To remember:
+
+$$L(y; \theta) = (2\pi \sigma^2)^{-\frac{N}{2}} \exp \left( -\frac{1}{2\sigma^2} (y - X\beta)' (y - X\beta) \right)$$
+
+$$\log L(y; \theta) = -\frac{1}{2} \left( N \log 2\pi + N \log \sigma^2 + \frac{e'e}{\sigma^2} \right)$$
+
+In this case, $\theta = (\beta, \sigma)$ or $\theta = (\beta, \sigma^2)$.
+
+* Extract your parameters from the vector, use sensible names
+* Check if your parameters are valid, i.e. $\sigma^2 > 0$?
+* And test...
+
+## `optim` continued
+
+Function to maximize should have format
+
+`optim(par, fn, gr = NULL, ..., method = c("BFGS", "CG"), lower = -Inf, upper = Inf, control = list(), hessian = FALSE)`
+
+where
+
+* `par` initial values for the parameters to be optimized over.
+* `fn` a function to be minimized
+* `gr` a function to return the gradient for the "BFGS" and "CG" methods. If it is NULL, a finite-difference approximation will be used.
+
+The output of `fn` has to be the negative average log-likelihood value evaluated in `vPar`.
+
+Why negative? Because by convention optimizers in R by default are minimizer. This option can be modified using arguments of the optimizer function.
+
+The output from `optim` is a list with named elements:
+
+* `par`: The estimated vector of parameters
+* `value`: The value of `fn` corresponding to `par.`
+* `counts`: A two-element integer vector giving the number of calls to `fn` and `gr` respectively.
+* `convergence`: An integer code. 0 indicates successful completion, see `help(optim)` for other labels.
+* `message`: A character string giving any additional information returned by the optimizer, or NULL.
+
+## Code for pitfalls and BFGS
+
+::: {.callout-note collapse="true"}
+## Click to view full code associated with the first part
+
+```{r, `code-line-numbers` = "1"}
+##  Purpose: Constrained Optimization
+##    Example with Gaussian Log-Likelihood + Gradient Transform in unconstrained 
+##    optimizer
+##
+
+##    Compute the negative average log likelihood
+
+NegAvgLL <- function(vPar, vY, mX) {
+  
+  dSigma <- vPar[1]       ## Extracting the first parameter from vPar
+  vBeta  <- vPar[-1]      ## Extracting the second parameter from vPar
+  vMean  <- mX %*% vBeta
+  vEps   <- vY - vMean
+  
+  iN <- length(vY)
+  dSumSquareRes <- as.numeric(t(vEps) %*% vEps)
+  
+  dLLK <- -0.5 * (iN * log(dSigma^2) + dSumSquareRes / dSigma^2) ## Log likelihood function
+ 
+  return(-dLLK / iN)
+}
+
+
+
+
+##  Simulate from the DGP
+set.seed(12)
+iT <- 100 # Number of observations
+
+mX     <- matrix(rnorm(iT * 3), ncol = 3)  # A matrix of randomly drawn values from the normal distribution
+vBeta  <- c(1, 2, 3)                       # True beta values
+dSigma <- 3                                # True variance
+vY     <- mX %*% vBeta + dSigma * rnorm(iT)     
+
+
+##  Estimate parameters using BFGS
+vPar0 <- c(0.1, c(0, 1, 4)) #problem: flat gradient
+Fit0 <- optim(vPar0, NegAvgLL, vY = vY, mX = mX, method = "BFGS")
+print(Fit0)
+
+
+vPar1 <- c(-1, c(0, 1, 4))  #problem: negative sigma solution
+Fit1 <- optim(vPar1, NegAvgLL, vY = vY, mX = mX, method = "BFGS")
+print(Fit1)
+
+
+
+
+## Now using reparameterized problem ##
+
+
+#reparameterized neg LL
+NegAvgLL.t <- function(vPar, vY, mX) {
+  
+  dSigma.t <- vPar[1]       ## Extracting the first parameter from vPar
+  vBeta    <- vPar[-1]      ## Extracting the second parameter from vPar
+  vMean    <- mX %*% vBeta
+  vEps     <- vY - vMean
+  
+  iN <- length(vY)
+  dSumSquareRes <- as.numeric(t(vEps) %*% vEps)
+  
+  dLLK <- -0.5 * (iN * dSigma.t + dSumSquareRes / exp(dSigma.t) ) ## Log likelihood function
+  
+  return(-dLLK / iN)
+}
+
+
+#unconstrained optimization
+Fit.t <- optim(vPar0, NegAvgLL.t, vY = vY, mX = mX, method = "BFGS") #flat gradient case
+#Fit.t <- optim(vPar1, NegAvgLL.t, vY = vY, mX = mX, method = "BFGS") #neg sigma case
+print(Fit.t)
+
+#re-transform estimates
+estimates <- c( sqrt(exp(Fit.t$par[1])) , Fit.t$par[-1] )
+print(estimates)
+
+#sanity check: compare -LL at corresponding solutions
+NegAvgLL.t(Fit.t$par, vY = vY, mX = mX)
+NegAvgLL(estimates, vY = vY, mX = mX)
+
+#compare to problematic solutions above: 
+NegAvgLL(Fit0$par, vY = vY, mX = mX) #failed
+NegAvgLL(Fit1$par, vY = vY, mX = mX) #worked but yielded negative sigma
+NegAvgLL.t(Fit.t$par, vY = vY, mX = mX)
+```
+
+:::

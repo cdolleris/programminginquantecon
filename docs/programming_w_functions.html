@@ -1,0 +1,1462 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>4&nbsp; Programming with Functions – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./efficiency_and_parallel_computing.html" rel="next">
+<link href="./basic_programming.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./programming_w_functions.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#definition-of-functions-in-r" id="toc-definition-of-functions-in-r" class="nav-link active" data-scroll-target="#definition-of-functions-in-r"><span class="header-section-number">4.1</span> Definition of functions in R</a>
+  <ul class="collapse">
+<li><a href="#running-a-function" id="toc-running-a-function" class="nav-link" data-scroll-target="#running-a-function"><span class="header-section-number">4.1.1</span> Running a Function</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples"><span class="header-section-number">4.1.2</span> Examples</a></li>
+  <li><a href="#notes-on-functions" id="toc-notes-on-functions" class="nav-link" data-scroll-target="#notes-on-functions"><span class="header-section-number">4.1.3</span> Notes on Functions</a></li>
+  <li><a href="#small-exercises" id="toc-small-exercises" class="nav-link" data-scroll-target="#small-exercises"><span class="header-section-number">4.1.4</span> Small Exercises</a></li>
+  <li><a href="#example-roots-of-a-quadratic-function" id="toc-example-roots-of-a-quadratic-function" class="nav-link" data-scroll-target="#example-roots-of-a-quadratic-function"><span class="header-section-number">4.1.5</span> Example: roots of a quadratic function</a></li>
+  <li><a href="#advantages-of-coding-with-functions" id="toc-advantages-of-coding-with-functions" class="nav-link" data-scroll-target="#advantages-of-coding-with-functions"><span class="header-section-number">4.1.6</span> Advantages of coding with functions</a></li>
+  <li><a href="#variables-inside-a-function" id="toc-variables-inside-a-function" class="nav-link" data-scroll-target="#variables-inside-a-function"><span class="header-section-number">4.1.7</span> Variables inside a function</a></li>
+  <li><a href="#the-scope-of-a-variable" id="toc-the-scope-of-a-variable" class="nav-link" data-scroll-target="#the-scope-of-a-variable"><span class="header-section-number">4.1.8</span> The scope of a variable</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#arguments-of-a-function" id="toc-arguments-of-a-function" class="nav-link" data-scroll-target="#arguments-of-a-function"><span class="header-section-number">4.2</span> Arguments of a function</a>
+  <ul class="collapse">
+<li><a href="#default-arguments" id="toc-default-arguments" class="nav-link" data-scroll-target="#default-arguments"><span class="header-section-number">4.2.1</span> Default arguments</a></li>
+  <li><a href="#default-arguments-partial-matching" id="toc-default-arguments-partial-matching" class="nav-link" data-scroll-target="#default-arguments-partial-matching"><span class="header-section-number">4.2.2</span> Default arguments: Partial matching</a></li>
+  </ul>
+</li>
+  <li><a href="#ellipsis" id="toc-ellipsis" class="nav-link" data-scroll-target="#ellipsis"><span class="header-section-number">4.3</span> Ellipsis</a></li>
+  <li>
+<a href="#vector-based-programming-using-functions" id="toc-vector-based-programming-using-functions" class="nav-link" data-scroll-target="#vector-based-programming-using-functions"><span class="header-section-number">4.4</span> Vector-based programming using functions</a>
+  <ul class="collapse">
+<li><a href="#sapply" id="toc-sapply" class="nav-link" data-scroll-target="#sapply"><span class="header-section-number">4.4.1</span> <code>sapply</code></a></li>
+  <li><a href="#sapply-and-lapply" id="toc-sapply-and-lapply" class="nav-link" data-scroll-target="#sapply-and-lapply"><span class="header-section-number">4.4.2</span> <code>sapply</code> and <code>lapply</code></a></li>
+  <li><a href="#mapply" id="toc-mapply" class="nav-link" data-scroll-target="#mapply"><span class="header-section-number">4.4.3</span> <code>mapply</code></a></li>
+  <li><a href="#apply" id="toc-apply" class="nav-link" data-scroll-target="#apply"><span class="header-section-number">4.4.4</span> <code>apply</code></a></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">4.4.5</span> Exercise</a></li>
+  <li><a href="#recursive-programming" id="toc-recursive-programming" class="nav-link" data-scroll-target="#recursive-programming"><span class="header-section-number">4.4.6</span> Recursive programming</a></li>
+  <li><a href="#multiple-outputs" id="toc-multiple-outputs" class="nav-link" data-scroll-target="#multiple-outputs"><span class="header-section-number">4.4.7</span> Multiple outputs</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#comments" id="toc-comments" class="nav-link" data-scroll-target="#comments"><span class="header-section-number">4.5</span> Comments</a>
+  <ul class="collapse">
+<li><a href="#exercise-1" id="toc-exercise-1" class="nav-link" data-scroll-target="#exercise-1"><span class="header-section-number">4.5.1</span> Exercise</a></li>
+  </ul>
+</li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./programming_w_functions.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p>We have already seen and used a number of different pre-defined functions, such as:</p>
+<ul>
+<li><p><code>matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)</code></p></li>
+<li><p><code>mean(x)</code>, <code>sd(x)</code>, <code>median(x)</code></p></li>
+<li><p><code>read.table(file, header = FALSE, sep = "", dec = ".", row.names, col.names, na.strings = "NA", skip = 0, ...</code></p></li>
+<li><p><code>write.table(x, file = "", quote = TRUE, sep = " ", na = "NA", dec = ".", row.names = TRUE, col.names = TRUE, ...)</code></p></li>
+<li><p><code>plot(x, y, ...)</code></p></li>
+</ul>
+<section id="definition-of-functions-in-r" class="level2" data-number="4.1"><h2 data-number="4.1" class="anchored" data-anchor-id="definition-of-functions-in-r">
+<span class="header-section-number">4.1</span> Definition of functions in R</h2>
+<p>A function is a piece of code that takes input (in the form of variables), performs a specified action using the input, and produces output (variables, or a table of numbers, or a graph, etc.).</p>
+<p>A function has the general form:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">name</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">argument_1</span>, <span class="va">argument_2</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">expression_1</span></span>
+<span>  <span class="va">expression_2</span></span>
+<span>  <span class="co">#&lt;some other expression&gt;</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">output</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><p><code>argument_1</code>, <code>argument_2</code>, etc., are the names of variables (the input).</p></li>
+<li><p><code>expression_1</code>, <code>expression_2</code>, and <code>output</code> are all regular R expressions.</p></li>
+<li><p><code>name</code> is the name of the function.</p></li>
+</ul>
+<section id="running-a-function" class="level3" data-number="4.1.1"><h3 data-number="4.1.1" class="anchored" data-anchor-id="running-a-function">
+<span class="header-section-number">4.1.1</span> Running a Function</h3>
+<p>To call or run a function, we type (as an example):</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">name</span><span class="op">(</span><span class="va">x1</span>, <span class="va">x2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The value of this expression is the value of the expression output.</p>
+<p>To calculate the value of output, the function first copies the value of <code>x1</code> to <code>argument_1</code>, the value of <code>x2</code> to <code>argument_2</code>, and so on. The arguments have then been passed to the function and act as variables within the function.</p>
+<p>Next, the function evaluates the grouped expressions contained in the braces {}, and the value of the expression <code>output</code> is returned as the value of the function.</p>
+</section><section id="examples" class="level3" data-number="4.1.2"><h3 data-number="4.1.2" class="anchored" data-anchor-id="examples">
+<span class="header-section-number">4.1.2</span> Examples</h3>
+<p><strong>Example 1</strong></p>
+<p>Consider the following example of a very simple function that computes the value of <code>x</code> to the power of <code>y</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">power_fct</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vX</span>, <span class="va">power</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vX</span> <span class="op">^</span> <span class="va">power</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function is then carried out as:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">power_fct</span><span class="op">(</span>vX <span class="op">=</span> <span class="fl">2</span>, power <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><strong>Example 2</strong></p>
+<p>Consider the following example of a function that swaps the values of the first and second elements of a vector:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">swap</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vZ</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dTemp</span> <span class="op">&lt;-</span> <span class="va">vZ</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>  <span class="va">vZ</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">vZ</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span>  <span class="va">vZ</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">dTemp</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vZ</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function is then carried out as:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">swap</span><span class="op">(</span>vZ <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">7</span>, <span class="fl">8</span>, <span class="fl">9</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 8 7 9</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="notes-on-functions" class="level3" data-number="4.1.3"><h3 data-number="4.1.3" class="anchored" data-anchor-id="notes-on-functions">
+<span class="header-section-number">4.1.3</span> Notes on Functions</h3>
+<p>Note that some functions have no arguments, e.g., <code><a href="https://rdrr.io/r/base/getwd.html">getwd()</a></code>. If there is no <code>return(output)</code> statements then the value returned by the function is the value of the last expression in the braces.</p>
+</section><section id="small-exercises" class="level3" data-number="4.1.4"><h3 data-number="4.1.4" class="anchored" data-anchor-id="small-exercises">
+<span class="header-section-number">4.1.4</span> Small Exercises</h3>
+<ul>
+<li><em>Write a function that returns the sum of the first N natural numbers.</em></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## There are multiple solutions to this:</span></span>
+<span><span class="co"># The efficient</span></span>
+<span><span class="va">fEfficientSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># Input validation: Check if n is a non-negative integer</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/numeric.html">is.numeric</a></span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="op">||</span> <span class="va">iN</span> <span class="op">&lt;</span> <span class="fl">0</span> <span class="op">||</span> <span class="va">iN</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html">%%</a></span> <span class="fl">1</span> <span class="op">!=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"Input must be a non-negative integer."</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">iN</span> <span class="op">*</span> <span class="op">(</span><span class="va">iN</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co"># The for loop</span></span>
+<span><span class="va">fForSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">sum</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">iIndex</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">sum</span> <span class="op">=</span> <span class="va">sum</span> <span class="op">+</span> <span class="va">iIndex</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">sum</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co"># The recursive</span></span>
+<span><span class="va">fRecursiveSum</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">iN</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">iN</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">iN</span> <span class="op">+</span> <span class="fu">fRecursiveSum</span><span class="op">(</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">fEfficientSum</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15</span></span>
+<span><span class="fu">fForSum</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15</span></span>
+<span><span class="fu">fRecursiveSum</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 15</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ul>
+<li><em>Create a function that removes missing values from its vector input if it contains any.</em></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fRemoveMissing</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">vVector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">vVector</span> <span class="op">&lt;-</span> <span class="fu">fRemoveMissing</span><span class="op">(</span><span class="va">vVector</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 1 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="example-roots-of-a-quadratic-function" class="level3" data-number="4.1.5"><h3 data-number="4.1.5" class="anchored" data-anchor-id="example-roots-of-a-quadratic-function">
+<span class="header-section-number">4.1.5</span> Example: roots of a quadratic function</h3>
+<p>Assume we want to find the roots of: <span class="math display">\[
+ax^2 + bx + c = 0
+\]</span> The analytic solution is: <span class="math display">\[
+(x_1, x_2) = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+\]</span> The associated code can be written as a function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rootfinder</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dA</span>, <span class="va">dB</span>, <span class="va">dC</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vOut</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="va">vOut</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="op">(</span><span class="op">-</span><span class="va">dB</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">dB</span> <span class="op">^</span> <span class="fl">2</span> <span class="op">-</span> <span class="fl">4</span> <span class="op">*</span> <span class="va">dA</span> <span class="op">*</span> <span class="va">dC</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">dA</span><span class="op">)</span></span>
+<span>  <span class="va">vOut</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">=</span> <span class="op">(</span><span class="op">-</span><span class="va">dB</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">dB</span> <span class="op">^</span> <span class="fl">2</span> <span class="op">-</span> <span class="fl">4</span> <span class="op">*</span> <span class="va">dA</span> <span class="op">*</span> <span class="va">dC</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">dA</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>But there are some problems related to the efficiency of the code. We are computing the algebraic operations too many times, and we are not exploiting vector-operations.</p>
+<ul>
+<li>What if <span class="math inline">\(a=b=c=0\)</span>?</li>
+<li>What if <span class="math inline">\(a=b=0\)</span>?</li>
+<li>What if <span class="math inline">\(a=0\)</span>?</li>
+<li>What if <span class="math inline">\(b^2-4ac=0\)</span>?</li>
+<li>What is <span class="math inline">\(b^2-4ac&lt;0\)</span>?</li>
+</ul>
+<p>Reformulate the analytical solution as:</p>
+<p><span class="math display">\[
+(x_1, x_2) =
+\begin{cases}
+\mathbb{R}, &amp; \text{if } a=b=c=0 \\
+\emptyset, &amp; \text{if } a=b=0 \wedge c \ne 0 \\
+-\frac{c}{b}, &amp; \text{if } a=0 \wedge b \ne 0 \wedge c \ne 0 \\
+\frac{-b \pm \sqrt{\lvert\Delta\rvert} \sqrt{sgn(\Delta)}}{2a}, &amp; \text{otherwise}
+\end{cases}
+\]</span></p>
+<p>Where <span class="math inline">\(\Delta = b^2 - 4ac\)</span>. Note that:</p>
+<p><span class="math display">\[
+\sqrt{sgn(\Delta)} =
+\begin{cases}
+1, \text{if } \Delta \ge 0 \\
+i, \text{if } \Delta &lt; 0
+\end{cases}
+\]</span></p>
+<p>Thus, we modify our function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">rootfinder</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dA</span>, <span class="va">dB</span>, <span class="va">dC</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">dA</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="va">dB</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="va">dC</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">vRoots</span> <span class="op">&lt;-</span> <span class="cn">Inf</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">dA</span> <span class="op">==</span> <span class="fl">0</span> <span class="op">&amp;&amp;</span> <span class="va">dB</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">vRoots</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">dA</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">vRoots</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="va">dC</span> <span class="op">/</span> <span class="va">dB</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="co"># calculate the discriminant</span></span>
+<span>    <span class="va">dDelta</span> <span class="op">&lt;-</span> <span class="va">dB</span><span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">4</span> <span class="op">*</span> <span class="va">dA</span> <span class="op">*</span> <span class="va">dC</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">dDelta</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">vRoots</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">-</span><span class="va">dB</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">dDelta</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">dA</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">dDelta</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">vRoots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="op">-</span><span class="va">dB</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">dA</span><span class="op">)</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="va">di</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/complex.html">complex</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span>      <span class="va">vRoots</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">-</span><span class="va">dB</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="op">-</span><span class="va">dDelta</span><span class="op">)</span> <span class="op">*</span> <span class="va">di</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">dA</span><span class="op">)</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vRoots</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Suppose we have saved the function <code>rootfinder</code> in the script <code>rootfinder.R</code> which is located int he script folder inside our working directory.</p>
+<p>To use the function, we first load it (using source or by copying and pasting into R), then call it, supplying suitable arguments.</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># source("./scripts/rootfinder.r)</span></span>
+<span><span class="fu">rootfinder</span><span class="op">(</span>dA <span class="op">=</span> <span class="fl">1</span>, dB <span class="op">=</span> <span class="fl">1</span>, dC <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  0 -1</span></span>
+<span><span class="fu">rootfinder</span><span class="op">(</span>dA <span class="op">=</span> <span class="fl">1</span>, dB <span class="op">=</span> <span class="fl">0</span>, dC <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  1 -1</span></span>
+<span><span class="fu">rootfinder</span><span class="op">(</span>dA <span class="op">=</span> <span class="fl">1</span>, dB <span class="op">=</span> <span class="op">-</span><span class="fl">2</span>, dC <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 1</span></span>
+<span><span class="fu">rootfinder</span><span class="op">(</span>dA <span class="op">=</span> <span class="fl">1</span>, dB <span class="op">=</span> <span class="fl">1</span>, dC <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -0.5+0.8660254i -0.5-0.8660254i</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="advantages-of-coding-with-functions" class="level3" data-number="4.1.6"><h3 data-number="4.1.6" class="anchored" data-anchor-id="advantages-of-coding-with-functions">
+<span class="header-section-number">4.1.6</span> Advantages of coding with functions</h3>
+<p>Once a function is loaded, it can be used again and again without having to reload it.</p>
+<p>User-defined functions can be used in the same way as predefined functions are used in R. In particular, they can be used within other functions.</p>
+<p>The use of functions allows you to break down a programming task into smaller, logical units.</p>
+<p>Large programs are typically made up of a number of smaller functions, each of which does a simple, well-defined task.</p>
+</section><section id="variables-inside-a-function" class="level3" data-number="4.1.7"><h3 data-number="4.1.7" class="anchored" data-anchor-id="variables-inside-a-function">
+<span class="header-section-number">4.1.7</span> Variables inside a function</h3>
+<p>The arguments and variables that are defined within a function exist only within that function.</p>
+<p>If you define and use a variable <code>x</code> inside a function, it does not exist outside the function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">test</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">test</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">x</span> <span class="co"># This will return an error</span></span>
+<span><span class="va">y</span> <span class="co"># This will return an error</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="the-scope-of-a-variable" class="level3" data-number="4.1.8"><h3 data-number="4.1.8" class="anchored" data-anchor-id="the-scope-of-a-variable">
+<span class="header-section-number">4.1.8</span> The scope of a variable</h3>
+<p>If variables with the same name exist inside and outside a function, then they are separate and do not interact at all.</p>
+<p>You can think of a function as a separate environment that communicates with the outside world only through the values of its arguments and its output expression.</p>
+<p>That part of a program in which a variable is defined is called its scope. Restricting the scope of variables within a function provides an assurance that calling the function will not modify variables outside the function, except by assigning the returned value.</p>
+<p>Beware, however, the scope of a variable is not symmetric!</p>
+<p>Variables defined inside a fucntion cannot be seen outside, but variables defined outside the function can be seen inside the function, <em>provided there is not a variable with the same name defined inside</em>.</p>
+<p>Consider for example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">test2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">z</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span><span class="fu">test2</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="va">z</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span><span class="fu">test2</span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Best practice is always to pass variables to be used inside the function as additional arguments:</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">test2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">z</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">y</span> <span class="op">&lt;-</span> <span class="va">x</span> <span class="op">+</span> <span class="va">z</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">y</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="arguments-of-a-function" class="level2" data-number="4.2"><h2 data-number="4.2" class="anchored" data-anchor-id="arguments-of-a-function">
+<span class="header-section-number">4.2</span> Arguments of a function</h2>
+<p>The arguments of a function can be mandatory or optional depending on the function specification.</p>
+<p>The arguments of an existing function can be obtained by calling the <code>formals</code> function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/formals.html">formals</a></span><span class="op">(</span><span class="va">rootfinder</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $dA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $dB</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $dC</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="default-arguments" class="level3" data-number="4.2.1"><h3 data-number="4.2.1" class="anchored" data-anchor-id="default-arguments">
+<span class="header-section-number">4.2.1</span> Default arguments</h3>
+<p>In order to simplify calling functions, some arguments may be assigned default values. Default values are used in the case where the argument is not provided in the call to the function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">test3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">test3</span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="fu">test3</span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Calling <code>formals</code> on a function with default arguments, the value of the default arguments will be stated as well</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/formals.html">formals</a></span><span class="op">(</span><span class="va">matrix</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $data</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $nrow</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $ncol</span></span>
+<span><span class="co">#&gt; [1] 1</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $byrow</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $dimnames</span></span>
+<span><span class="co">#&gt; NULL</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1]</span></span>
+<span><span class="co">#&gt; [1,]   NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If an argument is omitted in a function call, R automatically assigns arguments to variables from the left and uses the default values for the unassigned arguments:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">test4</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">y</span> <span class="op">=</span> <span class="fl">1</span>, <span class="va">z</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">x</span> <span class="op">*</span> <span class="fl">100</span> <span class="op">+</span> <span class="va">y</span> <span class="op">*</span> <span class="fl">10</span> <span class="op">+</span> <span class="va">z</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">test4</span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 221</span></span>
+<span><span class="fu">test4</span><span class="op">(</span>y <span class="op">=</span> <span class="fl">2</span>, z <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 122</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In general, naming the arguments in the function call is good practice, because it increases the readability and eliminates one potential source of errors.</p>
+</section><section id="default-arguments-partial-matching" class="level3" data-number="4.2.2"><h3 data-number="4.2.2" class="anchored" data-anchor-id="default-arguments-partial-matching">
+<span class="header-section-number">4.2.2</span> Default arguments: Partial matching</h3>
+<p>Sometimes you will want to define arguments so that they can take only a small number of different values, and the function will stop informatively if an inappropriate value is passed.</p>
+<p>When writing the function, we include a vector of the permissable values for any such argument, and then check them using the <code>match.arg</code> function. For example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">MyFunc</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vX</span>, <span class="va">method</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"add"</span>, <span class="st">"multiply"</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">method</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/match.arg.html">match.arg</a></span><span class="op">(</span><span class="va">method</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">method</span> <span class="op">==</span> <span class="st">"add"</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/prod.html">prod</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">MyFunc</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"multiply"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 24</span></span>
+<span><span class="fu">MyFunc</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span>, method <span class="op">=</span> <span class="st">"add"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The R function <code>ar</code>, for example, which fits an autoregressive time series model to data, takes (among others) the argument specifying the method by which the model is estimated.</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">method</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"yule-walker"</span>, <span class="st">"burg"</span>, <span class="st">"ols"</span>, <span class="st">"mle"</span>, <span class="st">"yw"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="ellipsis" class="level2" data-number="4.3"><h2 data-number="4.3" class="anchored" data-anchor-id="ellipsis">
+<span class="header-section-number">4.3</span> Ellipsis</h2>
+<p>R provides a very useful means of passing arguments, unaltered, from the function that is being called to the functions that are called within it.</p>
+<p>These arguments do not need to be named explicitly in the outer function, hence providing great flexibility.</p>
+<p>The use this facility, you need to include … in your argument list. These three dots (an ellipsis) act as a placeholder for any extra arguments given to the function.</p>
+<p>Consider for example the function ‘square of the mean’:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">SquareMean</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vX</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dSM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vX</span>, <span class="va">...</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dSM</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">SquareMean</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="cn">NA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="fu">SquareMean</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">5</span>, <span class="cn">NA</span><span class="op">)</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 9</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="vector-based-programming-using-functions" class="level2" data-number="4.4"><h2 data-number="4.4" class="anchored" data-anchor-id="vector-based-programming-using-functions">
+<span class="header-section-number">4.4</span> Vector-based programming using functions</h2>
+<p>Many R functions are vectorized, meaning that given vector input the function acts on each element separately, and a vector output is return, e.g.:</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="cn">NA</span>, <span class="fl">3</span>, <span class="fl">8</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] FALSE  TRUE FALSE FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This is a very powerful aspect of R that allows for compact, efficient, and readable code. Moreover, for many R functions, applying the function to a vector is much faster than if we were to write a loop to apply it to each element one at a time.</p>
+<p>To further facilitate vector-based programming, R provides a family of powerful and flexible functions that make it easier for user-defined functions to handle vector inputs. These belong to the <code>apply</code> family of functions.</p>
+<p>Here we cover, <code>apply</code>, <code>sapply</code>, <code>lapply</code>, and <code>mapply</code>. Other functions belonging to this family are: <code>tapply</code>, <code>vapply</code>, and <code>eapply</code>, which require a bit of advanced R programming knowledge.</p>
+<section id="sapply" class="level3" data-number="4.4.1"><h3 data-number="4.4.1" class="anchored" data-anchor-id="sapply">
+<span class="header-section-number">4.4.1</span> <code>sapply</code>
+</h3>
+<p>The effect of <code>sapply(vX, FUN)</code> is to apply the function <code>FUN</code> to every element of vector <code>vX</code>. That is, <code>sapply</code> returns a vector whose <em>i</em>-th element is the value of the expression <code>FUN(vX[i])</code>.</p>
+<p>Consider the function, <code>f</code>, “sum of all integers lower than X”:</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">dX</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"dX needs to be positive."</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">dSum</span> <span class="op">=</span> <span class="fl">0.0</span></span>
+<span>  <span class="va">iC</span> <span class="op">=</span> <span class="fl">0</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="va">iC</span> <span class="op">&lt;=</span> <span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dSum</span> <span class="op">=</span> <span class="va">dSum</span> <span class="op">+</span> <span class="va">iC</span></span>
+<span>    <span class="va">iC</span> <span class="op">=</span> <span class="va">iC</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dSum</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Suppose we want to apply the function <code>f</code> to the following vector of observations <code>vX = c(1, 4, 9.478, 6, 75, 0.48)</code>. We can of course write a <code>for</code> loop:</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">4</span>, <span class="fl">9.478</span>, <span class="fl">6</span>, <span class="fl">75</span>, <span class="fl">0.48</span><span class="op">)</span></span>
+<span><span class="va">vSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vSum</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vSum</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">vX</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">vSum</span></span>
+<span><span class="co">#&gt; [1]    1   10   45   21 2850    0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Or we can use the <code>sapply</code> function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">vX</span>, <span class="va">f</span><span class="op">)</span></span>
+<span><span class="va">vSum</span></span>
+<span><span class="co">#&gt; [1]    1   10   45   21 2850    0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that R performs a loop over the elements of <code>vX</code>, so execution of this code is not faster than execution of an equivalent loop - it is just faster to type.</p>
+<p>If <code>FUN</code> has arguments other than <code>X[i]</code>, then they can be included using the three dots (an ellipsis) as shown above. That is, <code>sapply(X, FUN, ...)</code> returns <code>FUN(X[i]; ...)</code> as the <em>i</em>-th element.</p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span>, <span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">dX</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/stop.html">stop</a></span><span class="op">(</span><span class="st">"dX needs to be positive."</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">dSum</span> <span class="op">&lt;-</span> <span class="fl">0.0</span></span>
+<span>  <span class="va">iC</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="va">iC</span> <span class="op">&lt;=</span> <span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dSum</span> <span class="op">&lt;-</span> <span class="va">dSum</span> <span class="op">+</span> <span class="va">iC</span><span class="op">^</span><span class="va">iN</span></span>
+<span>    <span class="va">iC</span> <span class="op">&lt;-</span> <span class="va">iC</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dSum</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">vX</span>, <span class="va">g</span>, iN <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]      1     30    285     91 143450      0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code>lapply</code> does the same as <code>sapply</code> but always returns a <code>list</code>.</p>
+</section><section id="sapply-and-lapply" class="level3" data-number="4.4.2"><h3 data-number="4.4.2" class="anchored" data-anchor-id="sapply-and-lapply">
+<span class="header-section-number">4.4.2</span> <code>sapply</code> and <code>lapply</code>
+</h3>
+<p>That is, the arguments … are passed directly from <code>sapply</code> to <code>FUN</code>, thus allowing you to use a function with more than one argument.</p>
+<p>Note that the values of the arguments … are the same for each of the different arguments of <code>vx</code>. In order to vectorize over more than one argument (over both <code>vX</code> and …) we need to use <code>mapply</code>.</p>
+<p><code>lapply</code> does the same as <code>sapply</code>, but always returns a list.</p>
+</section><section id="mapply" class="level3" data-number="4.4.3"><h3 data-number="4.4.3" class="anchored" data-anchor-id="mapply">
+<span class="header-section-number">4.4.3</span> <code>mapply</code>
+</h3>
+<p><code>mapply</code> is a multivariate version of <code>sapply</code> and can be used to call a function <code>FUN</code> over vectorized arguments one index at a time. In other words, the function is first called over elements at index 1 of all vectors (or lists), it is then called over all elements at index 2 and so on.</p>
+<p>Consider for example the function <code>rep</code> which takes arguments: <code>x</code> and <code>times</code>. <code>mapply</code> allows you to write:</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mapply.html">mapply</a></span><span class="op">(</span><span class="va">rep</span>, times <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">3</span><span class="op">)</span>, x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] 2 2 2 2</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [1] 4 4 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Or using <code>mapply</code> on our <code>power_fct(vX, power)</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mapply.html">mapply</a></span><span class="op">(</span><span class="va">power_fct</span>, vX <span class="op">=</span> <span class="fl">1</span><span class="op">:</span><span class="fl">4</span>, power <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  1  4 27 64</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="apply" class="level3" data-number="4.4.4"><h3 data-number="4.4.4" class="anchored" data-anchor-id="apply">
+<span class="header-section-number">4.4.4</span> <code>apply</code>
+</h3>
+<p>If you wish to apply a function that takes a vector argument to each of the rows (or columns) of a matrix (or array), then use the function <code>apply</code>. Its formula is:</p>
+<div class="cell">
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">MARGIN</span>, <span class="va">FUN</span>, <span class="va">...</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Where:</p>
+<ul>
+<li><p><code>X</code> is an <code>array</code>.</p></li>
+<li><p><code>MARGIN</code> is the index/indices of the <code>array</code> to which apply <code>FUN</code>.</p></li>
+<li><p><code>FUN</code> is the function to apply.</p></li>
+<li><p>… are extra arguments for <code>FUN</code>.</p></li>
+</ul>
+<p>Note that <code>MARGIN</code> can be a vector of indices. If <code>X</code> is a <code>matrix</code> (an array of 2 dimensions), then <code>MARGINS = 1</code> indicates rows, while <code>MARGINS = 2</code> indicates columns.</p>
+<p><strong>Example with</strong> <code>apply</code></p>
+<p>To compute the cumulative sum over the columns of a matrix <code>mX</code> we write:</p>
+<div class="cell">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">16</span>, <span class="fl">4</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">mX</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1    5    9   13</span></span>
+<span><span class="co">#&gt; [2,]    2    6   10   14</span></span>
+<span><span class="co">#&gt; [3,]    3    7   11   15</span></span>
+<span><span class="co">#&gt; [4,]    4    8   12   16</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">mX</span>, <span class="fl">2</span>, <span class="va">cumsum</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1    5    9   13</span></span>
+<span><span class="co">#&gt; [2,]    3   11   19   27</span></span>
+<span><span class="co">#&gt; [3,]    6   18   30   42</span></span>
+<span><span class="co">#&gt; [4,]   10   26   42   58</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="exercise" class="level3" data-number="4.4.5"><h3 data-number="4.4.5" class="anchored" data-anchor-id="exercise">
+<span class="header-section-number">4.4.5</span> Exercise</h3>
+<ul>
+<li><p><em>Define the 3 x 4 matrix: </em> <span class="math display">\[
+mA =
+\begin{bmatrix}
+1 &amp; 10 &amp; 7 &amp; 4 \\
+8 &amp; 5 &amp; 2 &amp; 11 \\
+6 &amp; 3 &amp; 9 &amp; 12
+\end{bmatrix}
+\]</span></p></li>
+<li><p><em>Use the</em> <code>apply</code> <em>function to compute the row sums and the column sums of your matrix.</em></p></li>
+<li><p><em>Use the</em> <code>apply</code> <em>function to sort the columns of mA in a decreasing order and the rows of mA in an increasing order.</em></p></li>
+<li><p><em>Use the</em> <code>sapply</code> <em>function to find sine of all elements of the first row of mA and cosine of all elements of the second column of mA. Is this the easiest way to find the sine and cosine of a row/column of mA?</em></p></li>
+</ul>
+<p><strong>Solution</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">10</span>, <span class="fl">7</span>, <span class="fl">4</span>, <span class="fl">8</span>, <span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">11</span>, <span class="fl">6</span>, <span class="fl">3</span>, <span class="fl">9</span>, <span class="fl">12</span><span class="op">)</span>, <span class="fl">3</span>, <span class="fl">4</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">mA</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1   10    7    4</span></span>
+<span><span class="co">#&gt; [2,]    8    5    2   11</span></span>
+<span><span class="co">#&gt; [3,]    6    3    9   12</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">mA</span>, <span class="fl">1</span>, <span class="va">cumsum</span><span class="op">)</span><span class="op">)</span> <span class="co"># compute the row sums</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1   11   18   22</span></span>
+<span><span class="co">#&gt; [2,]    8   13   15   26</span></span>
+<span><span class="co">#&gt; [3,]    6    9   18   30</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">mA</span>, <span class="fl">2</span>, <span class="va">cumsum</span><span class="op">)</span> <span class="co"># compute the column sums</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1   10    7    4</span></span>
+<span><span class="co">#&gt; [2,]    9   15    9   15</span></span>
+<span><span class="co">#&gt; [3,]   15   18   18   27</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">mA</span>, <span class="fl">2</span>, <span class="va">sort</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># sort columns in decreasing order</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    8   10    9   12</span></span>
+<span><span class="co">#&gt; [2,]    6    5    7   11</span></span>
+<span><span class="co">#&gt; [3,]    1    3    2    4</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">mA</span>, <span class="fl">1</span>, <span class="va">sort</span>, decreasing <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span> <span class="co"># sort rows in increasing order</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]    1    4    7   10</span></span>
+<span><span class="co">#&gt; [2,]    2    5    8   11</span></span>
+<span><span class="co">#&gt; [3,]    3    6    9   12</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">mA</span><span class="op">[</span><span class="fl">1</span>, <span class="op">]</span>, <span class="va">sin</span><span class="op">)</span> <span class="co"># sine of first row using sapply</span></span>
+<span><span class="co">#&gt; [1]  0.8414710 -0.5440211  0.6569866 -0.7568025</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="va">mA</span><span class="op">[</span>, <span class="fl">2</span><span class="op">]</span>, <span class="va">cos</span><span class="op">)</span> <span class="co"># # cosine of second column using sapply</span></span>
+<span><span class="co">#&gt; [1] -0.8390715  0.2836622 -0.9899925</span></span>
+<span><span class="co"># the easier way is to do 'sin(mA[, 1])'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="recursive-programming" class="level3" data-number="4.4.6"><h3 data-number="4.4.6" class="anchored" data-anchor-id="recursive-programming">
+<span class="header-section-number">4.4.6</span> Recursive programming</h3>
+<p>Recursive programming is a powerful programming technique, made possible by functions. A recursive program is simply one that calls itself. This is useful because many algorithms are recursive in nature.</p>
+<p>Consider for example the evaluation of <span class="math inline">\(n!\)</span>, i.e., the factorial of the non-negative integer <span class="math inline">\(n\)</span>. We know that <span class="math inline">\(n! = n(n-1)!\)</span>, such that we can write a function like:</p>
+<div class="cell">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">myfactorial</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">iN</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="va">iN</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">iN</span> <span class="op">*</span> <span class="fu">myfactorial</span><span class="op">(</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">myfactorial</span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 120</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="multiple-outputs" class="level3" data-number="4.4.7"><h3 data-number="4.4.7" class="anchored" data-anchor-id="multiple-outputs">
+<span class="header-section-number">4.4.7</span> Multiple outputs</h3>
+<p>A function can generate multiple output values.</p>
+<p>Example: parameter estimates, their standard errors, and the optimized log-likelihood value.</p>
+<p>A strategy in R is to create a <code>list</code> with all your outputs and return it as a single output of a function. For example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lOut</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>Par <span class="op">=</span> <span class="va">vParam</span>, SE <span class="op">=</span> <span class="va">vStdErr</span>, LLK <span class="op">=</span> <span class="va">dLogLik</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">lOut</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="comments" class="level2" data-number="4.5"><h2 data-number="4.5" class="anchored" data-anchor-id="comments">
+<span class="header-section-number">4.5</span> Comments</h2>
+<p>Remember, you often want to re-use a code. It is often hard to read code that someone else has written, or code that you have written yourself months ago. Using sensible function and variable names, and Hungarian notation helps… somewhat.</p>
+<p>But also: <strong>comment your code!</strong></p>
+<p>In R, # signals a comment to the end of the line:</p>
+<div class="cell">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vBeta</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="op">-</span><span class="fl">5</span><span class="op">)</span> <span class="co"># Initial values</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>It is best practice to declare what a script does at its beginning. Furthermore, at the start of <em>every</em> function, put something like:</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">##</span></span>
+<span><span class="co">## FunctionName(Inputs)</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## Purpose:</span></span>
+<span><span class="co">##  Description of what the function does</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## Input:</span></span>
+<span><span class="co">##  List of inputs, describing what they represent</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## Output:</span></span>
+<span><span class="co">##  List of outputs, describing what they represent</span></span>
+<span><span class="co">##</span></span>
+<span><span class="co">## Return value:</span></span>
+<span><span class="co">##  List of return values, describing what they represent</span></span>
+<span><span class="co">##</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In RStudio, you can use the <code>Ctrl+Shift+C</code> shortcut to comment multiple lines at once.</p>
+<p>In addition, add a general description of the program at the top of the .R file. This should include your name and the date for future reference. It may seem like a lot of work, but it will par off in the end. So: comment a lot!</p>
+<section id="exercise-1" class="level3" data-number="4.5.1"><h3 data-number="4.5.1" class="anchored" data-anchor-id="exercise-1">
+<span class="header-section-number">4.5.1</span> Exercise</h3>
+<ul>
+<li>
+<em>Define a function,</em> <code>f</code><em>, that calculates the output of the following recursive algorithm, where</em> <span class="math inline">\(n \ge 0\)</span> <em>is an integer.</em>
+<ol type="1">
+<li>
+<em>If</em> <span class="math inline">\(n&lt;2\)</span>, <em>return</em> <span class="math inline">\(n\)</span>.</li>
+<li>
+<em>If</em> <span class="math inline">\(n \ge 2\)</span>, <em>return</em> <span class="math inline">\(f(n)=f(n-1)+f(n-2)\)</span>
+</li>
+</ol>
+</li>
+<li><em>Run the function</em></li>
+<li>
+<em>Now pass the function in</em> <code>sapply</code> <em>along with the additional vector of integers, e.g.,</em> <code>(1:20)</code><em>, do you recognize the pattern?</em>
+</li>
+<li><em>Bonus: Comment the code</em></li>
+</ul>
+<p><strong>Solution</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">iN</span> <span class="op">&lt;</span> <span class="fl">2</span><span class="op">)</span> <span class="op">{</span> <span class="co"># stopping criterion</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">iN</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu">f</span><span class="op">(</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="co"># recursive part</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span>, <span class="va">f</span><span class="op">)</span> <span class="co"># apply function f to a vector</span></span>
+<span><span class="co">#&gt;  [1]    1    1    2    3    5    8   13   21   34   55   89  144  233  377  610</span></span>
+<span><span class="co">#&gt; [16]  987 1597 2584 4181 6765</span></span>
+<span><span class="co"># regarding the output: it's the fibonacci series</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./basic_programming.html" class="pagination-link" aria-label="Basic Programming">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./efficiency_and_parallel_computing.html" class="pagination-link" aria-label="Program Efficiency and Parallel Computing">
+        <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

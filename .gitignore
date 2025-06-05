@@ -1,0 +1,16 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+/.quarto/
+*.md
+MAERSK-B.CO.csv
+/data/MAERSK-B.CO.CSV
+QPE_income1.R
+*_files
+_book/
+_freeze/
+_publish/
+.quarto/
+references.bib
+references.qmd

@@ -1,0 +1,181 @@
+# Exercise set 1
+
+## **(1)**
+
+*Do some simple computations of your choice. This could be for example defining two vectors and then performing addition, subtraction, multiplication of their elements. At each computation use* `help` *to find out which function you must use.*
+
+Solution:
+
+```{r}
+vX <- 1:5 # Numbers 1, 2, 3, 4, 5
+vY <- seq(2, 10, 2) # Numbers 2, 4, 6, 8, 10
+
+# Addition
+vX + 10
+vY + 1
+
+# Subtraction
+vX - 10
+vY - 1
+
+# Multiplication
+vX * 10
+vY * -1
+
+# Powers
+vX ^ 2
+vY ^ -1
+
+# Other functions: division (/), exponentiation (^), square root (sqrt())...
+```
+
+## **(2)**
+
+*Define* `v1 = c(1, 2, 2, 1)` *and* `v2 = c(2, 3, 3, 2)`*. Do element-wise addition, subtraction, multiplication etc. Perform concatenation between* `v1` *and* `v2` *into a new vector* `v3`*.*
+
+Solution:
+
+```{r}
+v1 <- c(1, 2, 2, 1)
+v2 <- c(2, 3, 3, 2)
+
+# Element-wise addition
+v1 + v2
+
+# Element-wise subtraction
+v1 - v2
+
+# Element-wise multiplication
+v1 * v2
+
+# Concatenation into new vector
+v3 <- c(v1, v2)
+v3
+```
+
+## **(3)**
+
+*Define matrices of your choice. Use* `R` *and determine the rows or columns of each of these variables.*
+
+Solution:
+
+```{r}
+mA <- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE)
+mA
+
+# Determining the dimensions (number of rows and columns)
+dim(mA)
+
+# Or retrieving either the number of rows or number of columns
+nrow(mA) # Rows
+
+ncol(mA) # Columns
+```
+
+## **(4)**
+
+*Define a* $3 \times 4$ *matrix,* `mA`*, of your choice*
+
+```{r}
+mA <- matrix(seq(12, 1, -1), 3, 4, byrow = TRUE)
+mA
+```
+
+*1. Print the minimum and the maximum of each row;*
+  
+```{r}
+# Minimum and maximum of each row
+apply(mA, 1, min) # `apply` applies the function `min` to each row (indicated by 1)
+
+apply(mA, 1, max)
+```
+
+*2. Compute the sum of each column and print it as a vector.*
+
+```{r}
+colSums(mA)
+```
+
+*3. Generate a matrix* `mB` *with columns equal to the cumulative sum of the rows in* `mA`*;*
+
+```{r}
+mB <- apply(mA, 1, cumsum) # See notes for `apply` above. `cumsum` returns the cumulative sum.
+mB # Column 1 in mB is the cumulative sum of row 1 in mA, and so on....
+```
+
+*4. Generate a matrix* `mC` *with columns equal to the cumulative product of the rows in* `mA`*.*
+
+```{r}
+mC <- apply(mA, 1, cumprod)
+mC # Column 1 in mC is the cumulative product of row 1 in mA, and so on....
+```
+
+*5. Sort in ascending order the elements in the first column of* `mA`*.*
+
+```{r}
+mA # Unsorted
+
+sort(mA[, 1]) # Sort and return only the first column
+
+mA[order(mA[, 1]), ] # All rows sorted by the first column. `order` returns a permutation that rearranges its first argument into the correct order. Ascending order is the default.
+```
+
+## **(5)**
+
+*Generate a vector of random numbers extracted from a Uniform distribution (use *`runif` *). The number samples is 250. Compute mean, variance, kurtosis and skewness parameters of the generated vector.*
+
+Solution:
+
+```{r}
+set.seed(1) # Make the results reproducible by setting a seed
+vU <- runif(n = 250, min = 0, max = 1) # The final two arguments are not necessary as they are the default values
+```
+
+Install the library for simple summary statistics (if needed):
+
+```{r message=FALSE, results='hide', warning=FALSE}
+if (!require("e1071")) install.packages("e1071")
+suppressMessages(library(e1071))
+```
+
+Calculate the summary statistics:
+
+```{r}
+cat("The mean is: ", mean(vU), "\n")
+
+cat("The variance is: ", var(vU), "\n")
+
+cat("The skewness is: ", skewness(vU), "\n")
+
+cat("The kurtosis is: ", kurtosis(vU), "\n")
+
+```
+
+We could also have computed the kurtosis and skewness manually:
+
+```{r}
+iN <- length(vU) # Number of observations
+dStdU <- sqrt(var(vU)) # Standard deviation of U
+
+dMoment3 <- sum((vU - mean(vU)) ^ 3) / iN # 3rd central moment
+dSkewnews <- dMoment3 / dStdU ^ 3
+dSkewnews
+
+dMoment4 <- sum((vU - mean(vU)) ^ 4) / iN # 4th central moment
+dKurtosis <- dMoment4 / dStdU ^ 4 - 3 # Excess kurtosis
+dKurtosis
+```
+
+## **(6)**
+
+*Compute the following:*
+
+* *Define the string* $\text{sR} = \text{"RisGreat"}$*; Suppose that you want to replace the first* $\text{"R"}$ *with an* $\text{"S"}$*.*
+
+Solution:
+
+```{r}
+sR <- "RisGreat"
+sub("R", "S", sR) # Note, `sub` only replaces the first occurence. `gsub` replaces all.
+```
+

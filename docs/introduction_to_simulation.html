@@ -1,0 +1,1524 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>6&nbsp; Introduction to Simulation – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./rootfinding.html" rel="next">
+<link href="./efficiency_and_parallel_computing.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./introduction_to_simulation.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#seeding" id="toc-seeding" class="nav-link active" data-scroll-target="#seeding"><span class="header-section-number">6.1</span> Seeding</a></li>
+  <li>
+<a href="#discrete-random-variables" id="toc-discrete-random-variables" class="nav-link" data-scroll-target="#discrete-random-variables"><span class="header-section-number">6.2</span> Discrete Random variables</a>
+  <ul class="collapse">
+<li><a href="#simulate-discrete-random-variables" id="toc-simulate-discrete-random-variables" class="nav-link" data-scroll-target="#simulate-discrete-random-variables"><span class="header-section-number">6.2.1</span> Simulate Discrete Random Variables</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#inversion" id="toc-inversion" class="nav-link" data-scroll-target="#inversion"><span class="header-section-number">6.3</span> Inversion</a>
+  <ul class="collapse">
+<li><a href="#inversion-method" id="toc-inversion-method" class="nav-link" data-scroll-target="#inversion-method"><span class="header-section-number">6.3.1</span> Inversion Method</a></li>
+  <li><a href="#small-exercise" id="toc-small-exercise" class="nav-link" data-scroll-target="#small-exercise"><span class="header-section-number">6.3.2</span> Small Exercise</a></li>
+  </ul>
+</li>
+  <li><a href="#acceptance-rejection" id="toc-acceptance-rejection" class="nav-link" data-scroll-target="#acceptance-rejection"><span class="header-section-number">6.4</span> Acceptance-Rejection</a></li>
+  <li>
+<a href="#simulate-normals" id="toc-simulate-normals" class="nav-link" data-scroll-target="#simulate-normals"><span class="header-section-number">6.5</span> Simulate Normals</a>
+  <ul class="collapse">
+<li><a href="#simulate-normals-using-uniformly-distributed-random-variable" id="toc-simulate-normals-using-uniformly-distributed-random-variable" class="nav-link" data-scroll-target="#simulate-normals-using-uniformly-distributed-random-variable"><span class="header-section-number">6.5.1</span> Simulate Normals: Using uniformly distributed random variable</a></li>
+  <li><a href="#simulate-normals-acceptance-rejection-with-exponential-envelope" id="toc-simulate-normals-acceptance-rejection-with-exponential-envelope" class="nav-link" data-scroll-target="#simulate-normals-acceptance-rejection-with-exponential-envelope"><span class="header-section-number">6.5.2</span> Simulate Normals: Acceptance-Rejection with Exponential Envelope</a></li>
+  <li><a href="#simulate-normals-box-muller-algorithm" id="toc-simulate-normals-box-muller-algorithm" class="nav-link" data-scroll-target="#simulate-normals-box-muller-algorithm"><span class="header-section-number">6.5.3</span> Simulate Normals: Box-Muller Algorithm</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#monte-carlo-integration" id="toc-monte-carlo-integration" class="nav-link" data-scroll-target="#monte-carlo-integration"><span class="header-section-number">6.6</span> Monte Carlo Integration</a>
+  <ul class="collapse">
+<li><a href="#monte-carlo-integration---a-brief-introduction" id="toc-monte-carlo-integration---a-brief-introduction" class="nav-link" data-scroll-target="#monte-carlo-integration---a-brief-introduction"><span class="header-section-number">6.6.1</span> Monte Carlo Integration - a brief introduction</a></li>
+  <li><a href="#monte-carlo-integration---the-code" id="toc-monte-carlo-integration---the-code" class="nav-link" data-scroll-target="#monte-carlo-integration---the-code"><span class="header-section-number">6.6.2</span> Monte Carlo Integration - the code</a></li>
+  <li><a href="#monte-carlo-integration---examples" id="toc-monte-carlo-integration---examples" class="nav-link" data-scroll-target="#monte-carlo-integration---examples"><span class="header-section-number">6.6.3</span> Monte Carlo Integration - examples</a></li>
+  <li><a href="#small-exercise-1" id="toc-small-exercise-1" class="nav-link" data-scroll-target="#small-exercise-1"><span class="header-section-number">6.6.4</span> Small Exercise</a></li>
+  </ul>
+</li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./introduction_to_simulation.html"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><p>Simulation is essential for quantitative analysis. It is widely applied in estimation, hypothesis testing, equation solving, numerical computing, etc.</p>
+<section id="seeding" class="level2" data-number="6.1"><h2 data-number="6.1" class="anchored" data-anchor-id="seeding">
+<span class="header-section-number">6.1</span> Seeding</h2>
+<p>Once the seed is known, the whole sequence of random variables can be reproduced. This property facilitates repetition of experimentation.</p>
+<ul>
+<li>
+<code>set.seed(seed)</code> is used to specify the seed.</li>
+<li>The current state of the random number generator is kept in the vector <code>.Random.seed.</code>
+</li>
+<li>If the random number generator is not initialized before generating pseudo-random numbers, R initializes it using a value taken from the system clock.</li>
+</ul>
+<p>For example, run first:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.708768032 0.384298612 0.003025926 0.277903935 0.714458605</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now run again:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.3166092 0.6863317 0.4725650 0.2655531 0.6193426</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Setting seed back to 10086, we can reproduce results in the first frame:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.708768032 0.384298612 0.003025926 0.277903935 0.714458605</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can also save the current state by:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">RNG.state</span> <span class="op">&lt;-</span> <span class="va">.Random.seed</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.3166092 0.6863317 0.4725650 0.2655531 0.6193426</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now try to implement the following codes:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">.Random.seed</span> <span class="op">&lt;-</span> <span class="va">RNG.state</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.3166092 0.6863317 0.4725650 0.2655531 0.6193426</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In this way you reproduce the results.</p>
+</section><section id="discrete-random-variables" class="level2" data-number="6.2"><h2 data-number="6.2" class="anchored" data-anchor-id="discrete-random-variables">
+<span class="header-section-number">6.2</span> Discrete Random variables</h2>
+<section id="simulate-discrete-random-variables" class="level3" data-number="6.2.1"><h3 data-number="6.2.1" class="anchored" data-anchor-id="simulate-discrete-random-variables">
+<span class="header-section-number">6.2.1</span> Simulate Discrete Random Variables</h3>
+<p>Suppose that we would like to simulate a <strong>discrete</strong> random variable <span class="math inline">\(X\)</span>.</p>
+<ul>
+<li>
+<span class="math inline">\(X\)</span> takes values in {0,1,2,…}</li>
+<li>
+<span class="math inline">\(X\)</span> has the CDF <span class="math inline">\(F\)</span>
+</li>
+</ul>
+<p>Suppose <span class="math inline">\(m\)</span> is any number from the set <span class="math inline">\({0,1,2,...}\)</span> such that it satisfies the following equation, given that <span class="math inline">\(U\)</span> follows the uniform distribution over <span class="math inline">\((0,1)\)</span>.</p>
+<p><span class="math display">\[
+P(X=m)=F(m)-F(m-1)=P(F(m-1)&lt;U \le F(m))
+\]</span></p>
+<p>Hence, the algorithm for simulating <span class="math inline">\(X\)</span> is:</p>
+<ol type="1">
+<li><p>Simulate a random variable <span class="math inline">\(U \sim \text{Uniform}(0,1)\)</span>;</p></li>
+<li><p>Find the minimal <span class="math inline">\(m\)</span> such that <span class="math inline">\(F(m) \ge U\)</span>, that is,</p></li>
+</ol>
+<p><span class="math display">\[
+m = \min\{k \ge 0 : F(k) \ge U\}
+\]</span></p>
+<ol start="3" type="1">
+<li>Set <span class="math inline">\(X = m\)</span>.</li>
+</ol>
+<p>This algorithm vectorizes the function and takes advantage of the ellipsis …, since at times additional arguments need to be passed to the cumulative distribution function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Discrete.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">F</span>, <span class="va">size</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># F - Cumulative distribution function</span></span>
+<span>  <span class="co"># size - number of i.i.d. random variables to be simulated</span></span>
+<span></span>
+<span>  <span class="va">m</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">X</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html">F</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">...</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">U</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html">F</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">...</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">U</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">m</span> <span class="op">&lt;-</span> <span class="va">m</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="va">X</span><span class="op">[</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html">F</a></span><span class="op">(</span><span class="va">m</span>, <span class="va">...</span><span class="op">)</span> <span class="op">&gt;=</span> <span class="va">U</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/logical.html">F</a></span><span class="op">(</span><span class="va">m</span> <span class="op">-</span> <span class="fl">1</span>, <span class="va">...</span><span class="op">)</span> <span class="op">&lt;</span> <span class="va">U</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">m</span></span>
+<span>  <span class="op">}</span></span>
+<span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For example, suppose that we would like to simulate 1000 i.i.d. discrete random variables whose probability density function is:</p>
+<p><span class="math display">\[
+p(x) =
+\begin{cases}
+0.2, \text{ if } x = 1 \\
+0.3, \text{ if } x = 2 \\
+0.5, \text{ if } x = 3
+\end{cases}
+\]</span></p>
+<p>The corresponding cumulative distribution function is:</p>
+<p><span class="math display">\[
+F(x) =
+\begin{cases}
+0.2, \text{ if } 1 \le x &lt; 2 \\
+0.5, \text{ if } 2 \le x &lt; 3 \\
+1, \text{ if } x \ge 3
+\end{cases}
+\]</span></p>
+<p>The following program makes use of <code>Discrete.Simulate</code> we just wrote to accomplish the task, and in addition produces the histogram:</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># cumulative distribution function</span></span>
+<span></span>
+<span><span class="cn">F</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fl">0.2</span> <span class="op">*</span> <span class="op">(</span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="fl">0.5</span> <span class="op">*</span> <span class="op">(</span><span class="op">(</span><span class="va">x</span> <span class="op">&gt;=</span> <span class="fl">2</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> <span class="op">(</span><span class="va">x</span> <span class="op">&gt;=</span> <span class="fl">3</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># draw 1000 i.i.d. random variables whose CDF is F</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">Discrete.Simulate</span><span class="op">(</span><span class="cn">F</span>, <span class="fl">1000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># histogram</span></span>
+<span><span class="va">h</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">X</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0.55</span>, <span class="fl">3.55</span>, <span class="fl">0.1</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">h</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">h</span><span class="op">$</span><span class="va">counts</span> <span class="op">/</span> <span class="fl">1000</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h</span>, freq <span class="op">=</span> <span class="cn">FALSE</span>, col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">"Percentage"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Simulate a binomial random variable <span class="math inline">\(X \sim \text{Binomial}(n, p)\)</span>.</p>
+<ul>
+<li>The density is given as</li>
+</ul>
+<p><span class="math display">\[
+p(k) = \mathbb{P}(X = k) = \binom{n}{k} p^k (1-p)^{n-k}, \text{for } 0 \le k \le n
+\]</span></p>
+<ul>
+<li>The CDF is given as</li>
+</ul>
+<p><span class="math display">\[
+F(x) = \sum_{k=0}^{ \lbrack x \rbrack} \binom{n}{k} p^k (1-p)^{n-k}
+\]</span></p>
+<p>The following program draws 1000 random variables with the distribution <code>Binomial(10, 0.5)</code>. Here, we see how ellipsis … renders <code>Discrete.Simulate</code> more flexible.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># cumulative distribution function of binomial distribution</span></span>
+<span></span>
+<span><span class="cn">F</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">n</span>, <span class="va">p</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">Index</span> <span class="op">&lt;-</span> <span class="fl">0</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span>  <span class="va">Density</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html">choose</a></span><span class="op">(</span><span class="va">n</span>, <span class="va">Index</span><span class="op">)</span> <span class="op">*</span> <span class="va">p</span><span class="op">^</span><span class="op">(</span><span class="va">Index</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">p</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="va">n</span><span class="op">-</span><span class="va">Index</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">Density</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># draw 1000 i.i.d. binomial random variables</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">Discrete.Simulate</span><span class="op">(</span><span class="cn">F</span>, <span class="fl">1000</span>, <span class="fl">10</span>, <span class="fl">0.5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alternatively, you can make use of the built-in function <code>rbinom</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Binomial.html">rbinom</a></span><span class="op">(</span><span class="fl">1000</span>, <span class="fl">10</span>, <span class="fl">0.5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Compare the histograms:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">h1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">X</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">10.5</span>, <span class="fl">0.2</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">h1</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">h1</span><span class="op">$</span><span class="va">counts</span> <span class="op">/</span> <span class="fl">1000</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h1</span>, freq <span class="op">=</span> <span class="cn">FALSE</span>, col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">"Percentage"</span><span class="op">)</span></span>
+<span><span class="va">h2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">Y</span>, breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">0.5</span>, <span class="fl">10.5</span>, <span class="fl">0.2</span><span class="op">)</span>, plot <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="va">h2</span><span class="op">$</span><span class="va">density</span> <span class="op">&lt;-</span> <span class="va">h2</span><span class="op">$</span><span class="va">counts</span> <span class="op">/</span> <span class="fl">1000</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">h2</span>, freq <span class="op">=</span> <span class="cn">FALSE</span>, col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">""</span>, xlab <span class="op">=</span> <span class="st">"n"</span>, ylab <span class="op">=</span> <span class="st">"Percentage"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="fig-test" class="quarto-layout-panel">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-test-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="quarto-layout-row">
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Use Discrete.Simulate</figcaption></figure>
+</div>
+</div>
+</div>
+<div class="cell quarto-layout-cell" style="flex-basis: 50.0%;justify-content: flex-start;">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Use rbinom</figcaption></figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-test-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;6.1
+</figcaption></figure>
+</div>
+</section></section><section id="inversion" class="level2" data-number="6.3"><h2 data-number="6.3" class="anchored" data-anchor-id="inversion">
+<span class="header-section-number">6.3</span> Inversion</h2>
+<section id="inversion-method" class="level3" data-number="6.3.1"><h3 data-number="6.3.1" class="anchored" data-anchor-id="inversion-method">
+<span class="header-section-number">6.3.1</span> Inversion Method</h3>
+<p>Thus far, we have discussed about simulation of random variables taking values in {0,1,…}. Next, we explain how to simulate random variable taking value in <span class="math inline">\(\mathbb{R}\)</span>.</p>
+<ul>
+<li>Suppose <em>F</em> is a cumulative distribution function on <span class="math inline">\(\mathbb{R}\)</span> and <em>U</em> is a random variable uniformly distributed over <span class="math inline">\((0,1)\)</span>, then:</li>
+</ul>
+<p><span class="math display">\[
+X=F^{-1}(U)
+\]</span></p>
+<ul>
+<li><p>where <span class="math inline">\(F^{-1}(\cdot)\)</span> is an inverse function of <span class="math inline">\(F\)</span>.</p></li>
+<li><p><strong>Inversion method</strong>: As long as you can compute <span class="math inline">\(F^{-1}\)</span>, you can simulate a random variable using a uniformly distributed random variable.</p></li>
+</ul>
+<p>Recall, that is <span class="math inline">\(X \sim \text{Exp}(\lambda)\)</span>, its cumulative distribution function is given by:</p>
+<p><span class="math display">\[
+F(x)=
+\begin{cases}
+0, \text{ for } x &lt; 0 \\
+1-e^{- \lambda x}, \text{ for } x \ge 0
+\end{cases}
+\]</span></p>
+<p>One can show that the inverse <span class="math inline">\(F^{-1}\)</span> is given by:</p>
+<p><span class="math display">\[
+F^{-1}(y)=- \lambda ^{-1} \log{(1-y), 0 \le y \le 1}
+\]</span></p>
+<p>When, <span class="math inline">\(y=1\)</span>, <span class="math inline">\(F^{-1}(y)=\infty\)</span>.</p>
+<p>By means of <span class="math inline">\(- \lambda ^ {-1} \log{(1-U)}\)</span>, we can simulate the desired exponential distribution with intensity <span class="math inline">\(\lambda\)</span>. Observe that <span class="math inline">\(1-U\)</span> also has uniform distribution over <span class="math inline">\((0,1)\)</span>. Hence, it is equivalent to use <span class="math inline">\(- \lambda ^ {-1} \log{(U)}\)</span>, which is more often used in practice.</p>
+<p>Here is an example of drawing 1000 i.i.d. random variables with distribution exp(0.7).</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Exponential.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span>, <span class="va">size</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># lambda - intensity of the exponential distribution</span></span>
+<span>  <span class="co"># size - number of i.i.d. random variables to be drawn</span></span>
+<span>  </span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="va">lambda</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">U</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># A test of the function</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">Exponential.Simulate</span><span class="op">(</span><span class="fl">0.7</span>, <span class="fl">1000</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Alternatively, we can also make use of the built-in function <code>rexp</code>, but an example is not provided.</p>
+<p>Below is a histogram of the sample drawn with <code>Exponential.Simulate</code>. We also superimpose the theoretical density function (now, with code included!):</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># 1. Create the Histogram</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">X</span>, </span>
+<span>     freq <span class="op">=</span> <span class="cn">FALSE</span>,        <span class="co"># Use density instead of frequency on y-axis</span></span>
+<span>     breaks <span class="op">=</span> <span class="fl">15</span>,         <span class="co"># Adjust number of breaks for desired resolution</span></span>
+<span>     col <span class="op">=</span> <span class="st">"cornflowerblue"</span>, </span>
+<span>     xlab <span class="op">=</span> <span class="st">""</span>,             <span class="co"># Remove default x-label (add it later with mtext)</span></span>
+<span>     ylab <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">""</span>,</span>
+<span>     xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">12</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 2. Superimpose the Theoretical Density Curve</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/curve.html">curve</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Exponential.html">dexp</a></span><span class="op">(</span><span class="va">x</span>, rate <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span>,  <span class="co"># Theoretical exponential density function</span></span>
+<span>      from <span class="op">=</span> <span class="fl">0</span>,             <span class="co"># Start of the curve</span></span>
+<span>      to <span class="op">=</span> <span class="fl">12</span>, <span class="co"># End of the curve </span></span>
+<span>      col <span class="op">=</span> <span class="st">"red"</span>,      </span>
+<span>      lwd <span class="op">=</span> <span class="fl">2</span>,            <span class="co"># Adjust line thickness</span></span>
+<span>      add <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>         <span class="co"># Add to the existing plot (histogram)</span></span>
+<span></span>
+<span><span class="co"># 3. Add Labels and Title (using mtext for better control)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="st">"x"</span>, side <span class="op">=</span> <span class="fl">1</span>, line <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span>  <span class="co"># Add x-axis label below the axis</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/mtext.html">mtext</a></span><span class="op">(</span><span class="st">"Histogram of Exponential Sample and Theoretical Density"</span>, </span>
+<span>      side <span class="op">=</span> <span class="fl">3</span>, line <span class="op">=</span> <span class="fl">1</span>, outer <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># Title at the top margin</span></span>
+<span></span>
+<span><span class="co"># 4. Add a Legend</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topright"</span>,                    <span class="co"># Position of the legend</span></span>
+<span>       legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"histogram"</span>, <span class="st">"density"</span><span class="op">)</span>, <span class="co"># Text for the legend</span></span>
+<span>       col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cornflowerblue"</span>, <span class="st">"red"</span><span class="op">)</span>,   <span class="co"># Colors of the legend elements</span></span>
+<span>       lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>                         <span class="co"># Line width for the legend</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="small-exercise" class="level3" data-number="6.3.2"><h3 data-number="6.3.2" class="anchored" data-anchor-id="small-exercise">
+<span class="header-section-number">6.3.2</span> Small Exercise</h3>
+<ul>
+<li><p><em>Consider the random variable With Gumble distribution</em> <span class="math inline">\(X \sim \text{Gumbel}(0,1)\)</span><em>. The CDF is given by</em> <span class="math inline">\(F_{X}(x)= \exp(- \exp(-x))\)</span></p></li>
+<li>
+<p><em>Now, suppose you want to simulate random draws from this distribution by use of the inverse transform method.</em></p>
+<ul>
+<li><p><em>Derive the inverse transform</em> <span class="math inline">\(F_{X}^{-1}(y)\)</span> <em>from this cdf. (Hint: solve</em> <span class="math inline">\(\exp(- \exp(-F_{X}^{-1}(y)))=y\)</span><em>). Write a function in R implementing the derived inverse transform.</em></p></li>
+<li><p><em>Set the seed to 1234 and use 100 random draws of standard uniforms.</em></p></li>
+<li><p><em>The first 4 draws will be:</em> <code>-0.7766432 0.7458437 0.7022162 0.7495061</code></p></li>
+</ul>
+</li>
+</ul>
+<p><strong>Solution</strong></p>
+<p>Note for the first part:</p>
+<p><span class="math display">\[
+\exp(- \exp(-F_{X}^{-1}(y)))=y
+\]</span> <span class="math display">\[
+\Rightarrow F_{X}^{-1}(y)=-\log(-\log(y))
+\]</span></p>
+<p>Then, implementing the inverse transform:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Gumbel.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">min</span>, <span class="va">max</span>, <span class="va">size</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span>, <span class="va">min</span>, <span class="va">max</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">U</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1234</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">Gumbel.Simulate</span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">100</span><span class="op">)</span></span>
+<span><span class="va">X</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] -0.7766432  0.7458437  0.7022162  0.7495061</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="acceptance-rejection" class="level2" data-number="6.4"><h2 data-number="6.4" class="anchored" data-anchor-id="acceptance-rejection">
+<span class="header-section-number">6.4</span> Acceptance-Rejection</h2>
+<p>The inversion method works fine if we can find <span class="math inline">\(F^{-1}\)</span> analytically. It becomes less feasible when <span class="math inline">\(F^{-1}\)</span> does not admit a closed-form representation, although it is still possible to employ (time-consuming) numerical methods to approximate <span class="math inline">\(F^{-1}\)</span>.</p>
+<p>Yet, there is another clever method that is often applicable, called the <strong>acceptance-rejection method</strong>.</p>
+<p>Suppose we would like to simulate a random variable <span class="math inline">\(X\)</span> whose cumulative distribution is <span class="math inline">\(F\)</span>, and</p>
+<p><span class="math display">\[
+F(x) = \int_{-\infty}^{x} f(t) \, dt
+\]</span></p>
+<p>for the probability density <span class="math inline">\(f\)</span>.</p>
+<p>The basic idea of the acceptance-rejection method is to find another distribution <span class="math inline">\(G\)</span> with probability density function <span class="math inline">\(g\)</span>, such that:</p>
+<ul>
+<li><p>A random variable with distribution <span class="math inline">\(G\)</span> can be simulated using some efficient method (such as inversion method).</p></li>
+<li><p><span class="math inline">\(g\)</span> is nonzero on the support of <span class="math inline">\(f\)</span>, that is, <span class="math inline">\(g(x) &gt; 0\)</span> as long as <span class="math inline">\(f(x) &gt; 0\)</span>.</p></li>
+<li><p><span class="math inline">\(f/g\)</span> is uniformly bounded, that is, <span class="math inline">\(c=\sup_{X} \frac{f(x)}{g(x)}&lt;\infty\)</span></p></li>
+</ul>
+<p>Once the forgoing conditions are satisfied, we shall say that <span class="math inline">\(g\)</span> <strong>envelopes</strong> <span class="math inline">\(f\)</span>.</p>
+<p>The acceptance-rejection algorithm for generating a random variable distributed as <span class="math inline">\(F\)</span>:</p>
+<ol type="1">
+<li><p>Generate a random variable <span class="math inline">\(Y\)</span> distributed as <span class="math inline">\(G\)</span></p></li>
+<li><p>Generate <span class="math inline">\(U \sim \text{Uniform}(0,1)\)</span>, which is independent from <span class="math inline">\(Y\)</span></p></li>
+<li><p>If</p></li>
+</ol>
+<p><span class="math display">\[
+U \le \frac{f(Y)}{cg(Y)}
+\]</span></p>
+<p>Then set <span class="math inline">\(X=Y\)</span> (“accept”); otherwise go back to step 1 (“reject”).</p>
+<p>In practice, choosing the distribution function <span class="math inline">\(G\)</span> is a kind of “art”.</p>
+<p>First of all, <span class="math inline">\(G\)</span> should be chosen such that the corresponding random variable could be simulated efficiently.</p>
+<p>Secondly, <span class="math inline">\(G\)</span> should be chosen such that <span class="math inline">\(c=\sup_{X} \frac{f(x)}{g(x)}\)</span> is as close to <span class="math inline">\(1\)</span> as possible.</p>
+<p>We consider the example of generating a random variable from the Gamma distribution. For<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a> <span class="math inline">\(k&gt;1\)</span> and <span class="math inline">\(\theta &gt; 0\)</span>, the <span class="math inline">\(\text{Gamma}(k, \theta)\)</span> density is given by:</p>
+<p><span class="math display">\[
+f(x)=\frac{\theta^{k}}{\Gamma{(k)}}x^{k-1}e^{-\theta x}, x&gt;0
+\]</span></p>
+<p>To envelope <span class="math inline">\(f\)</span>, we choose the probability density function <span class="math inline">\(g(\cdot ; \lambda)\)</span> of the <span class="math inline">\(\text{Exp}(\lambda)\)</span>, that is,</p>
+<p><span class="math display">\[
+g(x;\lambda)=\lambda e^{-\lambda x}, x&gt;0
+\]</span></p>
+<p>Then:</p>
+<p><span class="math display">\[
+h(x;\lambda) = \frac{f(x)}{g(x;\lambda)}=\frac{\theta^{k}}{\Gamma{(k) \lambda}}x^{k-1}e^{(\lambda-\theta) x}
+\]</span></p>
+<p>If <span class="math inline">\(h \ge \theta\)</span>, apparently <span class="math inline">\(\sup_{x&gt;0}h(x;\lambda)=\infty\)</span>, so we require <span class="math inline">\(\lambda &lt; \theta\)</span> below. Given such <span class="math inline">\(lambda\)</span>, <span class="math inline">\(h(x;\lambda)\)</span> is maximized at <span class="math inline">\(x_{\lambda}= \frac{k-1}{\theta - \lambda}\)</span>, and</p>
+<p><span class="math display">\[
+\sup_{x}\frac{f(x)}{g(x;\lambda)}=h(x_\lambda ; \lambda)
+= \frac{\theta ^ k (k-1) ^ {k-1}}{\Gamma{(k)} \lambda (\theta - \lambda) ^{k-1}} = e^{-1(k-1)}
+\]</span></p>
+<p>As said above, we would like to choose the envelope density function such that the above supremum is as small as possible. In other words, we should choose <span class="math inline">\(lambda\)</span> to minimize <span class="math inline">\(h(x_\lambda ; \lambda\)</span>. This is equivalent to maximizing <span class="math inline">\(\lambda (\theta - \lambda) ^{k-1}\)</span> by optimizing the first order condition wrt. <span class="math inline">\(\lambda\)</span>. This leads to:</p>
+<p><span class="math display">\[
+\lambda = \frac{\theta}{k}
+\]</span></p>
+<p>Plugging this back to the supremum, we get:</p>
+<p><span class="math display">\[
+c = \frac{k^k e^{-(k-1)}}{\Gamma (k)}
+\]</span></p>
+<p>The code for the acceptance-rejection method for simulating a Gamma distributed random variable is.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">### Auxiliary functions ###</span></span>
+<span></span>
+<span><span class="va">gamma.pdf</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">k</span>, <span class="va">theta</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">theta</span><span class="op">^</span><span class="va">k</span> <span class="op">*</span> <span class="va">x</span><span class="op">^</span><span class="op">(</span><span class="va">k</span><span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">theta</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">/</span><span class="fu"><a href="https://rdrr.io/r/base/Special.html">gamma</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">exponential.pdf</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span>, <span class="va">lambda</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">lambda</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">lambda</span><span class="op">*</span><span class="va">x</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">Exponential.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">lambda</span>, <span class="va">size</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">V</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="op">-</span><span class="fl">1</span><span class="op">/</span><span class="va">lambda</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">V</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">Gamma.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">k</span>, <span class="va">theta</span>, <span class="va">size</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">lambda</span> <span class="op">&lt;-</span> <span class="va">theta</span><span class="op">/</span><span class="va">k</span></span>
+<span>  <span class="va">c</span> <span class="op">&lt;-</span> <span class="va">k</span><span class="op">^</span><span class="va">k</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="op">-</span><span class="va">k</span><span class="op">+</span><span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/Special.html">gamma</a></span><span class="op">(</span><span class="va">k</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">Unaccepted</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">TRUE</span>, <span class="va">size</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="va">Unaccepted</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    </span>
+<span>    <span class="va">UnacceptedCount</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">Unaccepted</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">UnacceptedCount</span><span class="op">)</span></span>
+<span>    <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu">Exponential.Simulate</span><span class="op">(</span><span class="va">lambda</span>, <span class="va">UnacceptedCount</span><span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">Accepted_ThisTime</span> <span class="op">&lt;-</span> <span class="va">Unaccepted</span><span class="op">[</span><span class="va">Unaccepted</span><span class="op">]</span> <span class="op">&amp;</span></span>
+<span>      <span class="op">(</span> <span class="va">U</span> <span class="op">&lt;=</span> <span class="op">(</span> <span class="fu">gamma.pdf</span><span class="op">(</span><span class="va">Y</span>, <span class="va">k</span>, <span class="va">theta</span><span class="op">)</span> <span class="op">/</span> <span class="fu">exponential.pdf</span><span class="op">(</span><span class="va">Y</span>, <span class="va">lambda</span><span class="op">)</span><span class="op">/</span><span class="va">c</span> <span class="op">)</span> <span class="op">)</span></span>
+<span>    </span>
+<span>    <span class="va">X</span><span class="op">[</span><span class="va">Unaccepted</span><span class="op">]</span><span class="op">[</span><span class="va">Accepted_ThisTime</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">Y</span><span class="op">[</span><span class="va">Accepted_ThisTime</span><span class="op">]</span></span>
+<span>    <span class="va">Unaccepted</span><span class="op">[</span><span class="va">Unaccepted</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">!</span><span class="va">Accepted_ThisTime</span></span>
+<span>    </span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We test the function by simulating <span class="math inline">\(10^6\)</span> i.i.d. random variables with distribution <span class="math inline">\(\text{Gamma}(2,1)\)</span>. Compare the histogram of the simulated data and the theoretical density:</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">Gamma.Simulate</span><span class="op">(</span><span class="fl">2</span>, <span class="fl">1</span>, <span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># histogram</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">X</span>, breaks <span class="op">=</span> <span class="fl">30</span>, freq <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Theoretical and simulated Gamma(2,1) density"</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
+<span>     xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">14</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.35</span><span class="op">)</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>     cex.main <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">xticks</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="va">xticks</span>, <span class="fu"><a href="https://rdrr.io/r/stats/GammaDist.html">dgamma</a></span><span class="op">(</span><span class="va">xticks</span>, <span class="fl">2</span>, <span class="fl">1</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Simulated"</span>, <span class="st">"Theoretical"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">1</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cornflowerblue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="simulate-normals" class="level2" data-number="6.5"><h2 data-number="6.5" class="anchored" data-anchor-id="simulate-normals">
+<span class="header-section-number">6.5</span> Simulate Normals</h2>
+<p>If <span class="math inline">\(Z \sim N(0,1)\)</span> then <span class="math inline">\(\mu + \sigma Z \sim N(\mu, \sigma^2)\)</span>. Hence, it suffices to have an algorithm for simulating a <span class="math inline">\(N(0,1)\)</span> random variable, i.e., a standard normal variable.</p>
+<p>We cover three ways of simulating a standard normal random variable:</p>
+<ul>
+<li><p>Central limit theorem applied to a uniformly distributed random variable.</p></li>
+<li><p>Acceptance-Rejection method with exponential envelope</p></li>
+<li><p>Box-Muller algorithm</p></li>
+</ul>
+<section id="simulate-normals-using-uniformly-distributed-random-variable" class="level3" data-number="6.5.1"><h3 data-number="6.5.1" class="anchored" data-anchor-id="simulate-normals-using-uniformly-distributed-random-variable">
+<span class="header-section-number">6.5.1</span> Simulate Normals: Using uniformly distributed random variable</h3>
+<p>Let <span class="math inline">\({U_i, i=1,2,...}\)</span> be a sequence of i.i.d. random variables uniformly distributed over <span class="math inline">\((0,1)\)</span>.</p>
+<p>Note that <span class="math inline">\(\mathbb{E}[U_i]=1/2\)</span> and <span class="math inline">\(\text{var}[U_i]=1/12\)</span> respectively. The classic central limit theorem entails:</p>
+<p><span class="math display">\[
+\frac{1}{\sqrt{n}}\sum_{i=1}^{n} \frac{U_i-\frac{1}{2}}{\sqrt{\frac{1}{12}}} \rightarrow N(0,1)
+\]</span></p>
+<p>In particular, for some <span class="math inline">\(n\)</span> a random variable <span class="math inline">\(Z=\sum_{i=1}^{n}U_i-n/2\)</span> is approximately a standard normal distribution.</p>
+<p>The resulting program is very simple - set <span class="math inline">\(n=12\)</span>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">### Simulate standard normal random variable ###</span></span>
+<span></span>
+<span><span class="va">Normal.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">size</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">Z</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="va">size</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">size</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">Z</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">12</span><span class="op">)</span><span class="op">)</span> <span class="op">-</span> <span class="fl">6</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">Z</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Despite its simpleness, this method works well in fact.</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">Normal.Simulate</span><span class="op">(</span><span class="fl">10</span><span class="op">^</span><span class="fl">6</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># histogram</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">X</span>, breaks <span class="op">=</span> <span class="fl">35</span>, freq <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Theoretical and simulated N(0,1) density"</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
+<span>     xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3.5</span>, <span class="fl">3.5</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>     cex.main <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">xticks</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="va">xticks</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">xticks</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Simulated"</span>, <span class="st">"Theoretical"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cornflowerblue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>But it is possible to do better.</p>
+</section><section id="simulate-normals-acceptance-rejection-with-exponential-envelope" class="level3" data-number="6.5.2"><h3 data-number="6.5.2" class="anchored" data-anchor-id="simulate-normals-acceptance-rejection-with-exponential-envelope">
+<span class="header-section-number">6.5.2</span> Simulate Normals: Acceptance-Rejection with Exponential Envelope</h3>
+<p>When <span class="math inline">\(Z \sim N(0,1)\)</span>, we let <span class="math inline">\(X=\lvert Z \rvert\)</span>. Suppose that <span class="math inline">\(S\)</span> is a random variable which is independent of <span class="math inline">\(Z\)</span> and uniformly distributed over <span class="math inline">\({-1,1}\)</span>, that is,</p>
+<p><span class="math display">\[
+\mathbb{P}(S=-1)=\mathbb{P}(S=1)=\frac{1}{2}
+\]</span></p>
+<p>Then it is easy to check</p>
+<p><span class="math display">\[
+SX \sim N(0,1)
+\]</span></p>
+<p>The probability density function of <span class="math inline">\(X\)</span> is:</p>
+<p><span class="math display">\[
+f(x) =
+\begin{cases}
+\sqrt{\frac{2}{\pi}} \exp(-\frac{1}{2}x^2), \text{ if } x &gt; 0 \\
+0, \text{ if } x \le 0
+\end{cases}
+\]</span></p>
+<p>Which is the half <span class="math inline">\(N(0,1)\)</span> scaled by 2 to maintain a proper density.</p>
+<p>We use the envelope density function:</p>
+<p><span class="math display">\[
+g(x) =
+\begin{cases}
+\exp(-x), \text{ if } x &gt; 0 \\
+0, \text{ if } x \le 0
+\end{cases}
+\]</span></p>
+<p>Which is the probability density function of <span class="math inline">\(\text{Exp}(1)\)</span> distribution. Easily,</p>
+<p><span class="math display">\[
+c=\sup_{x}\frac{f(x)}{g(x)}=\sup_{x}\sqrt{\frac{2}{\pi}}
+\exp \left( x-\frac{x^2}{2} \right) =\sqrt{\frac{2e}{\pi}}
+\]</span></p>
+<p>This thus gives the following algorithm:</p>
+<ol type="1">
+<li><p>Draw <span class="math inline">\(V \sim \text{Uniform}(0,1)\)</span> and set <span class="math inline">\(Y=-\log(V)\)</span></p></li>
+<li><p>Draw <span class="math inline">\(U \sim \text{Uniform}(0,1)\)</span>, which is independent of <span class="math inline">\(Y\)</span></p></li>
+<li><p>If <span class="math display">\[
+  U \le \exp \left( -\frac{1}{2}(Y-1)^2 \right)
+  \]</span> then generate <span class="math inline">\(S\)</span> uniformly distributed over <span class="math inline">\({-1,1}\)</span> and return <span class="math inline">\(Z=SY\)</span>; Otherwise go back to step 1.</p></li>
+</ol></section><section id="simulate-normals-box-muller-algorithm" class="level3" data-number="6.5.3"><h3 data-number="6.5.3" class="anchored" data-anchor-id="simulate-normals-box-muller-algorithm">
+<span class="header-section-number">6.5.3</span> Simulate Normals: Box-Muller Algorithm</h3>
+<p>The Box-Muller algorithm is grounded on the following theorem:</p>
+<div id="thm-bm-transform" class="theorem">
+<p><span class="theorem-title"><strong>Theorem 6.1 (Box-Muller transform)</strong></span> <em>Let</em> <span class="math inline">\(U\)</span> <em>and</em> <span class="math inline">\(V\)</span> <em>be two independent random variables uniformly distributed over</em> <span class="math inline">\((0,1)\)</span>. <em>Define</em>:</p>
+<p><span class="math display">\[
+X = \sqrt{-2 \log (U)} \cos (2\pi V), \text{ } Y = \sqrt{-2 \log (U)} \sin (2\pi V)
+\]</span> <em>Then</em> <span class="math inline">\((X,Y)^{\top}\)</span> <em>is a standard bivariate normal random vector, i.e.,</em></p>
+<p><span class="math display">\[
+(X, Y)^{\top} \sim N\left( \begin{bmatrix} 0 \\ 0 \end{bmatrix}, \begin{bmatrix} 1 &amp; 0 \\ 0 &amp; 1 \end{bmatrix} \right)
+\]</span></p>
+</div>
+<p>Hence, we have the Box-Muller algorithm, which draws two independent standard normal random variables at a time:</p>
+<ol type="1">
+<li><p>Draw independent <span class="math inline">\(U \sim \text{Uniform}(0,1)\)</span> and <span class="math inline">\(V \sim \text{Uniform}(0,1)\)</span></p></li>
+<li><p>Set <span class="math inline">\(R=\sqrt{-2 \log(U)}\)</span> and <span class="math inline">\(\Theta = 2\pi V\)</span></p></li>
+<li><p>Return <span class="math inline">\(X=R \cos{\Theta}\)</span> and <span class="math inline">\(Y=R \sin{\Theta}\)</span></p></li>
+</ol>
+<p>The resulting program is very simple:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">BoxMuller</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">size</span> <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># size: number of standard bivariate normal random variables to simulate</span></span>
+<span>  </span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="va">V</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="va">X</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">U</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">cos</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="va">V</span><span class="op">)</span></span>
+<span>  <span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">U</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="fl">2</span><span class="op">*</span><span class="va">pi</span><span class="op">*</span><span class="va">V</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">X</span>,<span class="va">Y</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The histogram of 1000 standard normal random variables simulated using Box-Muller transformation:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">X</span> <span class="op">&lt;-</span> <span class="fu">BoxMuller</span><span class="op">(</span><span class="fl">1000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># histogram</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">X</span>, breaks <span class="op">=</span> <span class="fl">35</span>, freq <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Theoretical and simulated N(0,1) density"</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"cornflowerblue"</span>,</span>
+<span>     xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">3.5</span>, <span class="fl">3.5</span><span class="op">)</span>, ylim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span>     xlab <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>     cex.main <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">xticks</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">X</span><span class="op">)</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/lines.html">lines</a></span><span class="op">(</span><span class="va">xticks</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span><span class="op">(</span><span class="va">xticks</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/legend.html">legend</a></span><span class="op">(</span><span class="st">"topright"</span>, legend <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Simulated"</span>, <span class="st">"Theoretical"</span><span class="op">)</span>, lty <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, lwd <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>, <span class="fl">2</span><span class="op">)</span>, col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"cornflowerblue"</span>, <span class="st">"red"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="introduction_to_simulation_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="monte-carlo-integration" class="level2" data-number="6.6"><h2 data-number="6.6" class="anchored" data-anchor-id="monte-carlo-integration">
+<span class="header-section-number">6.6</span> Monte Carlo Integration</h2>
+<section id="monte-carlo-integration---a-brief-introduction" class="level3" data-number="6.6.1"><h3 data-number="6.6.1" class="anchored" data-anchor-id="monte-carlo-integration---a-brief-introduction">
+<span class="header-section-number">6.6.1</span> Monte Carlo Integration - a brief introduction</h3>
+<p>Suppose that you want to compute the integral:</p>
+<p><span class="math display">\[
+I = \int_{a}^{b} f(x)dx
+\]</span></p>
+<p>It is not always possible to calculate it analytically. In such cases, we can use Monte Carlo by noting that:</p>
+<p><span class="math display">\[
+I=(b-a)\mathbb{E}[f(U)], \space U \sim \text{Uniform}(a,b)
+\]</span></p>
+<p>Let <span class="math inline">\(U_i : i=1,2,...\)</span> be an i.i.d. sequence of random variables uniformly distributed over <span class="math inline">\((a,b)\)</span>. The strong law of large numbers implies:</p>
+<p><span class="math display">\[
+\frac{b-a}{n} \sum_{i=1}^{n}f(U_i) \xrightarrow{a.s.}I \text{, as }n \rightarrow \infty
+\]</span></p>
+<p>Where <span class="math inline">\(\xrightarrow{a.s.}\)</span> means almost sure convergence.</p>
+</section><section id="monte-carlo-integration---the-code" class="level3" data-number="6.6.2"><h3 data-number="6.6.2" class="anchored" data-anchor-id="monte-carlo-integration---the-code">
+<span class="header-section-number">6.6.2</span> Monte Carlo Integration - the code</h3>
+<p>Hence, you may pick a large <span class="math inline">\(n\)</span>, draw i.i.d. <span class="math inline">\(U_i \sim \text{Uniform}(a,b)\)</span>, and use <span class="math inline">\(\frac{b-a}{n} \sum_{i=1}^{n}f(U_i)\)</span> as an approximate of <span class="math inline">\(I\)</span>. The following function does this:</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">MonteCarlo.Integration</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">n</span>, <span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span>, min <span class="op">=</span> <span class="va">a</span>, max <span class="op">=</span> <span class="va">b</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span> <span class="op">(</span><span class="va">b</span><span class="op">-</span><span class="va">a</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="va">U</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="monte-carlo-integration---examples" class="level3" data-number="6.6.3"><h3 data-number="6.6.3" class="anchored" data-anchor-id="monte-carlo-integration---examples">
+<span class="header-section-number">6.6.3</span> Monte Carlo Integration - examples</h3>
+<p>Set seed to 10086 and consider two examples.</p>
+<p>Example 1: <span class="math inline">\(\int_{-1}^{1} \frac{1}{1+x^2}dx\)</span> with the accurate value <span class="math inline">\(\frac{\pi}{2} \approx 1.570796\)</span>. We get:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="fu">MonteCarlo.Integration</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fl">1</span><span class="op">/</span><span class="op">(</span><span class="fl">1</span><span class="op">+</span><span class="va">x</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, <span class="fl">100</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1.589363</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Example 2: <span class="math inline">\(\int_{0}^{1} \arctan{x}dx\)</span> with the accurate value <span class="math inline">\(0.4388246\)</span>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">10086</span><span class="op">)</span></span>
+<span><span class="fu">MonteCarlo.Integration</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">atan</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span>, <span class="fl">100</span>, <span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.445995</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="small-exercise-1" class="level3" data-number="6.6.4"><h3 data-number="6.6.4" class="anchored" data-anchor-id="small-exercise-1">
+<span class="header-section-number">6.6.4</span> Small Exercise</h3>
+<p>Suppose you want to measure the area of the unit circle via the Monte Carlo integration using the following steps:</p>
+<ul>
+<li><p><em>Simulate</em> <span class="math inline">\(U \sim U(0,1)\)</span> <em>and</em> <span class="math inline">\(V \sim U(0,1)\)</span> <em>to obtain</em> <span class="math inline">\(R^2 = U^2 + V^2\)</span>, <span class="math inline">\(100\)</span> <em>times.</em></p></li>
+<li><p><em>Define a function</em> <span class="math inline">\(f(U,V) = 1_{ \left\{ U^2+V^2&lt;1 \right\} }\)</span>: <span class="math inline">\(1_{\text{Condition}}\)</span> <em>is an indicator function that returns <span class="math inline">\(1\)</span> if the condition is true and</em> <span class="math inline">\(0\)</span> <em>otherwise.</em></p></li>
+<li><p><em>Implement the monte carlo integration of the unit circle in R using the formula</em> <span class="math inline">\((b-a)E[f(U)]\)</span>.</p></li>
+<li><p><em>Now, note that your result likely is somewhat lower than the area of the unit circle. Why is that? (Hint: try to multiply your obtained result by 4).</em></p></li>
+<li><p><em>Try to increase the number of standard uniform draws used to approximate the area.</em></p></li>
+</ul>
+<p>Note that you should have successfully approximated a famous mathematical constant.</p>
+<p><strong>Solution</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vU</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span></span>
+<span><span class="va">vV</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">fLessThanOne</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vInput</span> <span class="op">&lt;</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">dResult</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="fl">0</span><span class="op">)</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">fLessThanOne</span><span class="op">(</span><span class="va">vU</span><span class="op">^</span><span class="fl">2</span> <span class="op">+</span> <span class="va">vV</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">dResult</span> <span class="op">*</span> <span class="fl">4</span></span>
+<span><span class="co">#&gt; [1] 3.1716</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><hr>
+<ol>
+<li id="fn1"><p>For <span class="math inline">\(0&lt;k&lt;1\)</span> it’s still possible to employ the acceptance-rejection method, but we need another envelope probability density function, which we don’t elaborate on here.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./efficiency_and_parallel_computing.html" class="pagination-link" aria-label="Program Efficiency and Parallel Computing">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./rootfinding.html" class="pagination-link" aria-label="Root-finding">
+        <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

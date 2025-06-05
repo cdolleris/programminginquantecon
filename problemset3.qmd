@@ -1,0 +1,238 @@
+# Exercise set 3
+
+## **(1)**
+
+*The (Euclidean) length of a vector* $v=(a_0,...,a_k)$ *is the square root of the sum of squares of its coordinates, that is* $\sqrt{a_0^2+ \cdots +a_k^2}$*. Write a function that returns the Euclidean length of a vector.*
+
+Solution:
+
+```{r}
+euclidean_length <- function(vInput) {
+  return(sqrt(sum(vInput^2)))
+}
+
+vX <- 1:10
+euclidean_length(vX)
+```
+
+## **(2)**
+
+*The Game of Life is a cellular automaton and was devised by the mathematician J.H. Conway in 1970. It is played on a grid of cells, each of which is either alive or dead. The grid of cells evolves in time and each cell interacts with its eight neighbours, which are the cells directly adjacent horizontally, vertically, and diagonally.*
+
+*At each time step cells change as follows:*
+
+- *A live cell with fewer than two neighbours dies of loneliness.*
+
+- *A live cell with more than three neighbours dies of overcrowding.*
+
+- *A live cell with two or three neighbours lives on the the next generation.*
+
+- *A dead cell with exactly three neighbours comes to life*
+
+*The initial pattern constitutes the first generation of the system. The second generation is created by applying the above rules simultaneously to every cell in the first generation: births and deaths all happen simultaneously. The rules continue to be applied repeatedly to create further generations.*
+
+*Theoretically, the Game of Life is played on an infinite grid, but in practice we use a finite grid arranged as a torus. That is, if you are in the left-most column of the grid then your left-hand neighbours are in the right-most column, and if you are in the top row, then your neighbours above are in the bottom row.*
+
+*Write a program that replicates The Game of Life for* `iT = 420` *periods, then stop. Organize the cells in a* $n \times n$ *matrix* `A`*. Start by defining the initial population with* `A = matrix(round(runif(iN^2)), iN, iN)`*, for* `iN = 10`*. At the beginning of the program, set the seed of the random number generator with* `set.seed(999)` *such that your results can be replicated.*
+
+*After running the algorithm, you should get the following population:*
+
+```{r}
+#| echo: false
+mA <- matrix(0, nrow = 10, ncol = 10) # Create a 10x10 matrix filled with zeros
+
+# Fill in the non-zero values
+mA[4, 5] <- 1
+mA[4, 6] <- 1
+mA[5, 4] <- 1
+mA[5, 7] <- 1
+mA[6, 4] <- 1
+mA[6, 7] <- 1
+mA[7, 5] <- 1
+mA[7, 6] <- 1
+
+# Print the matrix
+print(mA)
+```
+
+*Notice that the distribution of the points is the same even if we let the program run for* `iT = 1620` *iterations. Do you think we always observe this behaviour? Try to conjecture an answer.*
+
+Solution(s):
+
+```{r}
+set.seed(999)
+iT <- 420
+iN <- 10
+A <- matrix(round(runif(iN^2)), iN, iN)
+
+## First solution (using a triple loop)
+game_of_life_1 <- function(mInput, iT) {
+  iR <- nrow(mInput)
+  iC <- ncol(mInput)
+  mNew <- matrix(0, iR, iC)
+  for (t in 1:iT) {
+    # Loop over rows and columns, i.e., each value in the matrix separately
+    for (i in 1:iR) {
+      for (j in 1:iC) {
+        # Use the modulus operator for handling the borders
+        # We need (i - 2) due to R indexing beginning at 1
+        iNeighbourCount <- mInput[(i - 2) %% iR + 1, (j - 2) %% iC + 1] +
+                           mInput[(i - 2) %% iR + 1, (j - 1) %% iC + 1] +
+                           mInput[(i - 2) %% iR + 1, j %% iC + 1] +
+
+                           mInput[(i - 1) %% iR + 1, (j - 2) %% iC + 1] +
+                           mInput[(i - 1) %% iR + 1, j %% iC + 1] +
+
+                           mInput[i %% iR + 1, (j - 2) %% iC + 1] +
+                           mInput[i %% iR + 1, (j - 1) %% iC + 1] +
+                           mInput[i %% iR + 1, j %% iC + 1]
+        
+        if (mInput[i, j] == 1) { # If alive
+          if (iNeighbourCount < 2 || iNeighbourCount > 3) {
+            mNew[i, j] <- 0
+          } else {
+            mNew[i, j] <- 1
+          }
+        } else { # If dead
+          if (iNeighbourCount == 3) {
+            mNew[i, j] <- 1
+          } else {
+            mNew[i, j] <- 0
+          }
+        }
+      }
+    }
+    mInput <- mNew
+  }
+  return(mInput)
+}
+
+print(game_of_life_1(A, 420))
+
+
+## Second solution (much faster)
+game_of_life_2 <- function(mInput, iT) {
+  iR <- nrow(mInput)
+  iC <- ncol(mInput)
+  for (t in 1:iT) {
+    mPadded <- matrix(0, iR + 2, iC + 2) # Empty matrix with a border
+    mPadded[2:(iR + 1), 2:(iC + 1)] <- mInput # Middle part
+    
+    mPadded[1, 2:(iC + 1)] <- mInput[iR, ] # Top row
+    mPadded[iR + 2, 2:(iC + 1)] <- mInput[1, ] # Bottom row
+    mPadded[2:(iR + 1), 1] <- mInput[, iC] # Left column
+    mPadded[2:(iR + 1), iC + 2] <- mInput[, 1] # Right column
+    
+    mPadded[1, 1] <- mInput[iR, iC] # Top left value
+    mPadded[1, iC + 2] <- mInput[iR, 1] # Top right value
+    mPadded[iR + 2, 1] <- mInput[1, iC] # Bottom left value
+    mPadded[iR + 2, iC + 2] <- mInput[1, 1] # Bottom right value
+    
+    # Now, we can create a neighbour count by shifting the padded matrix and adding the 1's
+    mNeighbourCount <- mPadded[1:iR, 1:iC] + 
+                       mPadded[2:(iR + 1), 1:iC] + 
+                       mPadded[3:(iR + 2), 1:iC] + 
+                       mPadded[1:iR, 2:(iC + 1)] + 
+                       mPadded[3:(iR + 2), 2:(iC + 1)] + 
+                       mPadded[1:iR, 3:(iC + 2)] + 
+                       mPadded[2:(iR + 1), 3:(iC + 2)] + 
+                       mPadded[3:(iR + 2), 3:(iC + 2)]
+    
+    # And we can use the neighbour count matrix for indexing
+    mInput <- (mInput & (mNeighbourCount == 2 | mNeighbourCount == 3)) | (!mInput & mNeighbourCount == 3)
+    
+  }
+  return(mInput)
+}
+
+# Use the plus-sign to return the matrix as integer booleans
+print(+game_of_life_2(A, 420))
+
+
+## A quick speed comparison of the two solutions shows a huge increase in performance
+suppressMessages(library(microbenchmark))
+microbenchmark(game_of_life_1(A, 420), +game_of_life_2(A, 420))
+
+```
+
+Regarding the second part of the question, there are certain patterns in Conway's Game of Life that do not change between generations - implying that further iterations are pointless.
+
+In our case, every "live" cell has two neighbours and thus survive. And dead cells either have 0, 2 or 4 neighbours, so they never come alive.
+
+## **(3)**
+
+*The number of ways you can choose* $r$ *things from a set of* $n$*, ignoring the order in which they are chosen is:*
+
+$$
+\binom{n}{r} = \frac{n!}{r!(n-r)!}
+$$
+
+*Let* $x$ *be the first element of the set of* $n$ *things. We can partition the collection of possible size* $r$ *subsets into those that contain* $x$ *and those that don't: there must be* $\binom{n-1}{r-1}$ *subsets of the first type and* $\binom{n-1}{r}$ *subsets of the second type. Thus:*
+
+$$
+\binom{n}{r} = \binom{n-1}{r-1} + \binom{n-1}{r}
+$$
+*Using this and the fact that* $\binom{n}{n} = \binom{n}{0} = 1$*, write a recursive function to calculate* $\binom{n}{r}$*.*
+
+Solution:
+
+```{r}
+fbinom <- function(n, r) {
+  if (n == r | r == 0) {
+    return(1)
+  } else {
+    return(fbinom(n - 1, r - 1) + fbinom(n - 1, r))
+  }
+}
+```
+
+## **(4)**
+
+*What will be the output of the following code? Try to answer this without typing it up.*
+
+```{r}
+#| eval: false
+fb <- function(n) {
+  if (n == 1 || n == 2) {
+    return(1)
+  } else {
+    return(fb(n - 1) + fb(n - 2))
+  }
+}
+fb(8)
+```
+
+Solution:
+
+The output will be the 8th number in the Fibonacci series (1, 1, 2, 3, 5, 8, 13, 21), i.e., 21.
+
+## **(5)**
+
+*Horner's algorithm for evaluating the polynomial* $p(x)=a_0+a_1x+a_2x^2+\cdots + a_nx^n$ *consists of re-expressing it as:*
+
+$$
+a_0+x(a_1+x(a_2+\cdots+x(a_{n-1}+xa_n)...))
+$$
+
+*How many operations are required to evaluate* $p(x)$ *in each form?*
+
+Solution: 
+
+For the normal expression, we need $n - 1$ additions, $n-1$ multiplications and $\sum_{i=0}^{n-1}=\frac{n^2-n}{2}$ multiplications. In total, this is $2*(n-1)+\frac{n^2}{2}-\frac{n}{2}$ elementary operations, which is approximately $O(n^2)$.
+
+For Horner's algorithm: There are still $n-1$ additive terms, but only $n-1$ multiplications. Thus, there are $2*(n-1)$ elementary operations, which is approximately $O(n)$.
+
+## **(6)**
+
+*Create a 10 by 10 matrix m1 and let its elements be drawn from a Gaussian distribution with mean value 20 and variance 100 and then rounded. Using the apply function, return a new matrix whose entries are those of m1 modulo 3.*
+
+Solution:
+
+```{r}
+m1 <- matrix(round(rnorm(100, mean = 20, sd = 10)), 10, 10)
+m1
+m2 <- apply(m1, c(1, 2), function(x) x %% 3)
+m3 <- matrix(m1 %% 3, 10, 10) # Not the apply() function, but it also works
+m2
+```
+

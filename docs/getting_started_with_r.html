@@ -1,0 +1,1865 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>2&nbsp; Getting Started with R – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./basic_programming.html" rel="next">
+<link href="./intro.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./getting_started_with_r.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li><a href="#working-directory" id="toc-working-directory" class="nav-link active" data-scroll-target="#working-directory"><span class="header-section-number">2.1</span> Working directory</a></li>
+  <li><a href="#arithmetic" id="toc-arithmetic" class="nav-link" data-scroll-target="#arithmetic"><span class="header-section-number">2.2</span> Arithmetic</a></li>
+  <li>
+<a href="#variable-types" id="toc-variable-types" class="nav-link" data-scroll-target="#variable-types"><span class="header-section-number">2.3</span> Variable types</a>
+  <ul class="collapse">
+<li><a href="#defining-variables" id="toc-defining-variables" class="nav-link" data-scroll-target="#defining-variables"><span class="header-section-number">2.3.1</span> Defining variables</a></li>
+  <li><a href="#variable-types-and-syntax" id="toc-variable-types-and-syntax" class="nav-link" data-scroll-target="#variable-types-and-syntax"><span class="header-section-number">2.3.2</span> Variable types and syntax</a></li>
+  <li><a href="#variable-names-and-hungarian-notation" id="toc-variable-names-and-hungarian-notation" class="nav-link" data-scroll-target="#variable-names-and-hungarian-notation"><span class="header-section-number">2.3.3</span> Variable names and Hungarian notation</a></li>
+  <li><a href="#integers" id="toc-integers" class="nav-link" data-scroll-target="#integers"><span class="header-section-number">2.3.4</span> Integers</a></li>
+  <li><a href="#doubles" id="toc-doubles" class="nav-link" data-scroll-target="#doubles"><span class="header-section-number">2.3.5</span> Doubles</a></li>
+  <li><a href="#precision" id="toc-precision" class="nav-link" data-scroll-target="#precision"><span class="header-section-number">2.3.6</span> Precision</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#built-in" id="toc-built-in" class="nav-link" data-scroll-target="#built-in"><span class="header-section-number">2.4</span> Built-in</a>
+  <ul class="collapse">
+<li><a href="#characterstrings" id="toc-characterstrings" class="nav-link" data-scroll-target="#characterstrings"><span class="header-section-number">2.4.1</span> Character/strings</a></li>
+  <li><a href="#built-in-functions" id="toc-built-in-functions" class="nav-link" data-scroll-target="#built-in-functions"><span class="header-section-number">2.4.2</span> Built-in functions</a></li>
+  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions"><span class="header-section-number">2.4.3</span> Functions</a></li>
+  <li><a href="#arguments-of-functions" id="toc-arguments-of-functions" class="nav-link" data-scroll-target="#arguments-of-functions"><span class="header-section-number">2.4.4</span> Arguments of functions</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#vectors" id="toc-vectors" class="nav-link" data-scroll-target="#vectors"><span class="header-section-number">2.5</span> Vectors</a>
+  <ul class="collapse">
+<li><a href="#vector-operations" id="toc-vector-operations" class="nav-link" data-scroll-target="#vector-operations"><span class="header-section-number">2.5.1</span> Vector operations</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#missing-values" id="toc-missing-values" class="nav-link" data-scroll-target="#missing-values"><span class="header-section-number">2.6</span> Missing values</a>
+  <ul class="collapse">
+<li><a href="#missing-date-na" id="toc-missing-date-na" class="nav-link" data-scroll-target="#missing-date-na"><span class="header-section-number">2.6.1</span> Missing date: NA</a></li>
+  <li><a href="#searching-for-nas" id="toc-searching-for-nas" class="nav-link" data-scroll-target="#searching-for-nas"><span class="header-section-number">2.6.2</span> Searching for NAs</a></li>
+  </ul>
+</li>
+  <li><a href="#small-exercise" id="toc-small-exercise" class="nav-link" data-scroll-target="#small-exercise"><span class="header-section-number">2.7</span> Small Exercise</a></li>
+  <li>
+<a href="#logical" id="toc-logical" class="nav-link" data-scroll-target="#logical"><span class="header-section-number">2.8</span> Logical</a>
+  <ul class="collapse">
+<li><a href="#logical-expression" id="toc-logical-expression" class="nav-link" data-scroll-target="#logical-expression"><span class="header-section-number">2.8.1</span> Logical expression</a></li>
+  <li><a href="#logical-expressions-and" id="toc-logical-expressions-and" class="nav-link" data-scroll-target="#logical-expressions-and"><span class="header-section-number">2.8.2</span> Logical expressions: &amp; and |</a></li>
+  <li><a href="#sequential-and" id="toc-sequential-and" class="nav-link" data-scroll-target="#sequential-and"><span class="header-section-number">2.8.3</span> Sequential &amp;&amp; and ||</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#matrices" id="toc-matrices" class="nav-link" data-scroll-target="#matrices"><span class="header-section-number">2.9</span> Matrices</a>
+  <ul class="collapse">
+<li><a href="#multiplication-with-matrices" id="toc-multiplication-with-matrices" class="nav-link" data-scroll-target="#multiplication-with-matrices"><span class="header-section-number">2.9.1</span> Multiplication with matrices</a></li>
+  </ul>
+</li>
+  <li><a href="#factors" id="toc-factors" class="nav-link" data-scroll-target="#factors"><span class="header-section-number">2.10</span> Factors</a></li>
+  <li><a href="#lists" id="toc-lists" class="nav-link" data-scroll-target="#lists"><span class="header-section-number">2.11</span> Lists</a></li>
+  <li>
+<a href="#dataframes" id="toc-dataframes" class="nav-link" data-scroll-target="#dataframes"><span class="header-section-number">2.12</span> Dataframes</a>
+  <ul class="collapse">
+<li><a href="#dataframes-extract" id="toc-dataframes-extract" class="nav-link" data-scroll-target="#dataframes-extract"><span class="header-section-number">2.12.1</span> Dataframes: Extract</a></li>
+  <li><a href="#dataframes-assign" id="toc-dataframes-assign" class="nav-link" data-scroll-target="#dataframes-assign"><span class="header-section-number">2.12.2</span> Dataframes: Assign</a></li>
+  </ul>
+</li>
+  <li><a href="#small-exercises-with-logical-operators-matrices-lists-and-dataframes" id="toc-small-exercises-with-logical-operators-matrices-lists-and-dataframes" class="nav-link" data-scroll-target="#small-exercises-with-logical-operators-matrices-lists-and-dataframes"><span class="header-section-number">2.13</span> Small exercises with logical operators, matrices, lists and dataframes</a></li>
+  <li><a href="#additional-code-in-r" id="toc-additional-code-in-r" class="nav-link" data-scroll-target="#additional-code-in-r"><span class="header-section-number">2.14</span> Additional code in R</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./getting_started_with_r.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="working-directory" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="working-directory">
+<span class="header-section-number">2.1</span> Working directory</h2>
+<p>When you run R, it nominates one of the directories on your hard drive as a working directory, which is where it looks for user-written programs and data files.</p>
+<p>You can determine the current working directory using the command <code>getwd</code>. You can do this using the command <code>setwd("sDir")</code>, where <code>dir</code> is the directory address.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sDir</span> <span class="op">&lt;-</span> <span class="st">"G:/foo"</span> <span class="co"># this path needs to exist</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="va">sDir</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the path does not exist, R can create the directory (“folder”) for you via the <code>dir.create</code> built-in function and then change to the new directory.</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Assign a new path to create the new directory</span></span>
+<span><span class="va">sPath</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/getwd.html">getwd</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="va">sDir</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/file.path.html">file.path</a></span><span class="op">(</span><span class="va">sPath</span>, <span class="st">"new_dir2"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/files2.html">dir.create</a></span><span class="op">(</span><span class="va">sDir</span><span class="op">)</span> <span class="co"># Creates a new directory</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/getwd.html">setwd</a></span><span class="op">(</span><span class="va">sDir</span><span class="op">)</span> <span class="co"># set WD to sDir</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>You can also just pass the directory path directly, i.e., <code>dir.create("C:/user/foo")</code>.</p>
+<p>Note that R will return an error message if “<span class="math inline">\(\backslash\)</span>” is used instead of “<span class="math inline">\(/\)</span>” in the path as this is reserved for other operations, e.g., the line change used in <a href="./intro.html#sec-lec1-se-1">Small Exercise 1</a> ; <code>cat("\n")</code></p>
+<p>When the working directory is set, we can call other scripts from the currently specified “WD” without specifying the path via the <code><a href="https://rdrr.io/r/base/source.html">source()</a></code> function, i.e.:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"foo.r"</span><span class="op">)</span> <span class="co"># tell R to Source/Run the .R file/script</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Calling e.g.&nbsp;scripts from another directory is also possible, but requires a specific path, i.e., <code>"C:/wd/foo.r"</code>.</p>
+<p>Furthermore, this feature is incredibly useful when writing longer scripts containing several user written functions.</p>
+<p>This is demonstrated in <code>Example_1.R</code>:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-1-contents" aria-controls="callout-1" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Click to view “Example_1.R”
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-1" class="callout-1-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># clear the environment</span></span>
+<span id="cb4-2"><a href="#cb4-2"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\014</span><span class="st">"</span>)     <span class="co"># Clear console:equivalent to ctrl + L </span></span>
+<span id="cb4-3"><a href="#cb4-3"></a></span>
+<span id="cb4-4"><a href="#cb4-4"></a></span>
+<span id="cb4-5"><a href="#cb4-5"></a><span class="fu">getwd</span>() <span class="co"># Check working directory is correct</span></span>
+<span id="cb4-6"><a href="#cb4-6"></a></span>
+<span id="cb4-7"><a href="#cb4-7"></a><span class="fu">dir</span>() <span class="co"># Check that the directory contain the desired files.</span></span>
+<span id="cb4-8"><a href="#cb4-8"></a></span>
+<span id="cb4-9"><a href="#cb4-9"></a><span class="co"># Source the functions contained in the script "example1_fun.r"</span></span>
+<span id="cb4-10"><a href="#cb4-10"></a><span class="fu">source</span>(<span class="st">"example1_fun.r"</span>) </span>
+<span id="cb4-11"><a href="#cb4-11"></a></span>
+<span id="cb4-12"><a href="#cb4-12"></a><span class="fu">squaring</span>(<span class="sc">-</span><span class="dv">3</span>)  <span class="co"># Calling the function squaring with input -3</span></span>
+<span id="cb4-13"><a href="#cb4-13"></a></span>
+<span id="cb4-14"><a href="#cb4-14"></a><span class="fu">squaring</span>(<span class="dv">3</span>)   <span class="co"># Calling the function squaring with input 3</span></span>
+<span id="cb4-15"><a href="#cb4-15"></a></span>
+<span id="cb4-16"><a href="#cb4-16"></a><span class="fu">squaring</span>(<span class="st">"a"</span>) <span class="co"># Calling the function squaring with input "a"</span></span>
+<span id="cb4-17"><a href="#cb4-17"></a></span>
+<span id="cb4-18"><a href="#cb4-18"></a><span class="fu">clc</span>() <span class="co"># Use the newly defined clc() function to clear console</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<p>Note for the script above: The sourced file, <code>example1_fun.r</code>, can be seen below:</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Click to view “example1_fun.R”
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="co"># This file contains two functions. </span></span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="co"># At this stage it is not necessary that you completely understand the functions, they will be discussed later.</span></span>
+<span id="cb5-3"><a href="#cb5-3"></a></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="do">## Function 1: squaring</span></span>
+<span id="cb5-5"><a href="#cb5-5"></a><span class="co"># input numeric types: dX</span></span>
+<span id="cb5-6"><a href="#cb5-6"></a><span class="co"># Output the square of the input</span></span>
+<span id="cb5-7"><a href="#cb5-7"></a>squaring <span class="ot">&lt;-</span> <span class="cf">function</span>(dX) {</span>
+<span id="cb5-8"><a href="#cb5-8"></a>  dX<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb5-9"><a href="#cb5-9"></a>}</span>
+<span id="cb5-10"><a href="#cb5-10"></a></span>
+<span id="cb5-11"><a href="#cb5-11"></a></span>
+<span id="cb5-12"><a href="#cb5-12"></a><span class="do">## Function 2: clc</span></span>
+<span id="cb5-13"><a href="#cb5-13"></a><span class="co"># non-input function to clear console</span></span>
+<span id="cb5-14"><a href="#cb5-14"></a>clc <span class="ot">&lt;-</span> <span class="cf">function</span>() {</span>
+<span id="cb5-15"><a href="#cb5-15"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\014</span><span class="st">"</span>) <span class="co"># "\014" is equivalent to ctrl + L (Windows) or cmd + L (MacOS)</span></span>
+<span id="cb5-16"><a href="#cb5-16"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+<p>In addition, <code>source</code> will check your program for completeness before executing it. That is, it will stop processing the call if an error is reported.</p>
+</section><section id="arithmetic" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="arithmetic">
+<span class="header-section-number">2.2</span> Arithmetic</h2>
+<p>R uses the usual symbols for addition <span class="math inline">\(+\)</span>, subtraction <span class="math inline">\(-\)</span>, multiplication <span class="math inline">\(*\)</span>, division <span class="math inline">\(/\)</span>, and exponentiation <span class="math inline">\(\wedge\)</span>. Parentheses <span class="math inline">\(()\)</span> can be used to specify the order of operations.</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span><span class="op">/</span><span class="fl">100</span><span class="op">)</span><span class="op">^</span><span class="fl">100</span></span>
+<span><span class="co">#&gt; [1] 2.704814</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that by default, R prints 7 significant digits. You can change the display to <code>x</code> digits using <code>options(digits = x)</code>. See <code><a href="https://rdrr.io/r/base/options.html">help(options)</a></code> for other options.</p>
+</section><section id="variable-types" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="variable-types">
+<span class="header-section-number">2.3</span> Variable types</h2>
+<section id="defining-variables" class="level3" data-number="2.3.1"><h3 data-number="2.3.1" class="anchored" data-anchor-id="defining-variables">
+<span class="header-section-number">2.3.1</span> Defining variables</h3>
+<p>To assign a value to a variable, we use (almost equivalently) the assignment commands <code>=</code> and <code>&lt;-</code>. For example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">iX</span> <span class="op">&lt;-</span> <span class="fl">100</span></span>
+<span><span class="va">iX</span> <span class="op">=</span> <span class="fl">100</span></span>
+<span><span class="co"># These are equivalent</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>With some exceptions as shown last time in <a href="./intro.html#sec-lec1-se-1">Becoming_a_useR.R</a>. We can perform operations in <code>iX</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">iX</span></span>
+<span><span class="co">#&gt; [1] 100</span></span>
+<span><span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fl">1</span><span class="op">/</span><span class="va">iX</span><span class="op">)</span><span class="op">^</span><span class="va">iX</span></span>
+<span><span class="co">#&gt; [1] 2.704814</span></span>
+<span><span class="va">iX</span> <span class="op">&lt;-</span> <span class="va">iX</span> <span class="op">+</span> <span class="fl">1</span> <span class="co"># is allowed</span></span>
+<span><span class="va">iX</span></span>
+<span><span class="co">#&gt; [1] 101</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="variable-types-and-syntax" class="level3" data-number="2.3.2"><h3 data-number="2.3.2" class="anchored" data-anchor-id="variable-types-and-syntax">
+<span class="header-section-number">2.3.2</span> Variable types and syntax</h3>
+<p>If you try to pass the string “a” to the function <code>squaring</code>, you get an error. Functions only take sensible inputs: in this case “numeric” class objects such as double or integers (and even vectors or matrices…)</p>
+<p>In addition, R has several object type specific functions, i.e., <code>length(vY)</code> will give you the length of a vector, but <code>mY</code> will return the length of <code>vY &lt;- c(mY)</code>. Hence, keeping track of variable types or variable classes therefore seems worthwhile.</p>
+<ul>
+<li>To R, everything is an “object”.</li>
+<li>We’ve seen some examples of objects as the atomic types/classis previously:
+<ul>
+<li>
+<em>Integers</em>, such as <code>3L</code> or <code>as.integer(3)</code>.</li>
+<li>
+<em>Numeric</em>, such as 3, -3, 9.01 (So in principle both doubles and “integers”).</li>
+<li>
+<em>Logicals</em>, such as TRUE or FALSE, “booleans”:</li>
+<li>
+<em>Characters</em>, such as “asdf”.</li>
+<li>And data structures as <em>Matrices</em>, such as <span class="math inline">\(\begin{pmatrix}1 &amp; 2 &amp; 3\\4 &amp; 5 &amp; 6\end{pmatrix}\)</span>
+</li>
+</ul>
+</li>
+<li>We’ll study these types, and a few other common ones in detail later on.</li>
+</ul></section><section id="variable-names-and-hungarian-notation" class="level3" data-number="2.3.3"><h3 data-number="2.3.3" class="anchored" data-anchor-id="variable-names-and-hungarian-notation">
+<span class="header-section-number">2.3.3</span> Variable names and Hungarian notation</h3>
+<p>Hungarian notation was developed for more restrictive languages, but also has its uses in R.</p>
+<ul>
+<li><p>Use variable names consisting of multiple characters.</p></li>
+<li><p>The first one of two indicate the type of the variable.</p></li>
+<li><p>The remainder forms a descriptive name.</p></li>
+</ul>
+<p>Example: suppose that you are estimating a linear model: <span class="math inline">\(y = X\beta + \varepsilon\)</span>. So, the input consists of a vector <span class="math inline">\(y\)</span> and a matrix <span class="math inline">\(X\)</span>. Variable names could be <code>vY</code> and <code>mX</code>. The output is probably a vector of estimated regression coefficients, which you could call <code>vBeta</code> or <code>vBetaHat</code> or <code>vBetaOLS</code> or something. And perhaps there’s also a <code>vEpsilon</code> or <code>vEps</code>.</p>
+<p>R doesn’t care what you call your variables. As soon as a variable is given a value, R will figure out what type it is automatically.</p>
+<p>So, if you calculate <span class="math inline">\((X'X)^{-1}X'y\)</span> and want to call the result <code>apple</code>, this is not technically wrong. But it’s not particularly nice to people reading your code either.</p>
+</section><section id="integers" class="level3" data-number="2.3.4"><h3 data-number="2.3.4" class="anchored" data-anchor-id="integers">
+<span class="header-section-number">2.3.4</span> Integers</h3>
+<p>The simplest value type is an <em>integer</em>. Its value is always a whole number, minimum <span class="math inline">\(\approx - 2^{31}\)</span>, maximum <span class="math inline">\(2^{31} - 1\)</span> (other bounds in other programming languages). The Hungarian prefix is <code>i</code>. The R command <code>iN &lt;- 5L</code> results in the creation of a variable that has name <code>iN</code>, type integer, and value 5. If we subsequently execute command <code>iN &lt;- 7L</code>, the variable still has the same name and type, but it has a different value. R forgets the value before the change.</p>
+<p>A logical, prefix <code>b</code>, is a special type of integer that holds boolean values. It can only take two different values: <code>TRUE</code> (=1) or <code>FALSE</code> (=0).</p>
+</section><section id="doubles" class="level3" data-number="2.3.5"><h3 data-number="2.3.5" class="anchored" data-anchor-id="doubles">
+<span class="header-section-number">2.3.5</span> Doubles</h3>
+<p>For a real number that’s not an integer, we generally use a <em>double</em>, Hungarian: <code>d</code>. We can write things like, <code>dPi &lt;- 3.14159</code>. Note, there’s nothing that prevents a double variable having an integer value. It would be weird if <code>dX</code> could be 4.9, 4.99, 4.999, 5.1, 5.01, 5.001, but not exactly 5. However, redefining the variable as <code>dX &lt;- 5</code> will create an integer, not a double. Instead, define <code>dX &lt;- 5.0</code>.</p>
+</section><section id="precision" class="level3" data-number="2.3.6"><h3 data-number="2.3.6" class="anchored" data-anchor-id="precision">
+<span class="header-section-number">2.3.6</span> Precision</h3>
+<p>Note, that <span class="math inline">\((1/3 + 1/3 + 1/3 + 1/3 + 1/3 + 1/3)-2\)</span> is not exactly zero in R; it’s something like -0.0000000000002220446.</p>
+<p>Integers aren’t rounded, so integer arithmetic is done exactly. To avoid unnecessary rounding errors, always use the integer type if you know you’re only going to be dealing with integers.</p>
+<p>For the most part, R will automatically set the type for you as needed, so no need to put too much emphasis on <code>5</code> vs <code>5L</code>. Use Hungarian “i” notation for both.</p>
+</section></section><section id="built-in" class="level2" data-number="2.4"><h2 data-number="2.4" class="anchored" data-anchor-id="built-in">
+<span class="header-section-number">2.4</span> Built-in</h2>
+<section id="characterstrings" class="level3" data-number="2.4.1"><h3 data-number="2.4.1" class="anchored" data-anchor-id="characterstrings">
+<span class="header-section-number">2.4.1</span> Character/strings</h3>
+<p>Characters are the R objects for storing strings. If we’re interested in storing text (a character string), we use a <em>character</em>. A string needs to be enclosed in quotation marks. Thus, the command to create a string variable that contains <em>Hello world</em> is <code>sText &lt;- "Hello world"</code> or <code>sText &lt;- 'Hello world'</code>. We can use functions such as <code><a href="https://rdrr.io/r/base/substr.html">substr()</a></code> to access part of a string, e.g.:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">sText</span> <span class="op">&lt;-</span> <span class="st">"Hello world"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/substr.html">substr</a></span><span class="op">(</span><span class="va">sText</span>, start <span class="op">=</span> <span class="fl">6</span>, stop <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/nchar.html">nchar</a></span><span class="op">(</span><span class="va">sText</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] " world"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that R has built-in functions such as <code><a href="https://rdrr.io/r/base/character.html">is.character()</a></code>, <code><a href="https://rdrr.io/r/base/character.html">as.character()</a></code> but not <code>is.string()</code> built.in. FOr comparability with other languages, we use Hungarian <code>s</code>, but <code>c</code> is also fine.</p>
+</section><section id="built-in-functions" class="level3" data-number="2.4.2"><h3 data-number="2.4.2" class="anchored" data-anchor-id="built-in-functions">
+<span class="header-section-number">2.4.2</span> Built-in functions</h3>
+<p>R has a number of built-in functions, for example <code>sin(x)</code>, <code>cos(x)</code>, <code>tan(x)</code>, (all in radians), <code>exp(x)</code>, <code>log(x)</code>, and <code>sqrt(x)</code>. Some special constants such as <code>pi</code> (<span class="math inline">\(\pi\)</span>) are also predefined.</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2.718282</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>digits <span class="op">=</span> <span class="fl">16</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">exp</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2.718281828459045</span></span>
+<span><span class="va">pi</span></span>
+<span><span class="co">#&gt; [1] 3.141592653589793</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="va">pi</span><span class="op">/</span><span class="fl">6</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.4999999999999999</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The functions <code>floor(x)</code> and <code>ceiling(x)</code> round down and up, respectively, to the nearest integer.</p>
+</section><section id="functions" class="level3" data-number="2.4.3"><h3 data-number="2.4.3" class="anchored" data-anchor-id="functions">
+<span class="header-section-number">2.4.3</span> Functions</h3>
+<p>In mathematics, a function takes one or more arguments (or inputs) and produces one or more outputs (or return values). Functions in R work in an analogous way. Consider the <code>seq</code> function. This function allows you to create a sequence of numbers:</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">9</span>, by <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 3 5 7 9</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Notice that by default (see <code><a href="https://rdrr.io/r/base/seq.html">help(seq)</a></code>), the <code>by</code> argument is equal to 1, such that:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>from <span class="op">=</span> <span class="fl">1</span>, to <span class="op">=</span> <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For a sequence with by equal to 1, R has a shorthand notation, se we may use to:from;</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">1</span><span class="op">:</span><span class="fl">4</span></span>
+<span><span class="co">#&gt; [1] 1 2 3 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="arguments-of-functions" class="level3" data-number="2.4.4"><h3 data-number="2.4.4" class="anchored" data-anchor-id="arguments-of-functions">
+<span class="header-section-number">2.4.4</span> Arguments of functions</h3>
+<p>Every function has a default order for the arguments. For <code>seq</code> this is: <code>from</code>, <code>to</code>, <code>by</code>. If you provide arguments in this order, then they do not need to be named explicitly.</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">9</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 3 5 7 9</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>But you can choose to give the arguments out of order provided you give them names in the format argument_name = expression.</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span>by <span class="op">=</span> <span class="fl">2</span>, to <span class="op">=</span> <span class="fl">9</span>, from <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 3 5 7 9</span></span>
+<span><span class="co"># Is different from</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">9</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2 3 4 5 6 7 8 9</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="vectors" class="level2" data-number="2.5"><h2 data-number="2.5" class="anchored" data-anchor-id="vectors">
+<span class="header-section-number">2.5</span> Vectors</h2>
+<p>We have already seen the <code>c</code> function. However, vectors can be created by any function that returns vectors as output. For instance, <code>seq</code> and <code>rep</code>. The <code>rep(vX, n)</code> function exactly replicates the vector <code>vX</code>, <span class="math inline">\(n\)</span> times.</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="va">vX</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 3 4 1 3 4 1 3 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function <code>c</code> also accepts vectors as inputs:</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">20</span>, by <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">vY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">vZ</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">vY</span>, <span class="va">vX</span><span class="op">)</span></span>
+<span><span class="va">vZ</span></span>
+<span><span class="co">#&gt;  [1]  3  3  3  3  1  3  5  7  9 11 13 15 17 19</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="vector-operations" class="level3" data-number="2.5.1"><h3 data-number="2.5.1" class="anchored" data-anchor-id="vector-operations">
+<span class="header-section-number">2.5.1</span> Vector operations</h3>
+<p>All algebraic operations are defined for vectors and act on each element separately, that is, element-wise:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="va">vY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span></span>
+<span><span class="va">vX</span> <span class="op">*</span> <span class="va">vY</span></span>
+<span><span class="co">#&gt; [1]  4 10 18</span></span>
+<span><span class="va">vX</span> <span class="op">+</span> <span class="va">vY</span></span>
+<span><span class="co">#&gt; [1] 5 7 9</span></span>
+<span><span class="va">vY</span> <span class="op">^</span> <span class="va">vX</span></span>
+<span><span class="co">#&gt; [1]   4  25 216</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>However, care should be taken when vectors of unequal length are used:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in c(1, 2, 3) + c(1, 2): longer object length is not a multiple of</span></span>
+<span><span class="co">#&gt; shorter object length</span></span>
+<span><span class="co">#&gt; [1] 2 4 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When you apply an algebraic expression to two vectors of unequal length, R automatically repeats the shorter vector until it has something the same length as the longer vector.</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2 4 4 6</span></span>
+<span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="op">^</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1]   1   4   3  16   5  36   7  64   9 100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This happens even when the shorter vector is of length 1, allowing the shorthand notation:</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">2</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 3 4 5</span></span>
+<span><span class="fl">2</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2 4 6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For example, using the modulus operator: <em>a</em> mod <em>b</em> (%%):</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fl">1</span><span class="op">:</span><span class="fl">20</span> <span class="op"><a href="https://rdrr.io/r/base/Arithmetic.html">%%</a></span> <span class="fl">3</span></span>
+<span><span class="co">#&gt;  [1] 1 2 0 1 2 0 1 2 0 1 2 0 1 2 0 1 2 0 1 2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="missing-values" class="level2" data-number="2.6"><h2 data-number="2.6" class="anchored" data-anchor-id="missing-values">
+<span class="header-section-number">2.6</span> Missing values</h2>
+<section id="missing-date-na" class="level3" data-number="2.6.1"><h3 data-number="2.6.1" class="anchored" data-anchor-id="missing-date-na">
+<span class="header-section-number">2.6.1</span> Missing date: NA</h3>
+<p>In real experiments, it is often the case, for one reason or another, that certain observations are missing. Depending on the statistical analysis involved, missing data can be ignored or invented (a process called imputation). R presents missing observations through the data value <code>NA</code>. They can be mixed in with all other kinds of data:</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>, <span class="cn">NA</span>, <span class="fl">13</span><span class="op">)</span></span>
+<span><span class="va">vA</span></span>
+<span><span class="co">#&gt; [1] 11 NA 13</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Performing analysis with NAs can be problematic:</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vA</span><span class="op">)</span> <span class="co"># NAs can propagate</span></span>
+<span><span class="co">#&gt; [1] NA</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The logical argument <code>na.rm</code> is often specified to deal with NAs.</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vA</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># NAs can be removed</span></span>
+<span><span class="co">#&gt; [1] 12</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="searching-for-nas" class="level3" data-number="2.6.2"><h3 data-number="2.6.2" class="anchored" data-anchor-id="searching-for-nas">
+<span class="header-section-number">2.6.2</span> Searching for NAs</h3>
+<p>Sometimes you want to search for NAs in your dataset to prevent misleading results at the end of your analysis. THe function <code>is.na</code> searches for NAs inside vectors and returns a logical output of the same size of the input provided:</p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">11</span>, <span class="cn">NA</span>, <span class="fl">13</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">vA</span><span class="op">)</span> <span class="co"># identify missing elements</span></span>
+<span><span class="co">#&gt; [1] FALSE  TRUE FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When <code>length(vA)</code> is very large, we might want to write:</p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/any.html">any</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">vA</span><span class="op">)</span><span class="op">)</span> <span class="co"># are any missing?</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>In order to remove NAs we can use:</p>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/na.fail.html">na.omit</a></span><span class="op">(</span><span class="va">vA</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 11 13</span></span>
+<span><span class="co">#&gt; attr(,"na.action")</span></span>
+<span><span class="co">#&gt; [1] 2</span></span>
+<span><span class="co">#&gt; attr(,"class")</span></span>
+<span><span class="co">#&gt; [1] "omit"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="small-exercise" class="level2" data-number="2.7"><h2 data-number="2.7" class="anchored" data-anchor-id="small-exercise">
+<span class="header-section-number">2.7</span> Small Exercise</h2>
+<ul>
+<li>
+<em>Define a vector</em> <code>vX</code> <em>containing the double 5.01, the string “hello”, the logical/boolean FALSE and the integer 10L.</em>
+<ul>
+<li><code>vX &lt;- c(5.01,"hello",FALSE,10L)</code></li>
+</ul>
+</li>
+<li>
+<em>Determine the type of this vector? (Use the</em> <code><a href="https://rdrr.io/r/base/typeof.html">typeof()</a></code> <em>built-in function or look at values in the environment).</em>
+<ul>
+<li>The vector is of type <code>character</code>.</li>
+</ul>
+</li>
+<li>
+<em>Do you have an explanation for why it is this type? (Try instead to assign all the above values to</em> <code>vX</code> <em>but not “hello” i.e.,</em> <code>c(5.01, FALSE, 10L)</code> <em>and repeat the second bullet point).</em>
+<ul>
+<li>Types are coerced in a fixed order: character, double, integer and logical. This only occurs for vectors. Lists are able to retain the correct datatypes.</li>
+</ul>
+</li>
+<li>
+<em>Define a vector</em> <code>vY</code> <em>as</em> <em>(</em><code>vY &lt;- c(NaN, NA, 6L)</code><em>)</em>
+</li>
+<li>
+<em>compare the output for</em> <code>is.na(vY)</code> <em>and</em> <code>is.nan(vY)</code><em>.</em>
+<ul>
+<li>
+<code>is.nan</code> does not recognize the NA.</li>
+</ul>
+</li>
+<li>
+<em>What is the difference between NaN and NA? Try to print 0/0 in the console</em>
+<ul>
+<li>NaN: “Not a Number”, which refers to things that cannot be calculated.</li>
+<li>NA: “Not Available”, referring to values that are unknown or missing.</li>
+</ul>
+</li>
+</ul>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Click to view the complete solution to the exercise
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># clear environment</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\014</span><span class="st">"</span>)     <span class="co"># Clear console:equivalent to ctrl + L </span></span>
+<span id="cb29-3"><a href="#cb29-3"></a></span>
+<span id="cb29-4"><a href="#cb29-4"></a><span class="co"># Small exercise with vectors and missing values</span></span>
+<span id="cb29-5"><a href="#cb29-5"></a><span class="co"># Exercises 1</span></span>
+<span id="cb29-6"><a href="#cb29-6"></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">5.01</span>,<span class="st">"hello"</span>,<span class="cn">FALSE</span>,<span class="dv">10</span>L)</span>
+<span id="cb29-7"><a href="#cb29-7"></a><span class="fu">typeof</span>(s) <span class="co"># Note the vector is of mode "character"</span></span>
+<span id="cb29-8"><a href="#cb29-8"></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="fl">5.01</span>,<span class="cn">FALSE</span>,<span class="dv">10</span>L)</span>
+<span id="cb29-9"><a href="#cb29-9"></a><span class="fu">typeof</span>(s) <span class="co"># Without the character element the vector is now of mode "double"</span></span>
+<span id="cb29-10"><a href="#cb29-10"></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">FALSE</span>,<span class="dv">10</span>L) </span>
+<span id="cb29-11"><a href="#cb29-11"></a><span class="fu">typeof</span>(s) <span class="co"># ... Now of mode integer</span></span>
+<span id="cb29-12"><a href="#cb29-12"></a>s <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">FALSE</span>)</span>
+<span id="cb29-13"><a href="#cb29-13"></a><span class="fu">typeof</span>(s) <span class="co"># ... Now of mode logical</span></span>
+<span id="cb29-14"><a href="#cb29-14"></a></span>
+<span id="cb29-15"><a href="#cb29-15"></a><span class="co"># Exercise 2</span></span>
+<span id="cb29-16"><a href="#cb29-16"></a>vY <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">NaN</span>,<span class="cn">NA</span>,<span class="dv">6</span>L) <span class="co"># define vector</span></span>
+<span id="cb29-17"><a href="#cb29-17"></a>vY</span>
+<span id="cb29-18"><a href="#cb29-18"></a><span class="fu">is.na</span>(vY)  <span class="co"># look for NA-value</span></span>
+<span id="cb29-19"><a href="#cb29-19"></a><span class="fu">is.nan</span>(vY) <span class="co"># look for NaN-value</span></span>
+<span id="cb29-20"><a href="#cb29-20"></a><span class="co"># NaN: "Not a Number", used for things that cannot be calculated</span></span>
+<span id="cb29-21"><a href="#cb29-21"></a><span class="co"># NA: "Not Available", values that are unknown or missing</span></span>
+<span id="cb29-22"><a href="#cb29-22"></a></span>
+<span id="cb29-23"><a href="#cb29-23"></a><span class="co"># NaN examples:</span></span>
+<span id="cb29-24"><a href="#cb29-24"></a><span class="dv">0</span><span class="sc">/</span><span class="dv">0</span>      <span class="co"># is NaN</span></span>
+<span id="cb29-25"><a href="#cb29-25"></a><span class="fu">sqrt</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="co"># is NaN</span></span>
+<span id="cb29-26"><a href="#cb29-26"></a><span class="cn">Inf</span><span class="sc">-</span><span class="cn">Inf</span>  <span class="co"># is NaN</span></span>
+<span id="cb29-27"><a href="#cb29-27"></a><span class="cn">NaN</span><span class="sc">/</span><span class="cn">NA</span>   <span class="co"># is NaN</span></span>
+<span id="cb29-28"><a href="#cb29-28"></a></span>
+<span id="cb29-29"><a href="#cb29-29"></a><span class="do">## Extra question..</span></span>
+<span id="cb29-30"><a href="#cb29-30"></a><span class="co"># Can NA matrices be used for more memory efficient </span></span>
+<span id="cb29-31"><a href="#cb29-31"></a><span class="co"># usage as predefined matrix/vectors prior to i.e. a loop?</span></span>
+<span id="cb29-32"><a href="#cb29-32"></a><span class="fu">object.size</span>(<span class="fu">matrix</span>(<span class="cn">NA</span>,<span class="dv">1000</span>,<span class="dv">1000</span>)) <span class="co"># Size: 4000216 bytes</span></span>
+<span id="cb29-33"><a href="#cb29-33"></a><span class="fu">object.size</span>(<span class="fu">matrix</span>(<span class="dv">0</span>,<span class="dv">1000</span>,<span class="dv">1000</span>))  <span class="co"># Size: 8000216 bytes</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+</section><section id="logical" class="level2" data-number="2.8"><h2 data-number="2.8" class="anchored" data-anchor-id="logical">
+<span class="header-section-number">2.8</span> Logical</h2>
+<section id="logical-expression" class="level3" data-number="2.8.1"><h3 data-number="2.8.1" class="anchored" data-anchor-id="logical-expression">
+<span class="header-section-number">2.8.1</span> Logical expression</h3>
+<p>A logical expression is formed using the comparison operators:</p>
+<ul>
+<li><p><span class="math inline">\(&lt;\)</span> lower than</p></li>
+<li><p><span class="math inline">\(&gt;\)</span> greater than</p></li>
+<li><p><span class="math inline">\(\le\)</span> lower than or equal to</p></li>
+<li><p><span class="math inline">\(\ge\)</span> greater than or equal to</p></li>
+<li><p><span class="math inline">\(==\)</span> equal to</p></li>
+<li><p><span class="math inline">\(!=\)</span> not equal to</p></li>
+<li><p><span class="math inline">\(\&amp;\)</span> and</p></li>
+<li><p><span class="math inline">\(|\)</span> or</p></li>
+<li><p><span class="math inline">\(!\)</span> not</p></li>
+</ul>
+<p>The operators return a logical output:</p>
+<div class="cell">
+<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">vX</span> <span class="op">==</span> <span class="fl">2</span></span>
+<span><span class="co">#&gt; [1] FALSE  TRUE FALSE FALSE</span></span>
+<span><span class="va">vX</span> <span class="op">!=</span> <span class="fl">2</span></span>
+<span><span class="co">#&gt; [1]  TRUE FALSE  TRUE  TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Vectors (but also matrices and arrays) can be accessed also using logical indicators:</p>
+<div class="cell">
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">18</span><span class="op">)</span></span>
+<span><span class="va">vX</span> <span class="op">&gt;</span> <span class="fl">2</span></span>
+<span><span class="co">#&gt; [1] FALSE  TRUE  TRUE  TRUE</span></span>
+<span><span class="va">vX</span><span class="op">[</span><span class="va">vX</span> <span class="op">&gt;</span> <span class="fl">2</span> <span class="op">&amp;</span> <span class="va">vX</span> <span class="op">&lt;</span> <span class="fl">10</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 3 4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The subset function can be used for a similar scope:</p>
+<div class="cell">
+<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">vX</span>, subset <span class="op">=</span> <span class="va">vX</span> <span class="op">&gt;</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  3  4 18</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="logical-expressions-and" class="level3" data-number="2.8.2"><h3 data-number="2.8.2" class="anchored" data-anchor-id="logical-expressions-and">
+<span class="header-section-number">2.8.2</span> Logical expressions: &amp; and |</h3>
+<p>Take two logical objects:</p>
+<div class="cell">
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">=</span> <span class="fl">4</span></span>
+<span><span class="va">vY</span> <span class="op">=</span> <span class="va">vX</span> <span class="op">&gt;</span> <span class="fl">2</span></span>
+<span><span class="va">vY</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="va">vZ</span> <span class="op">=</span> <span class="va">vX</span> <span class="op">&lt;</span> <span class="fl">3</span></span>
+<span><span class="va">vZ</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The &amp; operator returns TRUE if both <code>vY</code> and <code>vZ</code> are TRUE, and FALSE otherwise:</p>
+<div class="cell">
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vY</span> <span class="op">&amp;</span> <span class="va">vZ</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The | operator returns TRUE if <code>y</code> or <code>z</code> are TRUE, and FALSE otherwise:</p>
+<div class="cell">
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vY</span> <span class="op">|</span> <span class="va">vZ</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="sequential-and" class="level3" data-number="2.8.3"><h3 data-number="2.8.3" class="anchored" data-anchor-id="sequential-and">
+<span class="header-section-number">2.8.3</span> Sequential &amp;&amp; and ||</h3>
+<p>The logical operators &amp;&amp; and || are sequantially evaluated version of &amp; and |, respectively.</p>
+<p>To evaluate <code>vX &amp; vY</code>, R first evaluates <code>vX</code> and <code>vY</code>, then returns TRUE, if <code>vX</code> and <code>vY</code> are both TRUE, and FALSE otherwise.</p>
+<p>To evaluate <code>vX &amp;&amp; vY</code>, R first evaluates <code>vX</code>. If <code>vX</code> is FALSE then R returns FALSE without evaluating <code>vY</code>. If <code>vX</code> is TRUE, R evaluates <code>vY</code> and returns TRUE if <code>vY</code> is TRUE, and FALSE otherwise.</p>
+<p>Sequantial evaluation of <code>vX</code> and <code>vY</code> is useful when <code>vY</code> is not always well defined, or when <code>vY</code> takes a long time to compute.</p>
+<p>As an example of the first instance, suppose we wish to know if <code>dX * sin(1/dX) = 0</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dX</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="va">dX</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">dX</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span></span>
+<span><span class="co">#&gt; Warning in sin(1/dX): NaNs produced</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="op">(</span><span class="va">dX</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">|</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">dX</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning in sin(1/dX): NaNs produced</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="op">(</span><span class="va">dX</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">||</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Trig.html">sin</a></span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="va">dX</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that %% and || only work on scalars, whereas &amp; and | work on vectors on a element-by-element basis:</p>
+<div class="cell">
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10</span><span class="op">)</span> <span class="co"># Note: c() is not necessary here.</span></span>
+<span><span class="va">vX</span></span>
+<span><span class="co">#&gt;  [1]  1  2  3  4  5  6  7  8  9 10</span></span>
+<span><span class="va">bTest</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span><span class="op">(</span><span class="va">vX</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">&amp;</span> <span class="va">bTest</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt;  [1] FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE FALSE</span></span>
+<span><span class="op">(</span><span class="va">vX</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">&amp;&amp;</span> <span class="va">bTest</span> <span class="op">==</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># Not even possible to run</span></span>
+<span><span class="co">#&gt; Error in vX == 1 &amp;&amp; bTest == TRUE: 'length = 10' in coercion to 'logical(1)'</span></span>
+<span><span class="op">(</span><span class="va">vX</span> <span class="op">==</span> <span class="fl">2</span> <span class="op">&amp;&amp;</span> <span class="va">bTest</span> <span class="op">==</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in vX == 2 &amp;&amp; bTest == FALSE: 'length = 10' in coercion to 'logical(1)'</span></span>
+<span><span class="op">(</span><span class="va">vX</span> <span class="op">==</span> <span class="fl">1</span> <span class="op">&amp;&amp;</span> <span class="va">bTest</span> <span class="op">==</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Error in vX == 1 &amp;&amp; bTest == FALSE: 'length = 10' in coercion to 'logical(1)'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="matrices" class="level2" data-number="2.9"><h2 data-number="2.9" class="anchored" data-anchor-id="matrices">
+<span class="header-section-number">2.9</span> Matrices</h2>
+<p>We have already seen how to build matrices in R:</p>
+<div class="cell">
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">6</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol<span class="op">=</span> <span class="fl">3</span>, byrow <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To retrieve the dimension of a matrix, use <code>dim</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/dim.html">dim</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 2 3</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Useful functions for matrices:</p>
+<ul>
+<li><p><code>diag</code>, extract the diagonal elements and return a vector or create a diagonal matrix, see <code><a href="https://rdrr.io/r/base/diag.html">help(diag)</a></code>.</p></li>
+<li><p><code>rbind</code>, join matrices with rows of the same length (stacking vertically).</p></li>
+<li><p><code>cbind</code>, join matrices with columns of the same length (stacking horizontally).</p></li>
+<li><p><code>solve</code>, invert a matrix.</p></li>
+<li><p><code>eigen</code>, extract eigenvalues and associated eigenvectors of a matrix.</p></li>
+<li><p><code>t</code>, transpose of matrix.</p></li>
+</ul>
+<section id="multiplication-with-matrices" class="level3" data-number="2.9.1"><h3 data-number="2.9.1" class="anchored" data-anchor-id="multiplication-with-matrices">
+<span class="header-section-number">2.9.1</span> Multiplication with matrices</h3>
+<p>Define:</p>
+<div class="cell">
+<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">5</span>, <span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">mB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">9</span>, <span class="fl">4</span>, <span class="fl">1</span>, <span class="fl">2</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span>
+<span><span class="va">mA</span></span>
+<span><span class="co">#&gt;      [,1] [,2]</span></span>
+<span><span class="co">#&gt; [1,]    3    2</span></span>
+<span><span class="co">#&gt; [2,]    5    3</span></span>
+<span><span class="va">mB</span></span>
+<span><span class="co">#&gt;      [,1] [,2]</span></span>
+<span><span class="co">#&gt; [1,]    9    1</span></span>
+<span><span class="co">#&gt; [2,]    4    2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Element-wise multiplication, <span class="math inline">\(A \circ B\)</span> (Hadamard product):</p>
+<div class="cell">
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op">*</span> <span class="va">mB</span></span>
+<span><span class="co">#&gt;      [,1] [,2]</span></span>
+<span><span class="co">#&gt; [1,]   27    2</span></span>
+<span><span class="co">#&gt; [2,]   20    6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Matrix multiplication, <span class="math inline">\(AB\)</span>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">mB</span></span>
+<span><span class="co">#&gt;      [,1] [,2]</span></span>
+<span><span class="co">#&gt; [1,]   35    7</span></span>
+<span><span class="co">#&gt; [2,]   57   11</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Kronecker product, <span class="math inline">\(A \otimes B\)</span>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/kronecker.html">kronecker</a></span><span class="op">(</span><span class="va">mA</span>, <span class="va">mB</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt; [1,]   27    3   18    2</span></span>
+<span><span class="co">#&gt; [2,]   12    6    8    4</span></span>
+<span><span class="co">#&gt; [3,]   45    5   27    3</span></span>
+<span><span class="co">#&gt; [4,]   20   10   12    6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="factors" class="level2" data-number="2.10"><h2 data-number="2.10" class="anchored" data-anchor-id="factors">
+<span class="header-section-number">2.10</span> Factors</h2>
+<p>R has a special data structure for Categorical variables that take ordinal or cardinal values.</p>
+<ul>
+<li><p>Ordinal (rankable): Low, medium, high.</p></li>
+<li><p>Cardinal (Unrankable values): Colour, marital status, names, etc…</p></li>
+</ul>
+<p>In R, we (may) deal with categorical variables in factor variables; each category is called a level.</p>
+<ul>
+<li><p>Packages or statistical models may facilitate easy use of the factor class, .e.g, in <code>lm</code> to create dummies from the categorical variable.</p></li>
+<li><p>Memory efficient data storage.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">phys.act</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>, <span class="st">"H"</span>, <span class="st">"H"</span>, <span class="st">"L"</span>, <span class="st">"M"</span>, <span class="st">"M"</span><span class="op">)</span></span>
+<span><span class="va">phys.act</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&gt;</span> <span class="va">phys.act</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] FALSE</span></span>
+<span><span class="va">phys.act</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">phys.act</span>, levels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"L"</span>, <span class="st">"M"</span>, <span class="st">"H"</span><span class="op">)</span>, ordered <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/factor.html">is.ordered</a></span><span class="op">(</span><span class="va">phys.act</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="va">phys.act</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&gt;</span> <span class="va">phys.act</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="lists" class="level2" data-number="2.11"><h2 data-number="2.11" class="anchored" data-anchor-id="lists">
+<span class="header-section-number">2.11</span> Lists</h2>
+<p>We have seen that all the elements of a vector have to be of the same type: <code>numeric</code>, <code>character</code>, or <code>logical</code>. The type of the vector is called: <code>mode</code>.</p>
+<p>A list is an indexed set of objects (and so has a length) whose elements can be of different types, including other lists! The mode of a list is <code>list</code>.</p>
+<p>A list is just a generic container for other objects. The power and utility of lists comes from this generality. In R, lists are often used for collecting and storing complicated function outputs. For example, the first element of a list can be a vector, the second can be another list and the third can be a matrix.</p>
+<p>A list is created using the <code>list(...)</code> command, with comma-separated arguments:</p>
+<div class="cell">
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">my.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"one"</span>, <span class="cn">TRUE</span>, <span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"f"</span>, <span class="st">"o"</span>, <span class="st">"u"</span>, <span class="st">"r"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Double-square brackets are used to extract a single element:</p>
+<div class="cell">
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">my.list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] "one"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mode.html">mode</a></span><span class="op">(</span><span class="va">my.list</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "character"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Single-square brackets are used to select a sublist:</p>
+<div class="cell">
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">my.list</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] "one"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/mode.html">mode</a></span><span class="op">(</span><span class="va">my.list</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "list"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>When displaying a list, R uses double-square brackets <code>[[1]]</code>, and <code>[[2]]</code>, etc. to indicate list element. The single-square brackets <code>[1]</code>, <code>[2]</code>, etc. incide vector elements within the list.</p>
+<p>The elements of a list can be named when the list is created, using arguments of the form <code>name1 = x1</code>, <code>name2 = x2</code>, etc.:</p>
+<div class="cell">
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">my.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>first <span class="op">=</span> <span class="st">"one"</span>, second <span class="op">=</span> <span class="cn">TRUE</span>, third <span class="op">=</span> <span class="fl">3</span>, fourth <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"f"</span>, <span class="st">"o"</span>, <span class="st">"u"</span>, <span class="st">"r"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">my.list</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "first"  "second" "third"  "fourth"</span></span>
+<span><span class="va">my.list</span><span class="op">$</span><span class="va">second</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note the use of the $ operator to access named lists. Alternatively, a list element can be named later by assigning a value to the names attribute:</p>
+<div class="cell">
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">my.list</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="st">"one"</span>, <span class="cn">TRUE</span>, <span class="fl">3</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"f"</span>, <span class="st">"O"</span>, <span class="st">"u"</span>, <span class="st">"r"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">my.list</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"first"</span>, <span class="st">"second"</span>, <span class="st">"third"</span>, <span class="st">"fourth"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To flatten a list <code>x</code>, i.e., convert it to a vector, we use <code>unlist(x)</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">3</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/unlist.html">unlist</a></span><span class="op">(</span><span class="va">x</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1 2 3 4 5 6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the list object itself comprises lists, then these lists are also flattened, unless the argument <code>recursive = FALSE</code> is set in <code>unlist</code>.</p>
+</section><section id="dataframes" class="level2" data-number="2.12"><h2 data-number="2.12" class="anchored" data-anchor-id="dataframes">
+<span class="header-section-number">2.12</span> Dataframes</h2>
+<p>We have already seen how to work in R with numbers, strings, and logical valuels. We have also worked with homogeneous collections of such objects, grouped into numeric, character, or logical vectors.</p>
+<p>The defining characteristic of the vector data structure in R is that all componenets must be of the same mode. Obviously, to work with datasets from real experiments, we need a way to group data of differing modes.</p>
+<p>Suppose to have the following dataset representing a forestry experiment in which we randomly selected a number of plots and then from each plot selected a number of trees.</p>
+<table class="caption-top table">
+<thead><tr class="header">
+<th>Plot</th>
+<th>Tree</th>
+<th>Species</th>
+<th>Diameter (cm)</th>
+<th>Height (m)</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>2</td>
+<td>1</td>
+<td>DF</td>
+<td>39</td>
+<td>20.5</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>2</td>
+<td>WL</td>
+<td>48</td>
+<td>33.0</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>2</td>
+<td>GF</td>
+<td>52</td>
+<td>30.0</td>
+</tr>
+<tr class="even">
+<td>3</td>
+<td>5</td>
+<td>WC</td>
+<td>36</td>
+<td>20.7</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>8</td>
+<td>WC</td>
+<td>38</td>
+<td>22.5</td>
+</tr>
+<tr class="even">
+<td>:</td>
+<td>:</td>
+<td>:</td>
+<td>:</td>
+<td>:</td>
+</tr>
+</tbody>
+</table>
+<p>For each tree, we measured its height and diameter (which are <code>numeric</code>), and also the species of tree (which is a <code>character</code> string).</p>
+<p>As experimental data collected in a table looks like an array, you may be tempted to represent it in R as a matrix. But in R, matrices cannot contain heterogeneous data (data of different modes, like <code>numeric</code> and <code>character</code>)</p>
+<p>Lists and dataframes are able to store much more complicated data structures than matrices. A dataframe is a list of vectors restricted to be of equal length. Each vector (column of the dataframe) can be of any of the basic modes of object. To create a dataframe, we write:</p>
+<div class="cell">
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mData</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>Plot <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">5</span>, <span class="fl">8</span>, <span class="fl">8</span><span class="op">)</span>,</span>
+<span>                    Tree <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">3</span>, <span class="fl">2</span><span class="op">)</span>,</span>
+<span>                    Species <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"DF"</span>, <span class="st">"WL"</span>, <span class="st">"GF"</span>, <span class="st">"WC"</span>, <span class="st">"WC"</span>, <span class="st">"GF"</span><span class="op">)</span>,</span>
+<span>                    Diameter <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">39</span>, <span class="fl">48</span>, <span class="fl">52</span>, <span class="fl">35</span>, <span class="fl">37</span>, <span class="fl">30</span><span class="op">)</span>,</span>
+<span>                    Height <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">20.5</span>, <span class="fl">33.0</span>, <span class="fl">30.0</span>, <span class="fl">20.7</span>, <span class="fl">22.5</span>, <span class="fl">20.1</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="dataframes-extract" class="level3" data-number="2.12.1"><h3 data-number="2.12.1" class="anchored" data-anchor-id="dataframes-extract">
+<span class="header-section-number">2.12.1</span> Dataframes: Extract</h3>
+<p>Each column, or variable, in a <code>dataframe</code> has a unique name. We can extract that variable by means of the dataframe name, the column name, the a dollar sign, or as we do for a matrix:</p>
+<div class="cell">
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mData</span><span class="op">$</span><span class="va">Diameter</span></span>
+<span><span class="co">#&gt; [1] 39 48 52 35 37 30</span></span>
+<span><span class="va">mData</span><span class="op">[[</span><span class="st">"Diameter"</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 39 48 52 35 37 30</span></span>
+<span><span class="va">mData</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 39 48 52 35 37 30</span></span>
+<span><span class="va">mData</span><span class="op">[</span>, <span class="fl">4</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 39 48 52 35 37 30</span></span>
+<span><span class="va">mData</span><span class="op">[</span>, <span class="st">"Diameter"</span><span class="op">]</span></span>
+<span><span class="co">#&gt; [1] 39 48 52 35 37 30</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="dataframes-assign" class="level3" data-number="2.12.2"><h3 data-number="2.12.2" class="anchored" data-anchor-id="dataframes-assign">
+<span class="header-section-number">2.12.2</span> Dataframes: Assign</h3>
+<p>To assign a new variable to a dataframe, we write:</p>
+<div class="cell">
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mData</span><span class="op">$</span><span class="va">newdata</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">2</span>, <span class="fl">3</span>, <span class="fl">4</span>, <span class="fl">5</span>, <span class="fl">6</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If the new variable is the same across all the observations, we can write:</p>
+<div class="cell">
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mData</span><span class="op">$</span><span class="va">newdata2</span> <span class="op">&lt;-</span> <span class="cn">TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>This also works as long as the number of rows of the dataframe is a multiple of the length of the new variable (if it is not a multiple, we get an error):</p>
+<div class="cell">
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mData</span><span class="op">$</span><span class="va">newdata3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"one"</span>, <span class="st">"two"</span><span class="op">)</span></span>
+<span><span class="va">mData</span></span>
+<span><span class="co">#&gt;   Plot Tree Species Diameter Height newdata newdata2 newdata3</span></span>
+<span><span class="co">#&gt; 1    1    2      DF       39   20.5       1     TRUE      one</span></span>
+<span><span class="co">#&gt; 2    2    2      WL       48   33.0       2     TRUE      two</span></span>
+<span><span class="co">#&gt; 3    2    3      GF       52   30.0       3     TRUE      one</span></span>
+<span><span class="co">#&gt; 4    5    3      WC       35   20.7       4     TRUE      two</span></span>
+<span><span class="co">#&gt; 5    8    3      WC       37   22.5       5     TRUE      one</span></span>
+<span><span class="co">#&gt; 6    8    2      GF       30   20.1       6     TRUE      two</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="small-exercises-with-logical-operators-matrices-lists-and-dataframes" class="level2" data-number="2.13"><h2 data-number="2.13" class="anchored" data-anchor-id="small-exercises-with-logical-operators-matrices-lists-and-dataframes">
+<span class="header-section-number">2.13</span> Small exercises with logical operators, matrices, lists and dataframes</h2>
+<ul>
+<li>
+<em>Define a 10x4 matrix</em> <code>mA</code> <em>that holds the values from a vector of the sequence from 1 to 40 that increments by 1</em>.</li>
+<li>
+<em>Print</em> <code>mA</code> <em>and visually determine if R fills in the matrix by column or by row</em>.</li>
+<li>
+<em>Assign</em> <code>mA</code> <em>to the variable</em> <code>dfA</code> <em>as a dataframe (Try</em> <code><a href="https://rdrr.io/r/base/as.data.frame.html">?as.data.frame</a></code><em>)</em>.</li>
+<li>
+<em>Assign the column names “one”, “two”, “three” and “four” to the data frame (Try</em> <code><a href="https://rdrr.io/r/base/colnames.html">?colnames</a></code><em>)</em>.</li>
+<li>
+<em>Assign a new variable called “five” that contains the logical FALSE to the data frame</em> <code>dfA</code>.</li>
+<li>
+<em>Verify that</em> <code>dfA</code> <em>is indeed both considered a list and a data frame using a logical operator along with</em> <code>is.list</code> <em>and</em> <code>is.data.frame</code>.</li>
+<li><em>If time permits; remove the column named “two” from the data frame using a logical operator.</em></li>
+</ul>
+<p><strong>Solution</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">40</span>, <span class="fl">10</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="va">mA</span> <span class="co"># it's filled by columns</span></span>
+<span><span class="co">#&gt;       [,1] [,2] [,3] [,4]</span></span>
+<span><span class="co">#&gt;  [1,]    1   11   21   31</span></span>
+<span><span class="co">#&gt;  [2,]    2   12   22   32</span></span>
+<span><span class="co">#&gt;  [3,]    3   13   23   33</span></span>
+<span><span class="co">#&gt;  [4,]    4   14   24   34</span></span>
+<span><span class="co">#&gt;  [5,]    5   15   25   35</span></span>
+<span><span class="co">#&gt;  [6,]    6   16   26   36</span></span>
+<span><span class="co">#&gt;  [7,]    7   17   27   37</span></span>
+<span><span class="co">#&gt;  [8,]    8   18   28   38</span></span>
+<span><span class="co">#&gt;  [9,]    9   19   29   39</span></span>
+<span><span class="co">#&gt; [10,]   10   20   30   40</span></span>
+<span><span class="va">dfA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">as.data.frame</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span> <span class="co"># convert to dataframe</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/colnames.html">colnames</a></span><span class="op">(</span><span class="va">dfA</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"one"</span>, <span class="st">"two"</span>, <span class="st">"three"</span>, <span class="st">"four"</span><span class="op">)</span> <span class="co"># add headers</span></span>
+<span><span class="va">dfA</span> <span class="co"># view dataframe</span></span>
+<span><span class="co">#&gt;    one two three four</span></span>
+<span><span class="co">#&gt; 1    1  11    21   31</span></span>
+<span><span class="co">#&gt; 2    2  12    22   32</span></span>
+<span><span class="co">#&gt; 3    3  13    23   33</span></span>
+<span><span class="co">#&gt; 4    4  14    24   34</span></span>
+<span><span class="co">#&gt; 5    5  15    25   35</span></span>
+<span><span class="co">#&gt; 6    6  16    26   36</span></span>
+<span><span class="co">#&gt; 7    7  17    27   37</span></span>
+<span><span class="co">#&gt; 8    8  18    28   38</span></span>
+<span><span class="co">#&gt; 9    9  19    29   39</span></span>
+<span><span class="co">#&gt; 10  10  20    30   40</span></span>
+<span><span class="va">dfA</span><span class="op">$</span><span class="va">five</span> <span class="op">&lt;-</span> <span class="cn">FALSE</span></span>
+<span><span class="va">dfA</span> <span class="co"># view the new column</span></span>
+<span><span class="co">#&gt;    one two three four  five</span></span>
+<span><span class="co">#&gt; 1    1  11    21   31 FALSE</span></span>
+<span><span class="co">#&gt; 2    2  12    22   32 FALSE</span></span>
+<span><span class="co">#&gt; 3    3  13    23   33 FALSE</span></span>
+<span><span class="co">#&gt; 4    4  14    24   34 FALSE</span></span>
+<span><span class="co">#&gt; 5    5  15    25   35 FALSE</span></span>
+<span><span class="co">#&gt; 6    6  16    26   36 FALSE</span></span>
+<span><span class="co">#&gt; 7    7  17    27   37 FALSE</span></span>
+<span><span class="co">#&gt; 8    8  18    28   38 FALSE</span></span>
+<span><span class="co">#&gt; 9    9  19    29   39 FALSE</span></span>
+<span><span class="co">#&gt; 10  10  20    30   40 FALSE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/list.html">is.list</a></span><span class="op">(</span><span class="va">dfA</span><span class="op">)</span> <span class="co"># check if it's a list</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html">is.data.frame</a></span><span class="op">(</span><span class="va">dfA</span><span class="op">)</span> <span class="co"># check if it's a dataframe</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="va">dfA</span><span class="op">[</span>, <span class="op">!</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">dfA</span><span class="op">)</span> <span class="op">==</span> <span class="st">"two"</span><span class="op">)</span><span class="op">]</span> <span class="co"># remove the column with the name two</span></span>
+<span><span class="co">#&gt;    one three four  five</span></span>
+<span><span class="co">#&gt; 1    1    21   31 FALSE</span></span>
+<span><span class="co">#&gt; 2    2    22   32 FALSE</span></span>
+<span><span class="co">#&gt; 3    3    23   33 FALSE</span></span>
+<span><span class="co">#&gt; 4    4    24   34 FALSE</span></span>
+<span><span class="co">#&gt; 5    5    25   35 FALSE</span></span>
+<span><span class="co">#&gt; 6    6    26   36 FALSE</span></span>
+<span><span class="co">#&gt; 7    7    27   37 FALSE</span></span>
+<span><span class="co">#&gt; 8    8    28   38 FALSE</span></span>
+<span><span class="co">#&gt; 9    9    29   39 FALSE</span></span>
+<span><span class="co">#&gt; 10  10    30   40 FALSE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="additional-code-in-r" class="level2" data-number="2.14"><h2 data-number="2.14" class="anchored" data-anchor-id="additional-code-in-r">
+<span class="header-section-number">2.14</span> Additional code in R</h2>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Click to view “Week1_lecture1.R”
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1"></a><span class="co">#0.</span></span>
+<span id="cb57-2"><a href="#cb57-2"></a><span class="fu">rm</span>(<span class="at">list =</span> <span class="fu">ls</span>()) <span class="co"># Clear Environment</span></span>
+<span id="cb57-3"><a href="#cb57-3"></a><span class="fu">cat</span>(<span class="st">"</span><span class="sc">\014</span><span class="st">"</span>)     <span class="co"># Clear console: equivalent of ctrl+L</span></span>
+<span id="cb57-4"><a href="#cb57-4"></a></span>
+<span id="cb57-5"><a href="#cb57-5"></a><span class="co">#1. Manipulations with the directory</span></span>
+<span id="cb57-6"><a href="#cb57-6"></a><span class="co">#Check the current directory</span></span>
+<span id="cb57-7"><a href="#cb57-7"></a><span class="fu">getwd</span>() </span>
+<span id="cb57-8"><a href="#cb57-8"></a></span>
+<span id="cb57-9"><a href="#cb57-9"></a><span class="co">#You can change it by typing a new address with a command setwd(".../Newdirectory")</span></span>
+<span id="cb57-10"><a href="#cb57-10"></a></span>
+<span id="cb57-11"><a href="#cb57-11"></a><span class="co">#You can create a new folder in the directory by typing  dir.create("NameOFtheFolder")</span></span>
+<span id="cb57-12"><a href="#cb57-12"></a></span>
+<span id="cb57-13"><a href="#cb57-13"></a><span class="co">#2. Interactions with the directory: Also have a look at the example1.R</span></span>
+<span id="cb57-14"><a href="#cb57-14"></a>mX <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">0</span>, <span class="at">ncol =</span> <span class="dv">3</span>, <span class="at">nrow =</span> <span class="dv">3</span>) </span>
+<span id="cb57-15"><a href="#cb57-15"></a><span class="fu">save</span>(mX, <span class="at">file =</span> <span class="fu">file.path</span>(<span class="fu">getwd</span>(), <span class="st">"mX.RData"</span>))</span>
+<span id="cb57-16"><a href="#cb57-16"></a><span class="fu">load</span>(<span class="st">"mX.RData"</span>) </span>
+<span id="cb57-17"><a href="#cb57-17"></a></span>
+<span id="cb57-18"><a href="#cb57-18"></a><span class="co">#Load the matrix from a particular folder</span></span>
+<span id="cb57-19"><a href="#cb57-19"></a><span class="fu">load</span>(<span class="fu">file.path</span>(<span class="fu">getwd</span>(),<span class="st">"mX.RData"</span>))</span>
+<span id="cb57-20"><a href="#cb57-20"></a></span>
+<span id="cb57-21"><a href="#cb57-21"></a><span class="co">#Load the file containing some functions that we would like to use here</span></span>
+<span id="cb57-22"><a href="#cb57-22"></a><span class="fu">source</span>(<span class="st">"example1_fun.R"</span>) </span>
+<span id="cb57-23"><a href="#cb57-23"></a><span class="fu">source</span>(<span class="fu">file.path</span>(<span class="fu">getwd</span>(), <span class="st">"example1_fun.R"</span>)) </span>
+<span id="cb57-24"><a href="#cb57-24"></a></span>
+<span id="cb57-25"><a href="#cb57-25"></a><span class="co">#3. some useful functions for strings</span></span>
+<span id="cb57-26"><a href="#cb57-26"></a>sText_1 <span class="ot">&lt;-</span> <span class="st">"hello"</span></span>
+<span id="cb57-27"><a href="#cb57-27"></a>sText_2 <span class="ot">&lt;-</span> <span class="st">"world"</span></span>
+<span id="cb57-28"><a href="#cb57-28"></a></span>
+<span id="cb57-29"><a href="#cb57-29"></a><span class="co"># Combine together</span></span>
+<span id="cb57-30"><a href="#cb57-30"></a>sText_3 <span class="ot">&lt;-</span> <span class="fu">paste</span>(sText_1, sText_2, <span class="at">sep =</span> <span class="st">" "</span>)</span>
+<span id="cb57-31"><a href="#cb57-31"></a></span>
+<span id="cb57-32"><a href="#cb57-32"></a><span class="co"># Manipulate with this line:it allows to extract parts of the expression</span></span>
+<span id="cb57-33"><a href="#cb57-33"></a><span class="fu">substr</span>(sText_3, <span class="dv">7</span>, <span class="fu">nchar</span>(sText_3)) </span>
+<span id="cb57-34"><a href="#cb57-34"></a></span>
+<span id="cb57-35"><a href="#cb57-35"></a><span class="co">#4. some useful numerical functions</span></span>
+<span id="cb57-36"><a href="#cb57-36"></a><span class="fu">sqrt</span>(<span class="dv">2</span>)</span>
+<span id="cb57-37"><a href="#cb57-37"></a><span class="fu">sin</span>(<span class="dv">2</span>)</span>
+<span id="cb57-38"><a href="#cb57-38"></a>pi</span>
+<span id="cb57-39"><a href="#cb57-39"></a></span>
+<span id="cb57-40"><a href="#cb57-40"></a><span class="co"># Logarithms</span></span>
+<span id="cb57-41"><a href="#cb57-41"></a><span class="co"># Natural log</span></span>
+<span id="cb57-42"><a href="#cb57-42"></a><span class="fu">log</span>(<span class="fu">exp</span>(<span class="dv">1</span>)) <span class="co"># the log() function defaults to natural log</span></span>
+<span id="cb57-43"><a href="#cb57-43"></a></span>
+<span id="cb57-44"><a href="#cb57-44"></a><span class="co"># Log with base-10</span></span>
+<span id="cb57-45"><a href="#cb57-45"></a><span class="fu">log</span>(<span class="dv">100</span>, <span class="dv">10</span>) </span>
+<span id="cb57-46"><a href="#cb57-46"></a></span>
+<span id="cb57-47"><a href="#cb57-47"></a><span class="co"># Rounding numbers</span></span>
+<span id="cb57-48"><a href="#cb57-48"></a><span class="fu">round</span>(pi, <span class="dv">4</span>)</span>
+<span id="cb57-49"><a href="#cb57-49"></a><span class="fu">ceiling</span>(pi)</span>
+<span id="cb57-50"><a href="#cb57-50"></a><span class="fu">floor</span>(pi)</span>
+<span id="cb57-51"><a href="#cb57-51"></a></span>
+<span id="cb57-52"><a href="#cb57-52"></a><span class="co"># Setting how many digits you want to have the numbers displayed</span></span>
+<span id="cb57-53"><a href="#cb57-53"></a><span class="fu">options</span>(<span class="at">digits =</span> <span class="dv">10</span>)</span>
+<span id="cb57-54"><a href="#cb57-54"></a></span>
+<span id="cb57-55"><a href="#cb57-55"></a><span class="co"># generating sequences</span></span>
+<span id="cb57-56"><a href="#cb57-56"></a><span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">9</span>, <span class="at">by =</span> <span class="fl">0.5</span>)</span>
+<span id="cb57-57"><a href="#cb57-57"></a><span class="dv">2</span><span class="sc">:</span><span class="dv">17</span> <span class="co"># quicker way of generating a sequence</span></span>
+<span id="cb57-58"><a href="#cb57-58"></a><span class="dv">17</span><span class="sc">:</span><span class="dv">2</span></span>
+<span id="cb57-59"><a href="#cb57-59"></a></span>
+<span id="cb57-60"><a href="#cb57-60"></a><span class="co"># mod</span></span>
+<span id="cb57-61"><a href="#cb57-61"></a><span class="dv">14</span> <span class="sc">%%</span> <span class="dv">3</span> </span>
+<span id="cb57-62"><a href="#cb57-62"></a>vX <span class="ot">&lt;-</span> <span class="fu">seq</span>(<span class="dv">1</span>, <span class="dv">10</span>)</span>
+<span id="cb57-63"><a href="#cb57-63"></a>vX <span class="sc">%%</span> <span class="dv">2</span></span>
+<span id="cb57-64"><a href="#cb57-64"></a></span>
+<span id="cb57-65"><a href="#cb57-65"></a><span class="co">#5. NAs and NANs</span></span>
+<span id="cb57-66"><a href="#cb57-66"></a><span class="co"># NaN: "Not a Number", used for things that cannot be calculated</span></span>
+<span id="cb57-67"><a href="#cb57-67"></a><span class="co"># NA: "Not Available", values that are unknown or missing</span></span>
+<span id="cb57-68"><a href="#cb57-68"></a></span>
+<span id="cb57-69"><a href="#cb57-69"></a><span class="co"># NaN examples:</span></span>
+<span id="cb57-70"><a href="#cb57-70"></a><span class="dv">0</span><span class="sc">/</span><span class="dv">0</span>      <span class="co"># is NaN</span></span>
+<span id="cb57-71"><a href="#cb57-71"></a><span class="fu">sqrt</span>(<span class="sc">-</span><span class="dv">1</span>) <span class="co"># is NaN</span></span>
+<span id="cb57-72"><a href="#cb57-72"></a><span class="cn">Inf</span><span class="sc">-</span><span class="cn">Inf</span>  <span class="co"># is NaN</span></span>
+<span id="cb57-73"><a href="#cb57-73"></a><span class="cn">NaN</span><span class="sc">/</span><span class="cn">NA</span>   <span class="co"># is NaN</span></span>
+<span id="cb57-74"><a href="#cb57-74"></a></span>
+<span id="cb57-75"><a href="#cb57-75"></a><span class="co">#NAs </span></span>
+<span id="cb57-76"><a href="#cb57-76"></a>vA <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="cn">NA</span>)</span>
+<span id="cb57-77"><a href="#cb57-77"></a></span>
+<span id="cb57-78"><a href="#cb57-78"></a><span class="co"># The way NAs affect calculations</span></span>
+<span id="cb57-79"><a href="#cb57-79"></a><span class="fu">mean</span>(vA) </span>
+<span id="cb57-80"><a href="#cb57-80"></a><span class="fu">mean</span>(vA, <span class="at">na.rm =</span> <span class="cn">TRUE</span>) </span>
+<span id="cb57-81"><a href="#cb57-81"></a></span>
+<span id="cb57-82"><a href="#cb57-82"></a><span class="co"># Similarly we can do</span></span>
+<span id="cb57-83"><a href="#cb57-83"></a>vA[<span class="sc">!</span><span class="fu">is.na</span>(vA)] </span>
+<span id="cb57-84"><a href="#cb57-84"></a><span class="fu">mean</span>(vA[<span class="sc">!</span><span class="fu">is.na</span>(vA)])</span>
+<span id="cb57-85"><a href="#cb57-85"></a></span>
+<span id="cb57-86"><a href="#cb57-86"></a><span class="co"># Or equivalently</span></span>
+<span id="cb57-87"><a href="#cb57-87"></a><span class="fu">mean</span>(vA[<span class="fu">which</span>(<span class="sc">!</span><span class="fu">is.na</span>(vA))])</span>
+<span id="cb57-88"><a href="#cb57-88"></a></span>
+<span id="cb57-89"><a href="#cb57-89"></a><span class="do">##  NaNs</span></span>
+<span id="cb57-90"><a href="#cb57-90"></a>vB <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="cn">NaN</span>, <span class="cn">NA</span>)</span>
+<span id="cb57-91"><a href="#cb57-91"></a></span>
+<span id="cb57-92"><a href="#cb57-92"></a><span class="fu">is.nan</span>(vB)</span>
+<span id="cb57-93"><a href="#cb57-93"></a><span class="fu">any</span>(<span class="fu">is.nan</span>(vB))</span>
+<span id="cb57-94"><a href="#cb57-94"></a><span class="fu">is.na</span>(vB)</span>
+<span id="cb57-95"><a href="#cb57-95"></a></span>
+<span id="cb57-96"><a href="#cb57-96"></a><span class="co">#6. Manipulations using logicals</span></span>
+<span id="cb57-97"><a href="#cb57-97"></a>dX <span class="ot">=</span> <span class="dv">2</span></span>
+<span id="cb57-98"><a href="#cb57-98"></a>dX <span class="sc">==</span> <span class="dv">3</span> <span class="co"># is equal to</span></span>
+<span id="cb57-99"><a href="#cb57-99"></a></span>
+<span id="cb57-100"><a href="#cb57-100"></a><span class="co"># | or:just one of the constraints is true</span></span>
+<span id="cb57-101"><a href="#cb57-101"></a>((<span class="dv">2</span> <span class="sc">==</span> <span class="dv">3</span>) <span class="sc">|</span> (<span class="dv">2</span> <span class="sc">&gt;</span> <span class="dv">1</span>)) </span>
+<span id="cb57-102"><a href="#cb57-102"></a></span>
+<span id="cb57-103"><a href="#cb57-103"></a><span class="co"># &amp; and:all constraints to be true</span></span>
+<span id="cb57-104"><a href="#cb57-104"></a>((<span class="dv">2</span> <span class="sc">==</span> <span class="dv">3</span>) <span class="sc">&amp;</span> (<span class="dv">2</span> <span class="sc">&gt;</span> <span class="dv">1</span>)) </span>
+<span id="cb57-105"><a href="#cb57-105"></a></span>
+<span id="cb57-106"><a href="#cb57-106"></a>vX <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>)</span>
+<span id="cb57-107"><a href="#cb57-107"></a>vY <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">4</span>, <span class="dv">5</span>, <span class="dv">6</span>)</span>
+<span id="cb57-108"><a href="#cb57-108"></a></span>
+<span id="cb57-109"><a href="#cb57-109"></a><span class="co"># In case of vectors logical operators check element-wise</span></span>
+<span id="cb57-110"><a href="#cb57-110"></a>(vX <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">|</span> vY <span class="sc">&gt;</span> <span class="dv">3</span>) </span>
+<span id="cb57-111"><a href="#cb57-111"></a>(vX <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> vY <span class="sc">&gt;</span> <span class="dv">3</span>)</span>
+<span id="cb57-112"><a href="#cb57-112"></a></span>
+<span id="cb57-113"><a href="#cb57-113"></a></span>
+<span id="cb57-114"><a href="#cb57-114"></a><span class="co">#7. List and data frames</span></span>
+<span id="cb57-115"><a href="#cb57-115"></a><span class="co"># 7.1 List</span></span>
+<span id="cb57-116"><a href="#cb57-116"></a><span class="co"># Create an empty one and put elements in it</span></span>
+<span id="cb57-117"><a href="#cb57-117"></a>lList1 <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb57-118"><a href="#cb57-118"></a></span>
+<span id="cb57-119"><a href="#cb57-119"></a>lList1[[<span class="dv">1</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>)</span>
+<span id="cb57-120"><a href="#cb57-120"></a>lList1[[<span class="dv">2</span>]] <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb57-121"><a href="#cb57-121"></a>lList1[[<span class="dv">3</span>]] <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span>)</span>
+<span id="cb57-122"><a href="#cb57-122"></a><span class="fu">names</span>(lList1) <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"vector"</span>, <span class="st">"matrix"</span>, <span class="st">"boolean"</span>)</span>
+<span id="cb57-123"><a href="#cb57-123"></a></span>
+<span id="cb57-124"><a href="#cb57-124"></a>lList1<span class="sc">$</span>vector[<span class="dv">2</span>]</span>
+<span id="cb57-125"><a href="#cb57-125"></a>lList1<span class="sc">$</span>matrix[<span class="dv">1</span>, <span class="dv">2</span>]</span>
+<span id="cb57-126"><a href="#cb57-126"></a></span>
+<span id="cb57-127"><a href="#cb57-127"></a><span class="co"># Equivalently the list can be created this way</span></span>
+<span id="cb57-128"><a href="#cb57-128"></a>lList2 <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">vector =</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">2</span>,<span class="dv">3</span>), <span class="at">matrix =</span> <span class="fu">matrix</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">4</span>, <span class="at">ncol =</span> <span class="dv">2</span>), <span class="at">boolean =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">FALSE</span>))</span>
+<span id="cb57-129"><a href="#cb57-129"></a>lList2</span>
+<span id="cb57-130"><a href="#cb57-130"></a></span>
+<span id="cb57-131"><a href="#cb57-131"></a>lList2[[<span class="dv">2</span>]]</span>
+<span id="cb57-132"><a href="#cb57-132"></a>lList2<span class="sc">$</span>matrix</span>
+<span id="cb57-133"><a href="#cb57-133"></a>mX <span class="ot">&lt;-</span> lList2<span class="sc">$</span>matrix</span>
+<span id="cb57-134"><a href="#cb57-134"></a></span>
+<span id="cb57-135"><a href="#cb57-135"></a><span class="co"># 7.2 Data-frame</span></span>
+<span id="cb57-136"><a href="#cb57-136"></a>mData <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">Plot =</span> <span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">5</span>, <span class="dv">8</span>, <span class="dv">8</span>), <span class="at">Tree =</span> <span class="fu">c</span>(<span class="dv">2</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">3</span>, <span class="dv">2</span>),</span>
+<span id="cb57-137"><a href="#cb57-137"></a>                    <span class="at">Species =</span> <span class="fu">c</span>(<span class="st">"DF"</span>, <span class="st">"WL"</span>, <span class="st">"GF"</span>, <span class="st">"WC"</span>, <span class="st">"WC"</span>, <span class="st">"GF"</span>), <span class="at">Diameter =</span> <span class="fu">c</span>(<span class="dv">39</span>, <span class="dv">48</span>, <span class="dv">52</span>, <span class="dv">35</span>, <span class="dv">37</span>, <span class="dv">30</span>),</span>
+<span id="cb57-138"><a href="#cb57-138"></a>                    <span class="at">Height =</span> <span class="fu">c</span>(<span class="fl">20.5</span>, <span class="fl">33.0</span>, <span class="fl">30.0</span>, <span class="fl">20.7</span>, <span class="fl">22.5</span>, <span class="fl">20.1</span>))</span>
+<span id="cb57-139"><a href="#cb57-139"></a></span>
+<span id="cb57-140"><a href="#cb57-140"></a>mX <span class="ot">&lt;-</span> <span class="fu">matrix</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">2</span>, <span class="st">"hello"</span>, <span class="cn">TRUE</span>), <span class="at">ncol =</span> <span class="dv">2</span>) <span class="co"># a matrix cannot contain both numerical values, characters, and booleans</span></span>
+<span id="cb57-141"><a href="#cb57-141"></a></span>
+<span id="cb57-142"><a href="#cb57-142"></a><span class="co"># accessing the contents of a dataframe is easy</span></span>
+<span id="cb57-143"><a href="#cb57-143"></a>mData<span class="sc">$</span>Plot</span>
+<span id="cb57-144"><a href="#cb57-144"></a>mData[, <span class="dv">2</span>]</span>
+<span id="cb57-145"><a href="#cb57-145"></a>mData[, <span class="st">"Height"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./intro.html" class="pagination-link" aria-label="Introduction to the Course">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./basic_programming.html" class="pagination-link" aria-label="Basic Programming">
+        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,1258 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>7&nbsp; Root-finding – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./numericaloptimization1.html" rel="next">
+<link href="./introduction_to_simulation.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./rootfinding.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#main-problem" id="toc-main-problem" class="nav-link active" data-scroll-target="#main-problem"><span class="header-section-number">7.1</span> Main problem</a>
+  <ul class="collapse">
+<li><a href="#the-roots-of-a-function" id="toc-the-roots-of-a-function" class="nav-link" data-scroll-target="#the-roots-of-a-function"><span class="header-section-number">7.1.1</span> The Roots of a Function</a></li>
+  <li><a href="#example-loan-repayments" id="toc-example-loan-repayments" class="nav-link" data-scroll-target="#example-loan-repayments"><span class="header-section-number">7.1.2</span> Example: Loan repayments</a></li>
+  </ul>
+</li>
+  <li><a href="#numerical-methods-for-root-finding" id="toc-numerical-methods-for-root-finding" class="nav-link" data-scroll-target="#numerical-methods-for-root-finding"><span class="header-section-number">7.2</span> Numerical Methods for Root-finding</a></li>
+  <li>
+<a href="#the-newton-raphson-method" id="toc-the-newton-raphson-method" class="nav-link" data-scroll-target="#the-newton-raphson-method"><span class="header-section-number">7.3</span> The Newton-Raphson Method</a>
+  <ul class="collapse">
+<li><a href="#notes-for-the-newton-raphson-method" id="toc-notes-for-the-newton-raphson-method" class="nav-link" data-scroll-target="#notes-for-the-newton-raphson-method"><span class="header-section-number">7.3.1</span> Notes for the Newton-Raphson method</a></li>
+  <li><a href="#the-newton-raphson-algorithm" id="toc-the-newton-raphson-algorithm" class="nav-link" data-scroll-target="#the-newton-raphson-algorithm"><span class="header-section-number">7.3.2</span> The Newton-Raphson algorithm</a></li>
+  <li><a href="#drawbacks-of-the-newton-raphson-method" id="toc-drawbacks-of-the-newton-raphson-method" class="nav-link" data-scroll-target="#drawbacks-of-the-newton-raphson-method"><span class="header-section-number">7.3.3</span> Drawbacks of the Newton-Raphson method</a></li>
+  <li><a href="#loan-example" id="toc-loan-example" class="nav-link" data-scroll-target="#loan-example"><span class="header-section-number">7.3.4</span> Loan example</a></li>
+  </ul>
+</li>
+  <li><a href="#the-secant-method" id="toc-the-secant-method" class="nav-link" data-scroll-target="#the-secant-method"><span class="header-section-number">7.4</span> The Secant method</a></li>
+  <li>
+<a href="#the-bisection-method" id="toc-the-bisection-method" class="nav-link" data-scroll-target="#the-bisection-method"><span class="header-section-number">7.5</span> The bisection method</a>
+  <ul class="collapse">
+<li><a href="#the-bisection-method-implementation-in-r" id="toc-the-bisection-method-implementation-in-r" class="nav-link" data-scroll-target="#the-bisection-method-implementation-in-r"><span class="header-section-number">7.5.1</span> The bisection method: Implementation in R</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#the-unirootfunction" id="toc-the-unirootfunction" class="nav-link" data-scroll-target="#the-unirootfunction"><span class="header-section-number">7.6</span> The <code>uniroot</code>function</a>
+  <ul class="collapse">
+<li><a href="#example-for-the-loan-repayment-function" id="toc-example-for-the-loan-repayment-function" class="nav-link" data-scroll-target="#example-for-the-loan-repayment-function"><span class="header-section-number">7.6.1</span> Example for the loan repayment function</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#numerical-derivatives-in-r" id="toc-numerical-derivatives-in-r" class="nav-link" data-scroll-target="#numerical-derivatives-in-r"><span class="header-section-number">7.7</span> Numerical Derivatives in R</a>
+  <ul class="collapse">
+<li><a href="#warnings" id="toc-warnings" class="nav-link" data-scroll-target="#warnings"><span class="header-section-number">7.7.1</span> Warnings</a></li>
+  </ul>
+</li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./rootfinding.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="main-problem" class="level2" data-number="7.1"><h2 data-number="7.1" class="anchored" data-anchor-id="main-problem">
+<span class="header-section-number">7.1</span> Main problem</h2>
+<p>Suppose <span class="math inline">\(f : \mathbb{R} \rightarrow \mathbb{R}\)</span> is a continuous function. A <em>root</em> of <span class="math inline">\(f\)</span> is a solution to the equation <span class="math inline">\(f(x)=0)\)</span>.</p>
+<p>That is, a root is a number <span class="math inline">\(a \in \mathbb{R}\)</span> such that <span class="math inline">\(f(a)=0\)</span>, i.e.,</p>
+<p><span class="math display">\[
+R=\{ a\in \mathbb{R}:f(a)=0\}
+\]</span></p>
+<p>If we draw the gparh of our function, say <span class="math inline">\(y=f(x)\)</span>, which is a curve in the plane, a solution of <span class="math inline">\(f(x)=0\)</span> is the <span class="math inline">\(x\)</span>-coordinate of a point at which the curve crosses the <span class="math inline">\(x\)</span>-axis.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="rootfinding_files/figure-html/unnamed-chunk-1-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<section id="the-roots-of-a-function" class="level3" data-number="7.1.1"><h3 data-number="7.1.1" class="anchored" data-anchor-id="the-roots-of-a-function">
+<span class="header-section-number">7.1.1</span> The Roots of a Function</h3>
+<p>Except for some very special functions, it is not possible to find an analytic expression for the root/roots.</p>
+<p>A commonly arising function is the polynomial function of the form:</p>
+<p><span class="math display">\[
+P_{n}(x)=a_0+a_1x+a_2x^2+\cdots+a_nx^n
+\]</span></p>
+<p>We know that the roots of the quadratic function <span class="math inline">\(P_2(x)=a_0+a_1x+a_2x^2\)</span> can be obtained analytically by the expression:</p>
+<p><span class="math display">\[
+x=\frac{-a_1 \pm \sqrt{a_1^2-4a_0a_2}}{2a_0}
+\]</span></p>
+<p>Unfortunately, such analytical formulas for the roots do not exist for polynomials of degree 5 or greater. Thus, most computational methods for root-finding are <em>iterative</em> in nature.</p>
+<p>In general, the solution to a physical problem can often be expressed as the root of a suitable function, and we will see different methods of how to solve such problems.</p>
+<p>But first, some examples.</p>
+</section><section id="example-loan-repayments" class="level3" data-number="7.1.2"><h3 data-number="7.1.2" class="anchored" data-anchor-id="example-loan-repayments">
+<span class="header-section-number">7.1.2</span> Example: Loan repayments</h3>
+<p>A loan has an initial amount <span class="math inline">\(P\)</span>, a monthly interest rate <span class="math inline">\(r\)</span>, a duration of <span class="math inline">\(N\)</span> months and a monthly repayment of <span class="math inline">\(A\)</span>. The remaining debt after <span class="math inline">\(n\)</span> months is given by <span class="math inline">\(P_n\)</span>:</p>
+<p><span class="math display">\[
+P_0=P
+\]</span> <span class="math display">\[
+P_{n+1}=P_n(1+r)-A
+\]</span></p>
+<p>After iterative substitutions, we obtain:</p>
+<p><span class="math display">\[
+\begin{split}
+P_n &amp; = P(1+r)^n-A\sum_{i=0}^{n-1}(1+r)^i \\
+&amp; = P(1+r)^n-A[(1+r)^n-1]/r
+\end{split}
+\]</span></p>
+<p>At the end of the period (<span class="math inline">\(n=N\)</span>), we know that <span class="math inline">\(P_n=0\)</span> (we have repaid our loan), we get:</p>
+<p><span class="math display">\[
+\frac{A}{P}=\frac{r(1+r)^N}{(1+r)^N-1}
+\]</span></p>
+<p>Knowing the loan’s amount <span class="math inline">\(P\)</span>, the number of months <span class="math inline">\(N\)</span> and the monthly repayment <span class="math inline">\(A\)</span>, what is the interest rate <span class="math inline">\(r\)</span> that we pay? The answer is the solution of <span class="math inline">\(f(r)=0\)</span>, where:</p>
+<p><span class="math display">\[
+f(r)=\frac{A}{P}=\frac{r(1+r)^N}{(1+r)^N-1}
+\]</span></p>
+<p>Which is not available in closed form.</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dR</span>, <span class="va">dA</span>, <span class="va">dP</span>, <span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">=</span> <span class="va">dA</span><span class="op">/</span><span class="va">dP</span> <span class="op">-</span> <span class="op">(</span><span class="va">dR</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dR</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dR</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">vR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">1e-5</span>, <span class="fl">0.2</span>, <span class="fl">0.001</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vR</span>, <span class="fu">f</span><span class="op">(</span><span class="va">vR</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>h <span class="op">=</span> <span class="fl">0</span>, col <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="rootfinding_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Other examples:</p>
+<ul>
+<li>Estimation of Econometric Models</li>
+<li>Problems in Finance</li>
+<li>Physics (area minimization, shooting problems, orbital motions, …)</li>
+<li>…</li>
+</ul></section></section><section id="numerical-methods-for-root-finding" class="level2" data-number="7.2"><h2 data-number="7.2" class="anchored" data-anchor-id="numerical-methods-for-root-finding">
+<span class="header-section-number">7.2</span> Numerical Methods for Root-finding</h2>
+<p>As suggested above, when an analytical expression is not available for the root of some function, <span class="math inline">\(f\)</span>, i.e., the solution to <span class="math inline">\(f(x)=0\)</span>, we have to use numerical methods that are <em>iterative</em> in nature.</p>
+<p>The idea behind an iterative method is the following:</p>
+<p>Starting with an initial approximation, <span class="math inline">\(x_0\)</span>, construct a sequence of iterates <span class="math inline">\(\{ x_n \}\)</span> using an iteration formula with hope that this sequence converges to a root of <span class="math inline">\(f(x)=0\)</span>.</p>
+<p>As concrete examples of such numerical methods, we will consider the Newton-Raphson method, the secant method and the bisection method.</p>
+</section><section id="the-newton-raphson-method" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="the-newton-raphson-method">
+<span class="header-section-number">7.3</span> The Newton-Raphson Method</h2>
+<p>The Newton-Raphson method is a root-finding algorithm that uses an iterative process to approach one root of a funtion.</p>
+<ul>
+<li><p>Suppose the function <span class="math inline">\(f\)</span> is differentiable with continuous derivative <span class="math inline">\(f'\)</span> and a root <span class="math inline">\(a\)</span>.</p></li>
+<li><p>Let <span class="math inline">\(x_0 \in \mathbb{R}\)</span> and think of <span class="math inline">\(x_0\)</span> as our current ‘guess’ at <span class="math inline">\(a\)</span>.</p></li>
+<li><p>Now, the straight line through the point <span class="math inline">\((x_0,f(x_0))\)</span> with slope <span class="math inline">\(f'(x_0)\)</span> is the best straight approximation to the function <span class="math inline">\(f(x)\)</span> at the point <span class="math inline">\(x_0\)</span>.</p></li>
+<li><p>The equation of this straight line is given by <span class="math inline">\(y=f(x_0)+f'(x_0)(x-x_0)\)</span></p></li>
+<li><p>This line crosses the <span class="math inline">\(x\)</span>-axis at a point <span class="math inline">\(x_1\)</span>, which should be a better approximation than <span class="math inline">\(x_0\)</span> to <span class="math inline">\(a\)</span>.</p></li>
+<li>
+<p>We find <span class="math inline">\(x_1\)</span> by solving the equation for the straight line for <span class="math inline">\(x\)</span> with <span class="math inline">\(y=0\)</span>:</p>
+<p><span class="math display">\[
+x_1=x_0-\frac{f(x_0)}{f'(x_0)}
+\]</span> i.e., we update our best guess to be <span class="math inline">\(x_1\)</span> which is obtained from <span class="math inline">\(x_0\)</span> by subtracting a correction term <span class="math inline">\(f(x_0)/f'(x_0)\)</span>.</p>
+</li>
+<li>
+<p>Now that we have <span class="math inline">\(x_1\)</span>, we use the same procedure to get the next best guess:</p>
+<p><span class="math display">\[
+x_2=x_1-\frac{f(x_1)}{f'(x_1)}
+\]</span></p>
+</li>
+</ul>
+<p>[<img src="NewtonIteration_Ani.gif" class="img-fluid">] (source: https://commons.wikimedia.org/wiki/File:NewtonIteration_Ani.gif)</p>
+<section id="notes-for-the-newton-raphson-method" class="level3" data-number="7.3.1"><h3 data-number="7.3.1" class="anchored" data-anchor-id="notes-for-the-newton-raphson-method">
+<span class="header-section-number">7.3.1</span> Notes for the Newton-Raphson method</h3>
+<p>It can be shown that if <span class="math inline">\(f\)</span> is ‘well-behaved’ at <span class="math inline">\(a\)</span> (in particular, if <span class="math inline">\(f'(a) \ne 0\)</span> and <span class="math inline">\(f''\)</span> is finite and continuous at <span class="math inline">\(a\)</span>) and you start with <span class="math inline">\(x_0\)</span> ‘close enough’ to <span class="math inline">\(a\)</span>, then <span class="math inline">\(x_n\)</span> will converge to <span class="math inline">\(a\)</span> quickly.</p>
+<ul>
+<li>Unfortunately, we don’t know if <span class="math inline">\(f\)</span> is well behaved at <span class="math inline">\(a\)</span> until we know <span class="math inline">\(a\)</span>, and we don’t know beforehand how close is close enough.</li>
+</ul>
+<p>Since we are expecting <span class="math inline">\(f(x) \rightarrow 0\)</span>, a good stopping condition for the Newton-Raphson algorithm is <span class="math inline">\(|f(x_n)| \le \varepsilon\)</span> for some tolerance <span class="math inline">\(\varepsilon\)</span>.</p>
+<p>We also always want a hard limit on the maximum number of iterations, <span class="math inline">\(n_{max}\)</span>, in case we get stuck in an infinite loop.</p>
+<p>Implementing the Newton-Raphson method in R is straightforward; we just need the function <span class="math inline">\(f\)</span>, its derivative <span class="math inline">\(f'\)</span>, an initial guess <span class="math inline">\(x_0\)</span>, and the two stoppoing criteria <span class="math inline">\(\varepsilon\)</span> (the convergence tolerance) and <span class="math inline">\(n_{max}\)</span> (the maximum number of iterations).</p>
+</section><section id="the-newton-raphson-algorithm" class="level3" data-number="7.3.2"><h3 data-number="7.3.2" class="anchored" data-anchor-id="the-newton-raphson-algorithm">
+<span class="header-section-number">7.3.2</span> The Newton-Raphson algorithm</h3>
+<p>The Newton-Raphson algorithm proceeds as follows:</p>
+<ul>
+<li><p>Define inputs: <span class="math inline">\(f(x)\)</span>, <span class="math inline">\(x_0\)</span>, <span class="math inline">\(\varepsilon\)</span>, <span class="math inline">\(n_{max}\)</span>. For <span class="math inline">\(n=0,1,...\)</span> until stopping condition reached, do:</p></li>
+<li><p>Compute <span class="math inline">\(f(x_n)\)</span> and <span class="math inline">\(f'(x_n)\)</span>.</p></li>
+<li><p>Compute <span class="math inline">\(x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}\)</span></p></li>
+<li>
+<p>Stopping conditions:</p>
+<ul>
+<li>If <span class="math inline">\(|f(x_n)| \le \varepsilon\)</span> then set <span class="math inline">\(a=x_n\)</span> and stop; Algorithm converged.</li>
+<li>If <span class="math inline">\(n=n_{max}\)</span> then stop; Maximum number of iterations has been reached, algorithm failed to converge.</li>
+</ul>
+</li>
+</ul></section><section id="drawbacks-of-the-newton-raphson-method" class="level3" data-number="7.3.3"><h3 data-number="7.3.3" class="anchored" data-anchor-id="drawbacks-of-the-newton-raphson-method">
+<span class="header-section-number">7.3.3</span> Drawbacks of the Newton-Raphson method</h3>
+<p>The Newton-Raphson root-finding method works by producing a sequence of guesses to the root and, under favourable circumstances, converges rapidly to the root from an initial guess.</p>
+<ul>
+<li>Unfortunately, it cannot be guaranteed to work.</li>
+</ul>
+<p>It can be a costly task to calculate the required derivative <span class="math inline">\(f'(x_n)\)</span> for every iteration, when we are not able to analytically derive it.</p>
+<p>Instability: if the iteration hits a value <span class="math inline">\(x_n\)</span> where the function is close to flat (i.e., <span class="math inline">\(f'(x_n)\)</span> close to zero), the iteration is sent far away from the current point.</p>
+<p>No guarantee of convergence: the iteration might get caught up in an infinite loop.</p>
+<p>In general, we need to pick a starting point relatively close to the desired root (could be more than one).</p>
+<p>[<img src="NewtonDrawbacks.png" class="img-fluid">]</p>
+</section><section id="loan-example" class="level3" data-number="7.3.4"><h3 data-number="7.3.4" class="anchored" data-anchor-id="loan-example">
+<span class="header-section-number">7.3.4</span> Loan example</h3>
+<p>Consider the loan repayments problem with objective function:</p>
+<p><span class="math display">\[
+f(x) = \frac{A}{P}-\frac{x(1+x)^N}{(1+x)^N-1}
+\]</span></p>
+<p>and first derivative:</p>
+<p><span class="math display">\[
+f'(x) = \frac{[(1+x)^N+Nx(1+x)^{N-1}][(1+x)^N-1]-Nx(1+x)^{2N-1}}{[(1+x)^N-1]^2}
+\]</span></p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span>, <span class="va">dA</span>, <span class="va">dP</span>, <span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">=</span> <span class="va">dA</span><span class="op">/</span><span class="va">dP</span> <span class="op">-</span> <span class="op">(</span><span class="va">dX</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span><span class="op">)</span><span class="op">/</span><span class="op">(</span><span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">f_prime</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span>, <span class="va">dA</span>, <span class="va">dP</span>, <span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dNum1</span> <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span> <span class="op">+</span> <span class="va">iN</span> <span class="op">*</span> <span class="va">dX</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span> <span class="op">*</span> <span class="op">(</span><span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="va">dNum2</span> <span class="op">=</span> <span class="va">iN</span> <span class="op">*</span> <span class="va">dX</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="op">(</span><span class="fl">2</span> <span class="op">*</span> <span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="va">dDen</span> <span class="op">=</span> <span class="op">(</span><span class="op">(</span><span class="fl">1.0</span> <span class="op">+</span> <span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="va">iN</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span>  <span class="va">dOut</span> <span class="op">=</span> <span class="op">-</span><span class="op">(</span><span class="va">dNum1</span> <span class="op">-</span> <span class="va">dNum2</span><span class="op">)</span><span class="op">/</span><span class="va">dDen</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">NR</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">f_prime</span>, <span class="va">dX0</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span>, <span class="va">max.iter</span> <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dX</span> <span class="op">&lt;-</span> <span class="va">dX0</span></span>
+<span>  <span class="va">fx</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>  <span class="va">iter</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">fx</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span><span class="va">iter</span> <span class="op">&lt;</span> <span class="va">max.iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dX</span> <span class="op">&lt;-</span> <span class="va">dX</span> <span class="op">-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX</span>, <span class="va">...</span><span class="op">)</span><span class="op">/</span><span class="fu">f_prime</span><span class="op">(</span><span class="va">dX</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="va">fx</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="va">iter</span> <span class="op">&lt;-</span> <span class="va">iter</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"At iteration "</span>, <span class="va">iter</span>, <span class="st">"value of x is: "</span>, <span class="va">dX</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">fx</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Algorithm failed to converge\n"</span><span class="op">)</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Algorithm converged\n"</span><span class="op">)</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu">NR</span><span class="op">(</span><span class="va">f</span>, <span class="va">f_prime</span>, dX0 <span class="op">=</span> <span class="fl">0.15</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; At iteration  1 value of x is:  0.08241672 </span></span>
+<span><span class="co">#&gt; At iteration  2 value of x is:  0.07758319 </span></span>
+<span><span class="co">#&gt; At iteration  3 value of x is:  0.0775469 </span></span>
+<span><span class="co">#&gt; At iteration  4 value of x is:  0.0775469 </span></span>
+<span><span class="co">#&gt; Algorithm converged</span></span>
+<span><span class="co">#&gt; [1] 0.0775469</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<pre><code>#&gt; [1] -3.534942e-09</code></pre>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="rootfinding_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="the-secant-method" class="level2" data-number="7.4"><h2 data-number="7.4" class="anchored" data-anchor-id="the-secant-method">
+<span class="header-section-number">7.4</span> The Secant method</h2>
+<p>If the derivative <span class="math inline">\(f'\)</span> does not exist (or we don’t want to compute it), then we can use the secant method, which only requires that the function <span class="math inline">\(f\)</span> is continuous.</p>
+<p>Suppose <span class="math inline">\(f\)</span> has a root <span class="math inline">\(a\)</span>. For this method, we assume that we have two current ‘guesses’, <span class="math inline">\(x_0\)</span> and <span class="math inline">\(x_1\)</span>, for the value of <span class="math inline">\(a\)</span>.</p>
+<p>We will think of <span class="math inline">\(x_0\)</span> as an older guess and we want to replace the pair <span class="math inline">\(x_0,x_1\)</span> by the pair <span class="math inline">\(x_1,x_2\)</span>, where <span class="math inline">\(x_2\)</span> is a new guess.</p>
+<p>To find a new guess <span class="math inline">\(x_2\)</span>, we first draw the straight line from <span class="math inline">\((x_0,f(x_0))\)</span> to <span class="math inline">\((x_1,f(x_1))\)</span>, i.e., the <em>secant</em> of the curve <span class="math inline">\(y=f(x)\)</span>.</p>
+<p>The equation of the secant is:</p>
+<p><span class="math display">\[
+y=f(x_1) + \frac{f(x_0)-f(x_1)}{x_0-x_1}(x-x_1)
+\]</span></p>
+<p>As the new guess, we will use the <span class="math inline">\(x\)</span>-coordinate <span class="math inline">\(x_2\)</span> of the point at which the secant crosses the <span class="math inline">\(x\)</span>-axis, and so <span class="math inline">\(x_2\)</span> can be found from:</p>
+<p><span class="math display">\[
+0 = f(x_1)+\frac{f(x_0)-f(x_1)}{x_0-x_1}(x-x_1)
+\]</span></p>
+<p>Which implies:</p>
+<p><span class="math display">\[
+x_2=x_1-f(x_1) \frac{x_0-x_1}{f(x_0)-f(x_1)}
+\]</span></p>
+<p>Repeating this, we get a second-order recurrence relation (each new value depends on the previous two):</p>
+<p><span class="math display">\[
+x_{n+1}=x_n-f(x_n) \frac{x_{n-1}-x_n}{f(x_{n-1})-f(x_n)}
+\]</span></p>
+<p>Note that if <span class="math inline">\(x_n\)</span> and <span class="math inline">\(x_{n-1}\)</span> are cloes together, then:</p>
+<p><span class="math display">\[
+\frac{1}{f'(x_n)} \approx \frac{x_{n-1}-x_n}{f(x_{n-1})-f(x_n)}
+\]</span></p>
+<p>And we can thus view the secant method as an approximation of the Newton-Raphson method.</p>
+<p>Similar convergence properties to the Newton-Raphson method:</p>
+<ul>
+<li><p>If <span class="math inline">\(f\)</span> is well behaved at <span class="math inline">\(a\)</span> and you start with <span class="math inline">\(x_0\)</span> and <span class="math inline">\(x_1\)</span> sufficiently close to <span class="math inline">\(a\)</span>, then <span class="math inline">\(x_n\)</span> will converge quickly to <span class="math inline">\(a\)</span>, though not quite as fast as the NR method.</p></li>
+<li><p>We cannot guarantee convergence.</p></li>
+<li><p>Trade-off compared to NR: we no longer need to know <span class="math inline">\(f'\)</span> but in return we give up some speed and have to provide two initial points, <span class="math inline">\(x_0\)</span> and <span class="math inline">\(x_1\)</span>.</p></li>
+</ul></section><section id="the-bisection-method" class="level2" data-number="7.5"><h2 data-number="7.5" class="anchored" data-anchor-id="the-bisection-method">
+<span class="header-section-number">7.5</span> The bisection method</h2>
+<p>A more reliable but slower approach is root-bracketing, which works by first isolating an interval in which the root must lie, and then successively refining the bounding interval in such a way that the root is guaranteed to always lie inside the interval.</p>
+<p>The canonical example is the <em>bisection method</em>, in which the width of the bounding interval is successively halved.</p>
+<p>Suppose that <span class="math inline">\(f\)</span> is a continuous function, then it is easy to see that <span class="math inline">\(f\)</span> has at least one root in the interval <span class="math inline">\((x_l,x_r)\)</span> if <span class="math inline">\(f(x_l)f(x_r)&lt;0\)</span> (i.e., if either <span class="math inline">\(f(x_l)&lt;0\)</span> and <span class="math inline">\(f(x_r)&gt;0\)</span> or <span class="math inline">\(f(x_l)&gt;0\)</span> and <span class="math inline">\(f(x_r)&lt;0\)</span>).</p>
+<p>The bisection method works by taking an interval <span class="math inline">\((x_l,x_r)\)</span> that contains a root, the successively refining <span class="math inline">\(x_l\)</span> and <span class="math inline">\(x_r\)</span> until <span class="math inline">\(x_r-x_l \le \varepsilon\)</span>, where <span class="math inline">\(\varepsilon\)</span> is some predefined tolerance.</p>
+<p>The algorithm proceeds as follows:</p>
+<ol start="0" type="1">
+<li><p>Start with <span class="math inline">\(x_l&lt;x_r\)</span> such that <span class="math inline">\(f(x_l)f(x_r)&lt;0\)</span></p></li>
+<li><p>If <span class="math inline">\(x_r-x_l \le \varepsilon\)</span> then stop; set <span class="math inline">\(a=x_m=\frac{x_r-x_l}{2}\)</span></p></li>
+<li><p>Put <span class="math inline">\(x_m=(x_l+x_r)/2\)</span>; if <span class="math inline">\(f(x_m)=0\)</span> then stop.</p></li>
+<li><p>If <span class="math inline">\(f(x_l)f(x_m)&lt;0\)</span> then put <span class="math inline">\(x_r=x_m\)</span>; otherwise put <span class="math inline">\(x_l=x_m\)</span>.</p></li>
+<li><p>Go back to step 1.</p></li>
+</ol>
+<p>[<img src="Bisektion_Ani.gif" class="img-fluid">] (source: https://upload.wikimedia.org/wikipedia/commons/f/f0/Bisektion_Ani.gif)</p>
+<p>Note that at every iteration of the algorithm, we know that there is a root in the interval <span class="math inline">\((x_l,x_r)\)</span>. Hence, provided we start with <span class="math inline">\(f(x_l)f(x_r)&lt;0\)</span>, the algorithm is <em>guaranteed to converge</em> and we do not need to put a bound on the maximum number of iterations.</p>
+<p>If we stop when <span class="math inline">\(x_r-x_l \le \varepsilon\)</span>, then we know that both <span class="math inline">\(x_l\)</span> and <span class="math inline">\(x_r\)</span> are within distance <span class="math inline">\(\varepsilon\)</span> of a root.</p>
+<p>The bisection method converges very slowly…</p>
+<p>The most popular current root-finding methods use root-bracketing to get close to a root, then switch over to the Newton-Raphson or secant method when it seems safe to do so. This strategy combines the safety of bisection with the speed of the secant method.</p>
+<section id="the-bisection-method-implementation-in-r" class="level3" data-number="7.5.1"><h3 data-number="7.5.1" class="anchored" data-anchor-id="the-bisection-method-implementation-in-r">
+<span class="header-section-number">7.5.1</span> The bisection method: Implementation in R</h3>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">bisection</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">dX.l</span>, <span class="va">dX.r</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span>, <span class="va">max.iter</span> <span class="op">=</span> <span class="fl">1000</span>, <span class="va">...</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co">#check inputs</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">dX.l</span> <span class="op">&gt;=</span> <span class="va">dX.r</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"error: x.l &gt;= x.r \n"</span><span class="op">)</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.l</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>  <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.r</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">f.l</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX.l</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">f.r</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX.r</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">f.l</span><span class="op">*</span><span class="va">f.r</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"error: f(x.l)*f(x.r) &gt; 0 \n"</span><span class="op">)</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="co"># successively refine x.l and x.r</span></span>
+<span>  <span class="va">iter</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span> <span class="op">&amp;&amp;</span> <span class="op">(</span><span class="va">iter</span> <span class="op">&lt;</span> <span class="va">max.iter</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dX.m</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">dX.l</span> <span class="op">+</span> <span class="va">dX.r</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span></span>
+<span>    <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.m</span>, <span class="va">...</span><span class="op">)</span></span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="va">f.m</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX.m</span><span class="op">)</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">f.l</span><span class="op">*</span><span class="va">f.m</span> <span class="op">&lt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">dX.r</span> <span class="op">&lt;-</span> <span class="va">dX.m</span></span>
+<span>      <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="va">f.m</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>      <span class="va">dX.l</span> <span class="op">&lt;-</span> <span class="va">dX.m</span></span>
+<span>      <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="va">f.m</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">iter</span> <span class="op">&lt;-</span> <span class="va">iter</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"at iteration"</span>, <span class="va">iter</span>, <span class="st">"the root lies between"</span>, <span class="va">dX.l</span>, <span class="st">"and"</span>, <span class="va">dX.r</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  </span>
+<span>  <span class="co"># return approximate root</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="op">(</span><span class="va">dX.l</span> <span class="op">+</span> <span class="va">dX.r</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Let again <span class="math inline">\(f\)</span> be the loan repayment function.</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">bisection</span><span class="op">(</span><span class="va">f</span>, dX.l <span class="op">=</span> <span class="fl">1e-6</span> , dX.r <span class="op">=</span> <span class="fl">0.2</span>, dTol <span class="op">=</span> <span class="fl">1e-5</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; at iteration 1 the root lies between 1e-06 and 0.1000005 </span></span>
+<span><span class="co">#&gt; at iteration 2 the root lies between 0.05000075 and 0.1000005 </span></span>
+<span><span class="co">#&gt; at iteration 3 the root lies between 0.07500063 and 0.1000005 </span></span>
+<span><span class="co">#&gt; at iteration 4 the root lies between 0.07500063 and 0.08750056 </span></span>
+<span><span class="co">#&gt; at iteration 5 the root lies between 0.07500063 and 0.08125059 </span></span>
+<span><span class="co">#&gt; at iteration 6 the root lies between 0.07500063 and 0.07812561 </span></span>
+<span><span class="co">#&gt; at iteration 7 the root lies between 0.07656312 and 0.07812561 </span></span>
+<span><span class="co">#&gt; at iteration 8 the root lies between 0.07734436 and 0.07812561 </span></span>
+<span><span class="co">#&gt; at iteration 9 the root lies between 0.07734436 and 0.07773499 </span></span>
+<span><span class="co">#&gt; at iteration 10 the root lies between 0.07753967 and 0.07773499 </span></span>
+<span><span class="co">#&gt; at iteration 11 the root lies between 0.07753967 and 0.07763733 </span></span>
+<span><span class="co">#&gt; at iteration 12 the root lies between 0.07753967 and 0.0775885 </span></span>
+<span><span class="co">#&gt; at iteration 13 the root lies between 0.07753967 and 0.07756409 </span></span>
+<span><span class="co">#&gt; at iteration 14 the root lies between 0.07753967 and 0.07755188 </span></span>
+<span><span class="co">#&gt; at iteration 15 the root lies between 0.07754578 and 0.07755188</span></span>
+<span><span class="co">#&gt; [1] 0.07754883</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="the-unirootfunction" class="level2" data-number="7.6"><h2 data-number="7.6" class="anchored" data-anchor-id="the-unirootfunction">
+<span class="header-section-number">7.6</span> The <code>uniroot</code>function</h2>
+<p>R implements a general purposed unit root finder with the function <code>uniroot</code>.</p>
+<p><code>uniroot</code> is based on the Brent’s method, which is a root-finding algorithm that combines the bisection method, the secant method and a third method called the inverse quadratic interpolation method.<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a></p>
+<p>The function <code>uniroot</code> searches the interval from lower to upper for a root (i.e., zero) of the function <span class="math inline">\(f\)</span> with respect to its <strong>first argument</strong>. The function is given by:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/uniroot.html">uniroot</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">interval</span>, <span class="va">...</span>, lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">interval</span><span class="op">)</span>, upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">interval</span><span class="op">)</span>, tol <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">^</span><span class="fl">0.25</span>, maxiter <span class="op">=</span> <span class="fl">1000</span>, trace <span class="op">=</span> <span class="fl">0</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="example-for-the-loan-repayment-function" class="level3" data-number="7.6.1"><h3 data-number="7.6.1" class="anchored" data-anchor-id="example-for-the-loan-repayment-function">
+<span class="header-section-number">7.6.1</span> Example for the loan repayment function</h3>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/uniroot.html">uniroot</a></span><span class="op">(</span><span class="va">f</span>, lower <span class="op">=</span> <span class="fl">1e-6</span>, upper <span class="op">=</span> <span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $root</span></span>
+<span><span class="co">#&gt; [1] 0.07752483</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $f.root</span></span>
+<span><span class="co">#&gt; [1] 1.659286e-05</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $iter</span></span>
+<span><span class="co">#&gt; [1] 4</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $init.it</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $estim.prec</span></span>
+<span><span class="co">#&gt; [1] 6.103516e-05</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="numerical-derivatives-in-r" class="level2" data-number="7.7"><h2 data-number="7.7" class="anchored" data-anchor-id="numerical-derivatives-in-r">
+<span class="header-section-number">7.7</span> Numerical Derivatives in R</h2>
+<p>In order to implement the Newton-Raphson method as well as other numerical algorithms, the use of the derivative of the objective function is required.</p>
+<p>Sometimes, we are not able to analytically derive the derivative or we are just too lazy to do that. In these cases, the derivative can be computed numerically.</p>
+<p>In R, there are several routines to evaluate numerical derivatives. One of the most used is the <code>grad</code> function in the <code>numDeriv</code> package of Gilbert and Varadhan (2016).<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a></p>
+<p><code>grad</code> calculates a numerical approximation of the first derivative of a function at the point <code>x</code>. Its formulation is:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">grad</span><span class="op">(</span><span class="va">func</span>, <span class="va">x</span>, method <span class="op">=</span> <span class="st">"Richardson"</span>, side <span class="op">=</span> <span class="cn">NULL</span>, method.args<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span><span class="op">)</span>, <span class="va">...</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Where:</p>
+<ul>
+<li><p><code>func</code> is a function with a scalar real result.</p></li>
+<li><p><code>x</code> is a real scalar or vector argument to <code>func</code>, indicating the point(s) at which the gradient is to be calculated.</p></li>
+<li><p><code>method</code> is one of <code>Richardson</code>, <code>simple</code> or <code>complex</code> indicating the method to use for the approximation.</p></li>
+</ul>
+<p>In order to check that our implementation of <code>f_prime</code> in the loans problem is correct, we can test it using <code>grad</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">grad</span><span class="op">(</span><span class="va">f</span>, <span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -0.9351161</span></span>
+<span></span>
+<span><span class="fu">f_prime</span><span class="op">(</span><span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -0.9351161</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="fu">grad</span><span class="op">(</span><span class="va">f</span>, <span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span> <span class="op">-</span> <span class="fu">f_prime</span><span class="op">(</span><span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 1.055467e-11</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="warnings" class="level3" data-number="7.7.1"><h3 data-number="7.7.1" class="anchored" data-anchor-id="warnings">
+<span class="header-section-number">7.7.1</span> Warnings</h3>
+<p>Beware that:</p>
+<ul>
+<li><p>Numerical derivatives are not always precise.</p></li>
+<li><p>The computational cost generally increases considerably.</p></li>
+</ul>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/joshuaulrich/microbenchmark/">microbenchmark</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: pakke 'microbenchmark' blev bygget under R version 4.3.3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span></span>
+<span>  <span class="fu">grad</span><span class="op">(</span><span class="va">f</span>, <span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span>,</span>
+<span>  <span class="fu">f_prime</span><span class="op">(</span><span class="fl">0.2</span>, dA <span class="op">=</span> <span class="fl">10</span>, dP <span class="op">=</span> <span class="fl">100</span>, iN <span class="op">=</span> <span class="fl">20</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;                                      expr  min    lq   mean median    uq   max</span></span>
+<span><span class="co">#&gt;  grad(f, 0.2, dA = 10, dP = 100, iN = 20) 35.8 37.15 45.771   43.8 45.45 193.6</span></span>
+<span><span class="co">#&gt;  f_prime(0.2, dA = 10, dP = 100, iN = 20)  1.1  1.40  1.825    1.5  1.95  14.3</span></span>
+<span><span class="co">#&gt;  neval</span></span>
+<span><span class="co">#&gt;    100</span></span>
+<span><span class="co">#&gt;    100</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section></section><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><hr>
+<ol>
+<li id="fn1"><p>Brent, R. (1973) Algorithms for Minimization without Derivatives. Englewood Cliffs, NJ: Prentice-Hall.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>Paul Gilbert and Ravi Varadhan (2016), numDeriv: Accurate Numerical Derivatives. R package version 2016.8-1. https://CRAN.R-project.org/package=numDeriv<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./introduction_to_simulation.html" class="pagination-link" aria-label="Introduction to Simulation">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./numericaloptimization1.html" class="pagination-link" aria-label="Numerical Optimization 1">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

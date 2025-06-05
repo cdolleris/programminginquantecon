@@ -1,0 +1,1302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>27&nbsp; Retake exam 2024 – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./extra_exercises.html" rel="next">
+<link href="./exam2024.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./problemsets.html">Problem sets</a></li><li class="breadcrumb-item"><a href="./exam2024retake.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#problem-1" id="toc-problem-1" class="nav-link active" data-scroll-target="#problem-1"><span class="header-section-number">27.1</span> Problem 1</a>
+  <ul class="collapse">
+<li><a href="#problem-1.1" id="toc-problem-1.1" class="nav-link" data-scroll-target="#problem-1.1"><span class="header-section-number">27.1.1</span> Problem 1.1</a></li>
+  <li><a href="#problem-1.2" id="toc-problem-1.2" class="nav-link" data-scroll-target="#problem-1.2"><span class="header-section-number">27.1.2</span> Problem 1.2</a></li>
+  <li><a href="#problem-1.3" id="toc-problem-1.3" class="nav-link" data-scroll-target="#problem-1.3"><span class="header-section-number">27.1.3</span> Problem 1.3</a></li>
+  <li><a href="#problem-1.4" id="toc-problem-1.4" class="nav-link" data-scroll-target="#problem-1.4"><span class="header-section-number">27.1.4</span> Problem 1.4</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#problem-2-constrained-optimization-c-and-packaging" id="toc-problem-2-constrained-optimization-c-and-packaging" class="nav-link" data-scroll-target="#problem-2-constrained-optimization-c-and-packaging"><span class="header-section-number">27.2</span> Problem 2: (Constrained) Optimization, C++, and Packaging</a>
+  <ul class="collapse">
+<li><a href="#problem-2.1" id="toc-problem-2.1" class="nav-link" data-scroll-target="#problem-2.1"><span class="header-section-number">27.2.1</span> Problem 2.1</a></li>
+  <li><a href="#problem-2.2" id="toc-problem-2.2" class="nav-link" data-scroll-target="#problem-2.2"><span class="header-section-number">27.2.2</span> Problem 2.2</a></li>
+  <li><a href="#problem-2.3" id="toc-problem-2.3" class="nav-link" data-scroll-target="#problem-2.3"><span class="header-section-number">27.2.3</span> Problem 2.3</a></li>
+  <li><a href="#problem-2.4" id="toc-problem-2.4" class="nav-link" data-scroll-target="#problem-2.4"><span class="header-section-number">27.2.4</span> Problem 2.4</a></li>
+  <li><a href="#problem-2.5" id="toc-problem-2.5" class="nav-link" data-scroll-target="#problem-2.5"><span class="header-section-number">27.2.5</span> Problem 2.5</a></li>
+  </ul>
+</li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./problemsets.html">Problem sets</a></li><li class="breadcrumb-item"><a href="./exam2024retake.html"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="problem-1" class="level2" data-number="27.1"><h2 data-number="27.1" class="anchored" data-anchor-id="problem-1">
+<span class="header-section-number">27.1</span> Problem 1</h2>
+<section id="problem-1.1" class="level3" data-number="27.1.1"><h3 data-number="27.1.1" class="anchored" data-anchor-id="problem-1.1">
+<span class="header-section-number">27.1.1</span> Problem 1.1</h3>
+<ol type="1">
+<li>Monte Carlo Integration
+<ul>
+<li>
+<p>Consider a function</p>
+<p><span class="math display">\[f(u) = -\frac{\ln(1-u)}{\lambda},\]</span></p>
+</li>
+</ul>
+</li>
+</ol>
+<p>where <span class="math inline">\(\lambda &gt; 0\)</span> and <span class="math inline">\(u \in (0,1)\)</span>. * Consider the following integral</p>
+<p><span class="math display">\[\gamma = \frac{1}{1-\alpha} \int_{\alpha}^{1} f(u) \, du\]</span></p>
+<ul>
+<li>Evaluate the above integral for <span class="math inline">\(\alpha = 0.95\)</span> and <span class="math inline">\(\lambda = 2\)</span> using the Monte Carlo integration technique.</li>
+<li>Compare the result of your calculations with the following expression</li>
+</ul>
+<p><span class="math display">\[\gamma = \frac{-\ln(1-\alpha)+1}{\lambda}.\]</span></p>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">MonteCarlo.Integration</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">n</span>, <span class="va">a</span>, <span class="va">b</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">n</span>, min <span class="op">=</span> <span class="va">a</span>, max <span class="op">=</span> <span class="va">b</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span> <span class="op">(</span><span class="va">b</span><span class="op">-</span><span class="va">a</span><span class="op">)</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="va">U</span><span class="op">)</span><span class="op">)</span> <span class="op">)</span></span>
+<span>  </span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">123</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">dAlpha</span> <span class="op">&lt;-</span> <span class="fl">0.95</span></span>
+<span><span class="va">dLambda</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span></span>
+<span><span class="co"># Monte Carlo Integration</span></span>
+<span><span class="va">dGammaMI</span> <span class="op">&lt;-</span> <span class="fu">MonteCarlo.Integration</span><span class="op">(</span><span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">x</span><span class="op">)</span><span class="op">)</span> <span class="op">/</span> <span class="va">dLambda</span><span class="op">)</span>, <span class="fl">100</span>, <span class="va">dAlpha</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">dGammaMI</span></span>
+<span><span class="co">#&gt; [1] 0.09927233</span></span>
+<span></span>
+<span><span class="co"># Numerical evaluation</span></span>
+<span><span class="va">dGammaNE</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="op">-</span><span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="fl">1</span><span class="op">-</span><span class="va">dAlpha</span><span class="op">)</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span> <span class="op">/</span> <span class="va">dLambda</span></span>
+<span><span class="va">dGammaNE</span></span>
+<span><span class="co">#&gt; [1] 1.997866</span></span>
+<span></span>
+<span><span class="co"># Thus, we should have this relationship</span></span>
+<span><span class="co"># dGammaNE * (1 - dAlpha) approx dGammaMI</span></span>
+<span><span class="va">dGammaNE</span> <span class="op">*</span> <span class="op">(</span><span class="fl">1</span> <span class="op">-</span> <span class="va">dAlpha</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.09989331</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="problem-1.2" class="level3" data-number="27.1.2"><h3 data-number="27.1.2" class="anchored" data-anchor-id="problem-1.2">
+<span class="header-section-number">27.1.2</span> Problem 1.2</h3>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mU</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">40000</span><span class="op">)</span>, <span class="fl">200</span>, <span class="fl">200</span><span class="op">)</span></span>
+<span><span class="va">mU</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">mU</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mU</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 19715</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mU</span> <span class="op">==</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 20285</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>Vectorized if/else statement
+<ul>
+<li>Generate a <span class="math inline">\(200 \times 200\)</span> matrix where each entry is a standard Uniform random variable.</li>
+<li>Assign the value -1 to those elements of the matrix that are less than 0.5 and 1 to those that are larger than or equal to 0.5.</li>
+<li>Count how many entries are -1 and 1, and report the counts.</li>
+</ul>
+</li>
+</ol>
+<p>Solution:</p>
+</section><section id="problem-1.3" class="level3" data-number="27.1.3"><h3 data-number="27.1.3" class="anchored" data-anchor-id="problem-1.3">
+<span class="header-section-number">27.1.3</span> Problem 1.3</h3>
+<ol start="3" type="1">
+<li>Recursive functions
+<ul>
+<li>Consider the following power function that calculates <span class="math inline">\(z^k\)</span> written as <span class="math display">\[\text{Power}(z, k) = \begin{cases} 1 &amp; \text{if } k=0 \\ z \times \text{Power}(z, k-1) &amp; \text{if } k &gt; 0 \end{cases}\]</span>
+</li>
+<li>Write the recursive function.</li>
+</ul>
+</li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fPower</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">z</span>, <span class="va">k</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="kw">if</span> <span class="op">(</span><span class="va">k</span> <span class="op">&gt;</span> <span class="fl">0</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">z</span> <span class="op">*</span> <span class="fu">fPower</span><span class="op">(</span><span class="va">z</span>, <span class="va">k</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="cn">NULL</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co"># Test</span></span>
+<span><span class="fu">fPower</span><span class="op">(</span><span class="fl">2</span>, <span class="fl">4</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 16</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="problem-1.4" class="level3" data-number="27.1.4"><h3 data-number="27.1.4" class="anchored" data-anchor-id="problem-1.4">
+<span class="header-section-number">27.1.4</span> Problem 1.4</h3>
+<ol start="4" type="1">
+<li>Simulation by Application of the Inversion Method
+<ul>
+<li>Begin by setting the seed to 134.</li>
+<li>Suppose <span class="math inline">\(\mu = 0.5\)</span> is a location parameter and <span class="math inline">\(\gamma = 2\)</span>.</li>
+<li>Use the inversion method to simulate 1000 Cauchy-distributed random variables using the following inverse cumulative distribution function: <span class="math display">\[g(u) = \mu + \gamma \tan\left(\pi \left(u - \frac{1}{2}\right)\right),\]</span> where <span class="math inline">\(\tan()\)</span> stands for the trigonometric tangent function.</li>
+<li>Plot a histogram using the variables you have just generated.</li>
+</ul>
+</li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">134</span><span class="op">)</span></span>
+<span><span class="va">dMu</span> <span class="op">&lt;-</span> <span class="fl">0.5</span></span>
+<span><span class="va">dGamma</span> <span class="op">&lt;-</span> <span class="fl">2</span></span>
+<span></span>
+<span><span class="va">Cauchy.Simulate</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mu</span>, <span class="va">lambda</span>, <span class="va">size</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">U</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="va">size</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">mu</span> <span class="op">+</span> <span class="va">lambda</span> <span class="op">*</span> <span class="fu"><a href="https://rdrr.io/r/base/Trig.html">tan</a></span><span class="op">(</span><span class="va">pi</span> <span class="op">*</span> <span class="op">(</span><span class="va">U</span> <span class="op">-</span> <span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu">Cauchy.Simulate</span><span class="op">(</span><span class="va">dMu</span>, <span class="va">dGamma</span>, <span class="fl">1000</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/hist.html">hist</a></span><span class="op">(</span><span class="va">vX</span>, </span>
+<span>     freq <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>     breaks <span class="op">=</span> <span class="fl">5000</span>,</span>
+<span>     col <span class="op">=</span> <span class="st">"cornflowerblue"</span>, </span>
+<span>     xlab <span class="op">=</span> <span class="st">"x"</span>,</span>
+<span>     ylab <span class="op">=</span> <span class="st">"Density"</span>,</span>
+<span>     main <span class="op">=</span> <span class="st">"Histogram"</span>,</span>
+<span>     xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">20</span>, <span class="fl">20</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="exam2024retake_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="problem-2-constrained-optimization-c-and-packaging" class="level2" data-number="27.2"><h2 data-number="27.2" class="anchored" data-anchor-id="problem-2-constrained-optimization-c-and-packaging">
+<span class="header-section-number">27.2</span> Problem 2: (Constrained) Optimization, C++, and Packaging</h2>
+<p>Note: This problem is best solved in order from 1 - 5.</p>
+<p>In this problem, you will numerically maximize the negative Rosenbrock function</p>
+<p><span class="math display">\[f(x,y) = -(\pi - x)^2 - 100(y-x^2)^2, \quad (1)\]</span></p>
+<p>where <span class="math inline">\(\pi\)</span> is the mathematical constant 3.141593… You will use the Steepest Ascent Method (recall Lecture 9). For this purpose, you will need the gradient of <span class="math inline">\(f\)</span>:</p>
+<p><span class="math display">\[\nabla f(x,y) = \begin{pmatrix} 2\pi - 2x - 400x^3 + 400xy \\ 200(x^2-y) \end{pmatrix}. \quad (2)\]</span></p>
+<section id="problem-2.1" class="level3" data-number="27.2.1"><h3 data-number="27.2.1" class="anchored" data-anchor-id="problem-2.1">
+<span class="header-section-number">27.2.1</span> Problem 2.1</h3>
+<ol type="1">
+<li><ol type="a">
+<li>Write R functions called <code>fRosen</code> and <code>fRosen_grad</code> which implement equations (1) and (2).</li>
+</ol></li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fRosen</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="op">-</span><span class="op">(</span><span class="va">pi</span> <span class="op">-</span> <span class="va">vX</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">100</span> <span class="op">*</span> <span class="op">(</span><span class="va">vX</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">-</span> <span class="va">vX</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">fRosen_grad</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vOutput</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="va">vOutput</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">pi</span> <span class="op">-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">vX</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">-</span> <span class="fl">400</span> <span class="op">*</span> <span class="va">vX</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">3</span> <span class="op">+</span> <span class="fl">400</span> <span class="op">*</span> <span class="va">vX</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span> <span class="op">*</span> <span class="va">vX</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span></span>
+<span>  <span class="va">vOutput</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">200</span> <span class="op">*</span> <span class="op">(</span><span class="va">vX</span><span class="op">[</span><span class="fl">1</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="va">vX</span><span class="op">[</span><span class="fl">2</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vOutput</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="a">
+<li>Create a C++ script and write C++ functions called <code>fRosen_cpp</code> and <code>fRosen_grad_cpp</code> which do the same as your R functions in part (a). In your R script, include a <code><a href="https://rdrr.io/pkg/Rcpp/man/sourceCpp.html">sourceCpp()</a></code> command from the Rcpp package which compiles the C++ script and adds all C++ functions from questions 2 and 3 to your environment.</li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode cpp code-with-copy"><code class="sourceCode cpp"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::depends(RcppArmadillo)]]</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="pp">#include </span><span class="im">&lt;RcppArmadillo.h&gt;</span></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> Rcpp<span class="op">;</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="kw">using</span> <span class="kw">namespace</span> arma<span class="op">;</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="dt">double</span> fRosen_cpp<span class="op">(</span>vec vX<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> pi <span class="op">=</span> atan<span class="op">(</span><span class="dv">1</span><span class="op">)*</span><span class="dv">4</span><span class="op">;</span> <span class="co">//pi</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span><span class="op">(-</span>pow<span class="op">((</span>pi <span class="op">-</span> vX<span class="op">[</span><span class="dv">0</span><span class="op">]),</span> <span class="dv">2</span><span class="op">)</span> <span class="op">-</span> <span class="dv">100</span> <span class="op">*</span> pow<span class="op">((</span>vX<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">-</span> pow<span class="op">(</span>vX<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">2</span><span class="op">)),</span> <span class="dv">2</span><span class="op">));</span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co">// [[Rcpp::export]]</span></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>vec fRosen_grad_cpp<span class="op">(</span>vec vX<span class="op">)</span> <span class="op">{</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>  vec vOutput<span class="op">(</span><span class="dv">2</span><span class="op">);</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>  <span class="dt">double</span> pi <span class="op">=</span> atan<span class="op">(</span><span class="dv">1</span><span class="op">)*</span><span class="dv">4</span><span class="op">;</span> <span class="co">//pi</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>  vOutput<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> pi <span class="op">-</span> <span class="dv">2</span> <span class="op">*</span> vX<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">-</span> <span class="dv">400</span> <span class="op">*</span> pow<span class="op">(</span>vX<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">3</span><span class="op">)</span> <span class="op">+</span> <span class="dv">400</span> <span class="op">*</span> vX<span class="op">[</span><span class="dv">0</span><span class="op">]</span> <span class="op">*</span> vX<span class="op">[</span><span class="dv">1</span><span class="op">];</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>  vOutput<span class="op">[</span><span class="dv">1</span><span class="op">]</span> <span class="op">=</span> <span class="dv">200</span> <span class="op">*</span> <span class="op">(</span>pow<span class="op">(</span>vX<span class="op">[</span><span class="dv">0</span><span class="op">],</span> <span class="dv">2</span><span class="op">)</span> <span class="op">-</span> vX<span class="op">[</span><span class="dv">1</span><span class="op">]);</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>  <span class="cf">return</span><span class="op">(</span>vOutput<span class="op">);</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://www.rcpp.org">Rcpp</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: pakke 'Rcpp' blev bygget under R version 4.3.3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/RcppCore/RcppArmadillo">RcppArmadillo</a></span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: pakke 'RcppArmadillo' blev bygget under R version 4.3.3</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/Rcpp/man/sourceCpp.html">sourceCpp</a></span><span class="op">(</span><span class="st">"cpp_functions_retake_2024.cpp"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># sanity checks</span></span>
+<span><span class="fu">fRosen</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -313.228</span></span>
+<span><span class="fu">fRosen_cpp</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] -313.228</span></span>
+<span><span class="fu">fRosen_grad</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1]  355.2832 -350.0000</span></span>
+<span><span class="fu">fRosen_grad_cpp</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0.5</span>, <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;           [,1]</span></span>
+<span><span class="co">#&gt; [1,]  355.2832</span></span>
+<span><span class="co">#&gt; [2,] -350.0000</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="problem-2.2" class="level3" data-number="27.2.2"><h3 data-number="27.2.2" class="anchored" data-anchor-id="problem-2.2">
+<span class="header-section-number">27.2.2</span> Problem 2.2</h3>
+<ol start="2" type="1">
+<li><ol type="a">
+<li>Write an R function called <code>ascent</code> which implemented the Steepest Ascent Method with the Golden Section Method used to compute the step size. The function should accept as arguments the function to be maximized, its gradient, a starting value, a tolerance level, and a maximum number of iterations. It should output a list containing the function maximum and the vector at which the maximum is attained. In case the algorithm does not converge, the list should contain <code>-Inf</code> as the function maximum and <code>NA</code> as the vector.</li>
+</ol></li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># golden section algorithm from last week</span></span>
+<span><span class="va">gsection</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">dX.l</span>, <span class="va">dX.r</span>, <span class="va">dX.m</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># golden ratio plus one</span></span>
+<span>  <span class="va">dGR1</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span></span>
+<span>  </span>
+<span>  <span class="co"># successively refine x.l, x.r, and x.m</span></span>
+<span>  <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.l</span><span class="op">)</span></span>
+<span>  <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.r</span><span class="op">)</span></span>
+<span>  <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.m</span><span class="op">)</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">{</span> </span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.m</span><span class="op">)</span> <span class="op">&gt;</span> <span class="op">(</span><span class="va">dX.m</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># if the right segment is wider than the left </span></span>
+<span>      <span class="va">dY</span> <span class="op">&lt;-</span> <span class="va">dX.m</span> <span class="op">+</span> <span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.m</span><span class="op">)</span><span class="op">/</span><span class="va">dGR1</span> <span class="co"># put Y into the right segment according to the golden ratio</span></span>
+<span>      <span class="va">f.y</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dY</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">f.y</span> <span class="op">&gt;=</span> <span class="va">f.m</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.l</span> <span class="op">&lt;-</span> <span class="va">dX.m</span></span>
+<span>        <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="va">f.m</span></span>
+<span>        <span class="va">dX.m</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.r</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span> <span class="co">#if the left segment is wider than the right</span></span>
+<span>      <span class="va">dY</span> <span class="op">&lt;-</span> <span class="va">dX.m</span> <span class="op">-</span> <span class="op">(</span><span class="va">dX.m</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span><span class="op">/</span><span class="va">dGR1</span> <span class="co"># put Y into the left segment according to the golden ratio</span></span>
+<span>      <span class="va">f.y</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dY</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">f.y</span> <span class="op">&gt;=</span> <span class="va">f.m</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.r</span> <span class="op">&lt;-</span> <span class="va">dX.m</span></span>
+<span>        <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="va">f.m</span></span>
+<span>        <span class="va">dX.m</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.l</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX.m</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">line.search</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">vX</span>, <span class="va">vG</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span>, <span class="va">dA.max</span> <span class="op">=</span> <span class="fl">2</span><span class="op">^</span><span class="fl">5</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># f is a real function that takes a vector of length d</span></span>
+<span>  <span class="co"># x and y are vectors of length d</span></span>
+<span>  <span class="co"># line.search uses gsection to find a &gt;= 0 such that</span></span>
+<span>  <span class="co"># g(a) = f(x + a*y) has a local maximum at a,</span></span>
+<span>  <span class="co"># within a tolerance of tol</span></span>
+<span>  <span class="co"># if no local max is found then we use 0 or a.max for a</span></span>
+<span>  <span class="co"># the value returned is x + a*y</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">vG</span><span class="op">)</span><span class="op">)</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span> <span class="co"># +0*vG</span></span>
+<span>  <span class="op">}</span> <span class="co"># g(a) constant</span></span>
+<span>  <span class="va">g</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dA</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="va">vX</span> <span class="op">+</span> <span class="va">dA</span><span class="op">*</span><span class="va">vG</span><span class="op">)</span><span class="op">)</span> </span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="co"># find a triple a.l &lt; a.m &lt; a.r such that</span></span>
+<span>  <span class="co"># g(a.l) &lt;= g(a.m) and g(a.m) &gt;= g(a.r)</span></span>
+<span>  </span>
+<span>  <span class="co"># choose a.l</span></span>
+<span>  <span class="va">dA.l</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="va">g.l</span> <span class="op">&lt;-</span> <span class="fu">g</span><span class="op">(</span><span class="va">dA.l</span><span class="op">)</span></span>
+<span>  <span class="co"># find a.m</span></span>
+<span>  <span class="va">dA.m</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span>  <span class="va">g.m</span> <span class="op">&lt;-</span> <span class="fu">g</span><span class="op">(</span><span class="va">dA.m</span><span class="op">)</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="va">g.m</span> <span class="op">&lt;</span> <span class="va">g.l</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">dA.m</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dA.m</span> <span class="op">&lt;-</span> <span class="va">dA.m</span><span class="op">/</span><span class="fl">2</span></span>
+<span>    <span class="va">g.m</span> <span class="op">&lt;-</span> <span class="fu">g</span><span class="op">(</span><span class="va">dA.m</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="co"># if a suitable a.m was not found then use 0 for a, so just return vX as the next step</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">dA.m</span> <span class="op">&lt;=</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">g.m</span> <span class="op">&lt;</span> <span class="va">g.l</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> </span>
+<span>  <span class="co"># find a.r</span></span>
+<span>  <span class="va">dA.r</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">*</span><span class="va">dA.m</span></span>
+<span>  <span class="va">g.r</span> <span class="op">&lt;-</span> <span class="fu">g</span><span class="op">(</span><span class="va">dA.r</span><span class="op">)</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="va">g.m</span> <span class="op">&lt;</span> <span class="va">g.r</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">dA.r</span> <span class="op">&lt;</span> <span class="va">dA.max</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dA.m</span> <span class="op">&lt;-</span> <span class="va">dA.r</span></span>
+<span>    <span class="va">g.m</span> <span class="op">&lt;-</span> <span class="va">g.r</span></span>
+<span>    <span class="va">dA.r</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">*</span><span class="va">dA.m</span></span>
+<span>    <span class="va">g.r</span> <span class="op">&lt;-</span> <span class="fu">g</span><span class="op">(</span><span class="va">dA.r</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="co"># if a suitable a.r was not found then use a.max for a</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">dA.r</span> <span class="op">&gt;=</span> <span class="va">dA.max</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">g.m</span> <span class="op">&lt;</span> <span class="va">g.r</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vX</span> <span class="op">+</span> <span class="va">dA.max</span><span class="op">*</span><span class="va">vG</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> </span>
+<span>  <span class="co"># apply golden-section algorithm to g to find a</span></span>
+<span>  <span class="va">dA</span> <span class="op">&lt;-</span> <span class="fu">gsection</span><span class="op">(</span><span class="va">g</span>, <span class="va">dA.l</span>, <span class="va">dA.r</span>, <span class="va">dA.m</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vX</span> <span class="op">+</span> <span class="va">dA</span><span class="op">*</span><span class="va">vG</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="va">ascent</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">grad.f</span>, <span class="va">vX0</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span>, <span class="va">n.max</span> <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vX.old</span> <span class="op">&lt;-</span> <span class="va">vX0</span></span>
+<span>  <span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu">line.search</span><span class="op">(</span><span class="va">f</span>, <span class="va">vX0</span>, <span class="fu">grad.f</span><span class="op">(</span><span class="va">vX0</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span> <span class="op">-</span> <span class="fu">f</span><span class="op">(</span><span class="va">vX.old</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">n</span> <span class="op">&lt;</span> <span class="va">n.max</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">vX.old</span> <span class="op">&lt;-</span> <span class="va">vX</span></span>
+<span>    <span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu">line.search</span><span class="op">(</span><span class="va">f</span>, <span class="va">vX</span>, <span class="fu">grad.f</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="co">#cat("at iteration", n, "the coordinates of x are", vX, "\n")</span></span>
+<span>    <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="va">n.max</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>       maximizing.val <span class="op">=</span> <span class="cn">NA</span>, </span>
+<span>       maximum <span class="op">=</span> <span class="op">-</span><span class="cn">Inf</span>, </span>
+<span>       <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"Algorithm failed to converge. Maximum iterations reached. Last values:"</span>, <span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span></span>
+<span>      <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span></span>
+<span>       maximizing.val <span class="op">=</span> <span class="va">vX</span>, </span>
+<span>       maximum <span class="op">=</span> <span class="fu">f</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, </span>
+<span>       <span class="st">"Algorithm converged."</span><span class="op">)</span></span>
+<span>      <span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="a">
+<li>Use this function to attempt to maximize your <code>fRosen_cpp</code> function, using <code>fRosen_grad_cpp</code> as its gradient, and starting value <span class="math inline">\((1,1)\)</span>. This function is difficult to optimize, so it will likely fail to converge.</li>
+</ol>
+<p><em>Remark: You may adapt the example code from Lecture 9 if you wish, including the functions <code>gsection</code> and <code>line.search</code>. If you did not solve question 1(b), you can use the R functions instead of the C++ ones for partial credit.</em></p>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ascent</span><span class="op">(</span><span class="va">fRosen_cpp</span>, <span class="va">fRosen_grad_cpp</span>, vX0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $maximizing.val</span></span>
+<span><span class="co">#&gt; [1] NA</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $maximum</span></span>
+<span><span class="co">#&gt; [1] -Inf</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] "Algorithm failed to converge. Maximum iterations reached. Last values:1.20713041591749"</span></span>
+<span><span class="co">#&gt; [2] "Algorithm failed to converge. Maximum iterations reached. Last values:1.45716385117783"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="problem-2.3" class="level3" data-number="27.2.3"><h3 data-number="27.2.3" class="anchored" data-anchor-id="problem-2.3">
+<span class="header-section-number">27.2.3</span> Problem 2.3</h3>
+<p>You will now write a function which systematically applies the ascent function over a grid of starting values. To define the grid, let vector <span class="math inline">\((x_1, x_2, \dots, x_K)\)</span> and <span class="math inline">\((y_1, y_2, \dots, y_K)\)</span> be the grid coordinates. These are typically in ascending order and evenly spaced. The grid consists of all <span class="math inline">\(K^2\)</span> points <span class="math inline">\((x_i, y_j)\)</span>, <span class="math inline">\(i,j \in \{1, \dots, K\}\)</span>.</p>
+<ol start="3" type="1">
+<li><ol type="a">
+<li>Write a new R function <code>grid_ascent</code> which has inputs similar to the <code>ascent</code> function, but instead of a single initial value, it accepts two coordinate vectors. The function should evaluate the <code>ascent</code> function starting at each grid point. It should return a <span class="math inline">\(K \times K\)</span> matrix containing the corresponding function maxima found using these starting points.</li>
+</ol></li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">grid_ascent</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">grad.f</span>, <span class="va">vX0</span>, <span class="va">vY0</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span>, <span class="va">n.max</span> <span class="op">=</span> <span class="fl">100</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">mOutput</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vX0</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vY0</span><span class="op">)</span><span class="op">)</span></span>
+<span>  </span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">x</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vX0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">y</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vY0</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">vXY0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">vX0</span><span class="op">[</span><span class="va">x</span><span class="op">]</span>, <span class="va">vY0</span><span class="op">[</span><span class="va">y</span><span class="op">]</span><span class="op">)</span></span>
+<span>      <span class="va">vXY.old</span> <span class="op">&lt;-</span> <span class="va">vXY0</span></span>
+<span>      <span class="va">vXY</span> <span class="op">&lt;-</span> <span class="fu">line.search</span><span class="op">(</span><span class="va">f</span>, <span class="va">vXY0</span>, <span class="fu">grad.f</span><span class="op">(</span><span class="va">vXY0</span><span class="op">)</span><span class="op">)</span></span>
+<span>      <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span>      <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="fu">f</span><span class="op">(</span><span class="va">vXY</span><span class="op">)</span> <span class="op">-</span> <span class="fu">f</span><span class="op">(</span><span class="va">vXY.old</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">&amp;</span> <span class="op">(</span><span class="va">n</span> <span class="op">&lt;</span> <span class="va">n.max</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">vXY.old</span> <span class="op">&lt;-</span> <span class="va">vXY</span></span>
+<span>        <span class="va">vXY</span> <span class="op">&lt;-</span> <span class="fu">line.search</span><span class="op">(</span><span class="va">f</span>, <span class="va">vXY</span>, <span class="fu">grad.f</span><span class="op">(</span><span class="va">vXY</span><span class="op">)</span><span class="op">)</span></span>
+<span>        <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>      <span class="op">}</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="va">n.max</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">mOutput</span><span class="op">[</span><span class="va">x</span>, <span class="va">y</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="cn">Inf</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">mOutput</span><span class="op">[</span><span class="va">x</span>, <span class="va">y</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">vXY</span><span class="op">)</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">mOutput</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="a">
+<li>Choose an appropriate grid, and use the output of the <code>grid_ascent</code> function to find a starting point from which the <code>ascent</code> function converges to a maximum. To give you an idea where to start, try a grid with <span class="math inline">\(x\)</span> values around 3 and <span class="math inline">\(y\)</span> values around 9. To begin with, try a relatively small <span class="math inline">\(K\)</span> (e.g.&nbsp;<span class="math inline">\(K=5\)</span>) because the run time can be significant for large <span class="math inline">\(K\)</span>. If your grid cannot find any valid starting point, i.e.&nbsp;<code>grid_ascent</code> returns a matrix of all <code>-Inf</code>, here are some things you can try: make the grid larger by making the min and max of the coordinates further apart, make the grid finer by increasing <span class="math inline">\(K\)</span>, choose a smaller tolerance, or increase the maximum number of iterations. Do these changes gradually, as most of them will make the function run slower.</li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">grid_ascent</span><span class="op">(</span><span class="va">fRosen_cpp</span>, <span class="va">fRosen_grad_cpp</span>, vX0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">2.5</span>, <span class="fl">2.75</span>, <span class="fl">3</span>, <span class="fl">3.25</span>, <span class="fl">3.5</span><span class="op">)</span>, vY0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">8.5</span>, <span class="fl">8.75</span>, <span class="fl">9</span>, <span class="fl">9.25</span>, <span class="fl">9.5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;      [,1]          [,2] [,3]          [,4] [,5]</span></span>
+<span><span class="co">#&gt; [1,] -Inf          -Inf -Inf          -Inf -Inf</span></span>
+<span><span class="co">#&gt; [2,] -Inf          -Inf -Inf          -Inf -Inf</span></span>
+<span><span class="co">#&gt; [3,] -Inf -2.871553e-10 -Inf          -Inf -Inf</span></span>
+<span><span class="co">#&gt; [4,] -Inf          -Inf -Inf -1.443747e-09 -Inf</span></span>
+<span><span class="co">#&gt; [5,] -Inf          -Inf -Inf          -Inf -Inf</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="a">
+<li>When you find a grid point from which <code>ascent</code> converges, evaluate <code>ascent</code> at this starting point and report the function maximum and the point at which this maximum is achieved.</li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ascent</span><span class="op">(</span><span class="va">fRosen_cpp</span>, <span class="va">fRosen_grad_cpp</span>, vX0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3</span>, <span class="fl">8.75</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $maximizing.val</span></span>
+<span><span class="co">#&gt;          [,1]</span></span>
+<span><span class="co">#&gt; [1,] 3.141604</span></span>
+<span><span class="co">#&gt; [2,] 9.869677</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $maximum</span></span>
+<span><span class="co">#&gt; [1] -2.871553e-10</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] "Algorithm converged."</span></span>
+<span><span class="fu">ascent</span><span class="op">(</span><span class="va">fRosen_cpp</span>, <span class="va">fRosen_grad_cpp</span>, vX0 <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">3.25</span>, <span class="fl">9.25</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $maximizing.val</span></span>
+<span><span class="co">#&gt;          [,1]</span></span>
+<span><span class="co">#&gt; [1,] 3.141555</span></span>
+<span><span class="co">#&gt; [2,] 9.869366</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $maximum</span></span>
+<span><span class="co">#&gt; [1] -1.443747e-09</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[3]]</span></span>
+<span><span class="co">#&gt; [1] "Algorithm converged."</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="problem-2.4" class="level3" data-number="27.2.4"><h3 data-number="27.2.4" class="anchored" data-anchor-id="problem-2.4">
+<span class="header-section-number">27.2.4</span> Problem 2.4</h3>
+<ol start="4" type="1">
+<li>Maximize your <code>fRosen_cpp</code> function with the <code>optim</code> function in R, using starting point <span class="math inline">\((1,1)\)</span>, <code>fRosen_cpp_cpp</code> for the <code>gr</code> argument, and <code>method = "BFGS"</code>. Compare the result with your answer in question 3.</li>
+</ol>
+<p>Solution:</p>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/optim.html">optim</a></span><span class="op">(</span>par <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, fn <span class="op">=</span> <span class="va">fRosen_cpp</span>, gr <span class="op">=</span> <span class="va">fRosen_grad_cpp</span>, method <span class="op">=</span> <span class="st">"BFGS"</span>, control <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>fnscale <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $par</span></span>
+<span><span class="co">#&gt; [1] 3.141593 9.869604</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $value</span></span>
+<span><span class="co">#&gt; [1] -7.901082e-19</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $counts</span></span>
+<span><span class="co">#&gt; function gradient </span></span>
+<span><span class="co">#&gt;      154       62 </span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $convergence</span></span>
+<span><span class="co">#&gt; [1] 0</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $message</span></span>
+<span><span class="co">#&gt; NULL</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="problem-2.5" class="level3" data-number="27.2.5"><h3 data-number="27.2.5" class="anchored" data-anchor-id="problem-2.5">
+<span class="header-section-number">27.2.5</span> Problem 2.5</h3>
+<ol start="5" type="1">
+<li>Create an R package that contains all the functions you wrote for questions 1-3, and edit the Title of your package in the description file to “This is my exam package”. Export the package as a bundled development version (with file extension .tar.gz), and include it as part of your exam submission.</li>
+</ol>
+<p><em>Remark: If you cannot solve questions 1-3, create a package that contains an R and a C++ function with single scalar input that always return the number 2024.2.</em></p>
+
+
+</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./exam2024.html" class="pagination-link" aria-label="Ordinary exam 2024">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./extra_exercises.html" class="pagination-link" aria-label="Extra exercises">
+        <span class="nav-page-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

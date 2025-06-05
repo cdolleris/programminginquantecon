@@ -1,0 +1,127 @@
+# Exercise set 5
+
+*Assume you observe independent data* $(\mathbf{X}_i, Y_i)$ *for* $i = 1, \dots, n$ *where* $\mathbf{X}_i$ *have realizations in* $\mathbb{R}^p$ *and* $Y_i$ *is binary. You would like to model the relationship between* $\mathbf{X}_i$ *and* $Y_i$*. A logistic regression model is given by the following structure:*
+$$
+Y_i = \mathbb{I}(Y_i^* > 0)
+$$
+$$
+Y_i^* = \mathbf{X}_i'\mathbf{\beta} + \varepsilon_i
+$$
+$$
+P(\varepsilon_i \le z) = p(z) = \frac{1}{1 + \exp(-z)}
+$$
+*Thus the average log-likelihood function is given by*
+$$
+\ln L(\mathbf{\beta}) = \frac{1}{n} \sum_{i=1}^n \left[ Y_i \ln(p(\mathbf{X}_i'\mathbf{\beta})) + (1-Y_i) \ln(1-p(\mathbf{X}_i'\mathbf{\beta})) \right]
+$$
+*with Score*
+$$
+S(\mathbf{\beta}) = \frac{1}{n} \sum_{i=1}^n (Y_i - p(\mathbf{X}_i'\mathbf{\beta}))\mathbf{X}_i
+$$
+*and Hessian*
+$$
+H(\mathbf{\beta}) = -\frac{1}{n} \sum_{i=1}^n p(\mathbf{X}_i'\mathbf{\beta})(1-p(\mathbf{X}_i'\mathbf{\beta}))\mathbf{X}_i \mathbf{X}_i'
+$$
+
+## **(1)**
+
+*Write an R function* `fLogit()` *that finds the maximum likelihood estimator for* $\mathbf{\beta}$ *using a Gauss-Newton algorithm. It should take the following inputs:*
+
+  (a) *A numerical or logical input vector* $Y$ *of length* $n$ *containing the dependent variable.*
+  (b) *A* $[n \times p]$ *dimensional matrix* $\mathbf{X}$ *containing the regressors.*
+  (c) *An option whether a constant column should be added to* $\mathbf{X}$ *with default* `TRUE`*.*
+  (d) *A vector of starting values for the maximization with default being a zero vector of dimension* $p$*.*
+  (e) *The number of maximum iterations for the optimization with default set to 200.*
+  (f) *A tolerance level for the stopping criterion with default set to* $1\text{e-}16$*.*
+
+*Before optimization, if* $\mathbf{X}$ *does not contain a constant, your function should create a new* $\mathbf{X}$ *with an additional column of ones automatically. The overall function should return a list with the following components:*
+
+  (a) *The estimated parameters* $\hat{\mathbf{\beta}}$*.*
+  (b) *The average log-likelihood, Score and Hessian at the optimum.*
+  (c) *The log-likelihood function at* $\mathbf{\beta} = \mathbf{0}$*.*
+  (d) *The predicted probabilities* $p(\mathbf{X}_i'\mathbf{\beta})$*.*
+  (e) *A character containing information about convergence and stopping condition of the optimization.*
+
+Solution:
+
+```{r}
+fLogit <- function(vY, mX, add.constant = TRUE, init.vals = NULL, max.iter = 200, dTol = 1e-16) {
+  
+  # probability function
+  p <- function(vZ) {
+    return(1 / (1 + exp(-vZ)))
+  }
+  
+  # avg log-likelihood function
+  f <- function(vY, mX, vB) {
+    return(mean(vY * log(p(mX %*% vB)) + (1 - vY) * log(1 - p(mX %*% vB))))
+  }
+  
+  fScore <- function(vY, mX, vB) {
+    return(t(mX) %*% (vY - as.numeric(p(mX %*% vB))) / nrow(mX))
+  }
+
+  fHessian <- function(vY, mX, vB) {
+    return(-(t(mX) %*% diag(as.numeric(p(mX %*% vB) * (1 - as.numeric(p(mX %*% vB))))) %*% mX) / nrow(mX))
+  }
+  
+  if (add.constant == TRUE) {
+    mX <- cbind(1, mX)
+  }
+  if (is.null(init.vals)) init.vals <- rep(0, ncol(mX))
+  
+  i <- 0
+  vB <- init.vals
+  
+  # Keep updating until stopping criterion or max iterations reached
+  while ((max(abs(fScore(vY, mX, vB))) > dTol) && (i < max.iter)) {
+    # Newton-Raphson updating
+    vB <- vB - solve(fHessian(vY, mX, vB), fScore(vY, mX, vB))
+    i <- i + 1
+    #cat("At iteration", n, "the value of the parameter is:", dParam, "\n")
+  }
+  
+  if (i == max.iter) {
+    return(list(
+      beta_hat = NULL, 
+      log_likelihood_opt = NULL, 
+      score_opt = NULL,
+      hessian_opt = NULL,
+      log_likelihood_null = NULL,
+      predicted_probabilities = NULL,
+      iterations = i,  
+      msg = "Algorithm failed to converge. Maximum iterations reached.")
+    )
+  } else {
+    return(list(
+      beta_hat = vB, 
+      log_likelihood_opt = f(vY, mX, vB), 
+      score_opt = fScore(vY, mX, vB),
+      hessian_opt = fHessian(vY, mX, vB),
+      log_likelihood_null = f(vY, mX, rep(0, ncol(mX))),
+      predicted_probabilities = p(mX %*% vB),
+      iterations = i,  
+      msg = "Algorithm converged")
+    )
+  }
+}
+```
+
+## **(2)**
+
+*Simulate a process like the one above for* $p = 10$ *and* $n = 2000$ *using random variable generators and estimate it using your function. Validate your results using the built-in* `glm()` *function with option* `family = binomial`*.*
+
+```{r}
+set.seed(123)
+n <- 2000
+p <- 10
+mX <- matrix(rnorm(n*p), n, p)
+vB.actual <- matrix(1:p, p, 1)
+vY.star <- mX %*% vB.actual + rnorm(2000, 0, 1)
+vY.actual <- vY.star > 0
+
+vResults <- fLogit(vY.actual, mX)
+glm_fit <- glm(vY.actual ~ mX, family = binomial)
+glm_fit$coefficients
+vResults$beta_hat
+```

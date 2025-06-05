@@ -1,0 +1,881 @@
+# Getting Started with R
+
+## Working directory
+
+When you run R, it nominates one of the directories on your hard drive as a working directory, which is where it looks for user-written programs and data files.
+
+You can determine the current working directory using the command `getwd`. You can do this using the command `setwd("sDir")`, where `dir` is the directory address.
+
+```{r}
+#| eval: false
+getwd()
+sDir <- "G:/foo" # this path needs to exist
+setwd(sDir)
+getwd()
+```
+
+If the path does not exist, R can create the directory ("folder") for you via the `dir.create` built-in function and then change to the new directory.
+
+```{r}
+#| eval: false
+# Assign a new path to create the new directory
+sPath <- getwd()
+sDir <- file.path(sPath, "new_dir2")
+dir.create(sDir) # Creates a new directory
+setwd(sDir) # set WD to sDir
+```
+
+You can also just pass the directory path directly, i.e., `dir.create("C:/user/foo")`.
+
+Note that R will return an error message if "$\backslash$" is used instead of "$/$" in the path as this is reserved for other operations, e.g., the line change used in [Small Exercise 1](intro.qmd#sec-lec1-se-1) ; `cat("\n")`
+
+When the working directory is set, we can call other scripts from the currently specified "WD" without specifying the path via the `source()` function, i.e.:
+
+```{r}
+#| eval: false
+source("foo.r") # tell R to Source/Run the .R file/script
+```
+
+Calling e.g. scripts from another directory is also possible, but requires a specific path, i.e., `"C:/wd/foo.r"`.
+
+Furthermore, this feature is incredibly useful when writing longer scripts containing several user written functions.
+
+This is demonstrated in `Example_1.R`:
+
+::: {.callout-note collapse="true"}
+## Click to view "Example_1.R"
+
+```{r, `code-line-numbers` = "1"}
+#| eval: false
+rm(list = ls()) # clear the environment
+cat("\014")     # Clear console:equivalent to ctrl + L 
+
+
+getwd() # Check working directory is correct
+
+dir() # Check that the directory contain the desired files.
+
+# Source the functions contained in the script "example1_fun.r"
+source("example1_fun.r") 
+
+squaring(-3)  # Calling the function squaring with input -3
+
+squaring(3)   # Calling the function squaring with input 3
+
+squaring("a") # Calling the function squaring with input "a"
+
+clc() # Use the newly defined clc() function to clear console
+```
+
+:::
+
+Note for the script above: The sourced file, `example1_fun.r`, can be seen below:
+
+::: {.callout-note collapse="true"}
+## Click to view "example1_fun.R"
+
+```{r, `code-line-numbers` = "1"}
+#| eval: false
+# This file contains two functions. 
+# At this stage it is not necessary that you completely understand the functions, they will be discussed later.
+
+## Function 1: squaring
+# input numeric types: dX
+# Output the square of the input
+squaring <- function(dX) {
+  dX^2
+}
+
+
+## Function 2: clc
+# non-input function to clear console
+clc <- function() {
+cat("\014") # "\014" is equivalent to ctrl + L (Windows) or cmd + L (MacOS)
+}
+
+```
+
+:::
+
+In addition, `source` will check your program for completeness before executing it. That is, it will stop processing the call if an error is reported.
+
+## Arithmetic
+
+R uses the usual symbols for addition $+$, subtraction $-$, multiplication $*$, division $/$, and exponentiation $\wedge$.
+Parentheses $()$ can be used to specify the order of operations.
+
+```{r}
+(1 + 1/100)^100
+```
+
+Notice that by default, R prints 7 significant digits. You can change the display to `x` digits using `options(digits = x)`. See `help(options)` for other options.
+
+## Variable types
+### Defining variables
+
+To assign a value to a variable, we use (almost equivalently) the assignment commands `=` and `<-`. For example:
+
+```{r}
+iX <- 100
+iX = 100
+# These are equivalent
+```
+
+With some exceptions as shown last time in [Becoming_a_useR.R](intro.qmd#sec-lec1-se-1). We can perform operations in `iX`:
+
+```{r}
+iX
+(1 + 1/iX)^iX
+iX <- iX + 1 # is allowed
+iX
+```
+
+### Variable types and syntax
+
+If you try to pass the string "a" to the function `squaring`, you get an error. Functions only take sensible inputs: in this case "numeric" class objects such as double or integers (and even vectors or matrices...)
+
+In addition, R has several object type specific functions, i.e., `length(vY)` will give you the length of a vector, but `mY` will return the length of `vY <- c(mY)`. Hence, keeping track of variable types or variable classes therefore seems worthwhile.
+
+ - To R, everything is an "object".
+ - We've seen some examples of objects as the atomic types/classis previously:
+    - *Integers*, such as `3L` or `as.integer(3)`.
+    - *Numeric*, such as 3, -3, 9.01 (So in principle both doubles and "integers").
+    - *Logicals*, such as TRUE or FALSE, "booleans":
+    - *Characters*, such as "asdf".
+    - And data structures as *Matrices*, such as $\begin{pmatrix}1 & 2 & 3\\4 & 5 & 6\end{pmatrix}$
+ - We'll study these types, and a few other common ones in detail later on.
+
+### Variable names and Hungarian notation
+
+Hungarian notation was developed for more restrictive languages, but also has its uses in R.
+
+ - Use variable names consisting of multiple characters.
+ 
+ - The first one of two indicate the type of the variable.
+ 
+ - The remainder forms a descriptive name.
+
+Example: suppose that you are estimating a linear model: $y = X\beta + \varepsilon$. So, the input consists of a vector $y$ and a matrix $X$. Variable names could be `vY` and `mX`. The output is probably a vector of estimated regression coefficients, which you could call `vBeta` or `vBetaHat` or `vBetaOLS` or something. And perhaps there's also a `vEpsilon` or `vEps`.
+
+R doesn't care what you call your variables. As soon as a variable is given a value, R will figure out what type it is automatically.
+
+So, if you calculate $(X'X)^{-1}X'y$ and want to call the result `apple`, this is not technically wrong. But it's not particularly nice to people reading your code either.
+
+### Integers
+
+The simplest value type is an *integer*. Its value is always a whole number, minimum $\approx - 2^{31}$, maximum $2^{31} - 1$ (other bounds in other programming languages).
+The Hungarian prefix is `i`. The R command `iN <- 5L` results in the creation of a variable that has name `iN`, type integer, and value 5.
+If we subsequently execute command `iN <- 7L`, the variable still has the same name and type, but it has a different value. R forgets the value before the change.
+
+A logical, prefix `b`, is a special type of integer that holds boolean values. It can only take two different values: `TRUE` (=1) or `FALSE` (=0).
+
+### Doubles
+
+For a real number that's not an integer, we generally use a *double*, Hungarian: `d`. We can write things like, `dPi <- 3.14159`. Note, there's nothing that prevents a double variable having an integer value. It would be weird if `dX` could be 4.9, 4.99, 4.999, 5.1, 5.01, 5.001, but not exactly 5. However, redefining the variable as `dX <- 5` will create an integer, not a double. Instead, define `dX <- 5.0`.
+
+### Precision
+
+Note, that $(1/3 + 1/3 + 1/3 + 1/3 + 1/3 + 1/3)-2$ is not exactly zero in R; it's something like -0.0000000000002220446.
+
+Integers aren't rounded, so integer arithmetic is done exactly. To avoid unnecessary rounding errors, always use the integer type if you know you're only going to be dealing with integers.
+
+For the most part, R will automatically set the type for you as needed, so no need to put too much emphasis on `5` vs `5L`. Use Hungarian "i" notation for both.
+
+## Built-in
+### Character/strings
+
+Characters are the R objects for storing strings. If we're interested in storing text (a character string), we use a *character*. A string needs to be enclosed in quotation marks. Thus, the command to create a string variable that contains *Hello world* is `sText <- "Hello world"` or `sText <- 'Hello world'`.
+We can use functions such as `substr()` to access part of a string, e.g.:
+```{r}
+sText <- "Hello world"
+substr(sText, start = 6, stop = nchar(sText))
+```
+
+Note that R has built-in functions such as `is.character()`, `as.character()` but not `is.string()` built.in. FOr comparability with other languages, we use Hungarian `s`, but `c` is also fine.
+
+### Built-in functions
+
+R has a number of built-in functions, for example `sin(x)`, `cos(x)`, `tan(x)`, (all in radians), `exp(x)`, `log(x)`, and `sqrt(x)`. Some special constants such as `pi` ($\pi$) are also predefined.
+
+```{r}
+exp(1)
+options(digits = 16)
+exp(1)
+pi
+sin(pi/6)
+```
+
+The functions `floor(x)` and `ceiling(x)` round down and up, respectively, to the nearest integer.
+
+### Functions
+
+In mathematics, a function takes one or more arguments (or inputs) and produces one or more outputs (or return values). Functions in R work in an analogous way. Consider the `seq` function. This function allows you to create a sequence of numbers:
+
+```{r}
+seq(from = 1, to = 9, by = 2)
+```
+
+Notice that by default (see `help(seq)`), the `by` argument is equal to 1, such that:
+
+```{r}
+seq(from = 1, to = 3)
+```
+
+For a sequence with by equal to 1, R has a shorthand notation, se we may use to:from;
+
+```{r}
+1:4
+```
+
+### Arguments of functions
+
+Every function has a default order for the arguments. For `seq` this is: `from`, `to`, `by`. If you provide arguments in this order, then they do not need to be named explicitly.
+
+```{r}
+seq(1, 9, 2)
+```
+
+But you can choose to give the arguments out of order provided you give them names in the format argument_name = expression.
+
+```{r}
+seq(by = 2, to = 9, from = 1)
+# Is different from
+seq(2, 9, 1)
+```
+
+## Vectors
+
+We have already seen the `c` function. However, vectors can be created by any function that returns vectors as output. For instance, `seq` and `rep`. The `rep(vX, n)` function exactly replicates the vector `vX`, $n$ times.
+
+```{r}
+vX = c(1, 3, 4)
+rep(vX, 3)
+```
+
+The function `c` also accepts vectors as inputs:
+
+```{r}
+vX <- seq(1, 20, by = 2)
+vY <- rep(3, 4)
+vZ <- c(vY, vX)
+vZ
+```
+
+### Vector operations
+
+All algebraic operations are defined for vectors and act on each element separately, that is, element-wise:
+
+```{r}
+vX <- c(1, 2, 3)
+vY <- c(4, 5, 6)
+vX * vY
+vX + vY
+vY ^ vX
+```
+
+However, care should be taken when vectors of unequal length are used:
+
+```{r}
+c(1, 2, 3) + c(1, 2)
+```
+
+When you apply an algebraic expression to two vectors of unequal length, R automatically repeats the shorter vector until it has something the same length as the longer vector.
+
+```{r}
+c(1, 2, 3, 4) + c(1, 2)
+(1:10) ^ c(1, 2)
+```
+
+This happens even when the shorter vector is of length 1, allowing the shorthand notation:
+
+```{r}
+2 + c(1, 2, 3)
+2 * c(1, 2, 3)
+```
+
+For example, using the modulus operator: *a* mod *b* (%%):
+
+```{r}
+1:20 %% 3
+```
+
+## Missing values
+### Missing date: NA
+
+In real experiments, it is often the case, for one reason or another, that certain observations are missing. Depending on the statistical analysis involved, missing data can be ignored or invented (a process called imputation). R presents missing observations through the data value `NA`. They can be mixed in with all other kinds of data:
+
+```{r}
+vA <- c(11, NA, 13)
+vA
+```
+
+Performing analysis with NAs can be problematic:
+
+```{r}
+mean(vA) # NAs can propagate
+```
+
+The logical argument `na.rm` is often specified to deal with NAs.
+
+```{r}
+mean(vA, na.rm = TRUE) # NAs can be removed
+```
+
+### Searching for NAs
+
+Sometimes you want to search for NAs in your dataset to prevent misleading results at the end of your analysis. THe function `is.na` searches for NAs inside vectors and returns a logical output of the same size of the input provided:
+
+```{r}
+vA <- c(11, NA, 13)
+is.na(vA) # identify missing elements
+```
+
+When `length(vA)` is very large, we might want to write:
+
+```{r}
+any(is.na(vA)) # are any missing?
+```
+
+In order to remove NAs we can use:
+
+```{r}
+na.omit(vA)
+```
+
+## Small Exercise
+
+- *Define a vector* `vX` *containing the double 5.01, the string "hello", the logical/boolean FALSE and the integer 10L.*
+  - `vX <- c(5.01,"hello",FALSE,10L)`
+- *Determine the type of this vector? (Use the* `typeof()` *built-in function or look at values in the environment).*
+  - The vector is of type `character`.
+- *Do you have an explanation for why it is this type? (Try instead to assign all the above values to* `vX` *but not "hello" i.e.,* `c(5.01, FALSE, 10L)` *and repeat the second bullet point).*
+  - Types are coerced in a fixed order: character, double, integer and logical. This only occurs for vectors. Lists are able to retain the correct datatypes.
+- *Define a vector* `vY` *as* *(*`vY <- c(NaN, NA, 6L)`*)*
+- *compare the output for* `is.na(vY)` *and* `is.nan(vY)`*.*
+  - `is.nan` does not recognize the NA.
+- *What is the difference between NaN and NA? Try to print 0/0 in the console*
+  - NaN: "Not a Number", which refers to things that cannot be calculated.
+  - NA: "Not Available", referring to values that are unknown or missing.
+
+::: {.callout-note collapse="true"}
+## Click to view the complete solution to the exercise
+
+```{r, `code-line-numbers` = "1"}
+#| eval: false
+rm(list = ls()) # clear environment
+cat("\014")     # Clear console:equivalent to ctrl + L 
+
+# Small exercise with vectors and missing values
+# Exercises 1
+s <- c(5.01,"hello",FALSE,10L)
+typeof(s) # Note the vector is of mode "character"
+s <- c(5.01,FALSE,10L)
+typeof(s) # Without the character element the vector is now of mode "double"
+s <- c(FALSE,10L) 
+typeof(s) # ... Now of mode integer
+s <- c(FALSE)
+typeof(s) # ... Now of mode logical
+
+# Exercise 2
+vY <- c(NaN,NA,6L) # define vector
+vY
+is.na(vY)  # look for NA-value
+is.nan(vY) # look for NaN-value
+# NaN: "Not a Number", used for things that cannot be calculated
+# NA: "Not Available", values that are unknown or missing
+
+# NaN examples:
+0/0      # is NaN
+sqrt(-1) # is NaN
+Inf-Inf  # is NaN
+NaN/NA   # is NaN
+
+## Extra question..
+# Can NA matrices be used for more memory efficient 
+# usage as predefined matrix/vectors prior to i.e. a loop?
+object.size(matrix(NA,1000,1000)) # Size: 4000216 bytes
+object.size(matrix(0,1000,1000))  # Size: 8000216 bytes
+
+```
+
+:::
+
+## Logical
+### Logical expression
+
+A logical expression is formed using the comparison operators:
+
+- $<$ lower than
+
+- $>$ greater than
+
+- $\le$ lower than or equal to
+
+- $\ge$ greater than or equal to
+
+- $==$ equal to
+
+- $!=$ not equal to
+
+- $\&$ and
+
+- $|$ or
+
+- $!$ not
+
+The operators return a logical output:
+
+```{r}
+vX = c(1, 2, 3, 4)
+vX == 2
+vX != 2
+```
+
+Vectors (but also matrices and arrays) can be accessed also using logical indicators:
+
+```{r}
+vX <- c(1, 3, 4, 18)
+vX > 2
+vX[vX > 2 & vX < 10]
+```
+
+The subset function can be used for a similar scope:
+
+```{r}
+subset(vX, subset = vX > 2)
+```
+
+### Logical expressions: & and |
+
+Take two logical objects:
+
+```{r}
+vX = 4
+vY = vX > 2
+vY
+vZ = vX < 3
+vZ
+```
+
+The & operator returns TRUE if both `vY` and `vZ` are TRUE, and FALSE otherwise:
+
+```{r}
+vY & vZ
+```
+
+The | operator returns TRUE if `y` or `z` are TRUE, and FALSE otherwise:
+
+```{r}
+vY | vZ
+```
+
+### Sequential && and ||
+
+The logical operators && and || are sequantially evaluated version of & and |, respectively. 
+
+To evaluate `vX & vY`, R first evaluates `vX` and `vY`, then returns TRUE, if `vX` and `vY` are both TRUE, and FALSE otherwise. 
+
+To evaluate `vX && vY`, R first evaluates `vX`. If `vX` is FALSE then R returns FALSE without evaluating `vY`. If `vX` is TRUE, R evaluates `vY` and returns TRUE if `vY` is TRUE, and FALSE otherwise.
+
+Sequantial evaluation of `vX` and `vY` is useful when `vY` is not always well defined, or when `vY` takes a long time to compute.
+
+As an example of the first instance, suppose we wish to know if `dX * sin(1/dX) = 0`:
+
+```{r}
+dX <- 0
+dX * sin(1/dX) == 0
+(dX == 0) | (sin(1/dX) == 0)
+(dX == 0) || (sin(1/dX) == 0)
+```
+
+Note that %% and || only work on scalars, whereas & and | work on vectors on a element-by-element basis:
+
+```{r}
+#| error: true
+vX <- c(1:10) # Note: c() is not necessary here.
+vX
+bTest <- FALSE
+(vX == 1 & bTest == TRUE)
+(vX == 1 && bTest == TRUE) # Not even possible to run
+(vX == 2 && bTest == FALSE)
+(vX == 1 && bTest == FALSE)
+```
+
+## Matrices
+
+We have already seen how to build matrices in R:
+
+```{r}
+mA <- matrix(1:6, nrow = 2, ncol= 3, byrow = TRUE)
+```
+
+To retrieve the dimension of a matrix, use `dim`:
+
+```{r}
+dim(mA)
+```
+
+Useful functions for matrices:
+
+- `diag`, extract the diagonal elements and return a vector or create a diagonal matrix, see `help(diag)`.
+
+- `rbind`, join matrices with rows of the same length (stacking vertically).
+
+- `cbind`, join matrices with columns of the same length (stacking horizontally).
+
+- `solve`, invert a matrix.
+
+- `eigen`, extract eigenvalues and associated eigenvectors of a matrix.
+
+- `t`, transpose of matrix.
+
+### Multiplication with matrices
+
+Define:
+
+```{r}
+mA <- matrix(c(3, 5, 2, 3), nrow = 2, ncol = 2)
+mB <- matrix(c(9, 4, 1, 2), nrow = 2, ncol = 2)
+mA
+mB
+```
+
+Element-wise multiplication, $A \circ B$ (Hadamard product):
+
+```{r}
+mA * mB
+```
+
+Matrix multiplication, $AB$:
+
+```{r}
+mA %*% mB
+```
+
+Kronecker product, $A \otimes B$:
+
+```{r}
+kronecker(mA, mB)
+```
+
+## Factors
+
+R has a special data structure for Categorical variables that take ordinal or cardinal values.
+
+- Ordinal (rankable): Low, medium, high.
+
+- Cardinal (Unrankable values): Colour, marital status, names, etc...
+
+In R, we (may) deal with categorical variables in factor variables; each category is called a level.
+
+- Packages or statistical models may facilitate easy use of the factor class, .e.g, in `lm` to create dummies from the categorical variable.
+
+- Memory efficient data storage.
+
+```{r}
+phys.act <- c("L", "H", "H", "L", "M", "M")
+phys.act[2] > phys.act[1]
+phys.act <- factor(phys.act, levels = c("L", "M", "H"), ordered = TRUE)
+is.ordered(phys.act)
+phys.act[2] > phys.act[1]
+```
+
+## Lists
+
+We have seen that all the elements of a vector have to be of the same type: `numeric`, `character`, or `logical`. The type of the vector is called: `mode`.
+
+A list is an indexed set of objects (and so has a length) whose elements can be of different types, including other lists! The mode of a list is `list`.
+
+A list is just a generic container for other objects. The power and utility of lists comes from this generality. In R, lists are often used for collecting and storing complicated function outputs. For example, the first element of a list can be a vector, the second can be another list and the third can be a matrix.
+
+A list is created using the `list(...)` command, with comma-separated arguments:
+
+```{r}
+my.list <- list("one", TRUE, 3, c("f", "o", "u", "r"))
+```
+
+Double-square brackets are used to extract a single element:
+
+```{r}
+my.list[[1]]
+mode(my.list[[1]])
+```
+
+Single-square brackets are used to select a sublist:
+
+```{r}
+my.list[1]
+mode(my.list[1])
+```
+
+When displaying a list, R uses double-square brackets `[[1]]`, and `[[2]]`, etc. to indicate list element. The single-square brackets `[1]`, `[2]`, etc. incide vector elements within the list.
+
+The elements of a list can be named when the list is created, using arguments of the form `name1 = x1`, `name2 = x2`, etc.:
+
+```{r}
+my.list <- list(first = "one", second = TRUE, third = 3, fourth = c("f", "o", "u", "r"))
+names(my.list)
+my.list$second
+```
+
+Note the use of the $ operator to access named lists. Alternatively, a list element can be named later by assigning a value to the names attribute:
+
+```{r}
+my.list <- list("one", TRUE, 3, c("f", "O", "u", "r"))
+names(my.list) <- c("first", "second", "third", "fourth")
+```
+
+To flatten a list `x`, i.e., convert it to a vector, we use `unlist(x)`:
+
+```{r}
+x <- list(1, c(2, 3), c(4, 5, 6))
+unlist(x)
+```
+
+If the list object itself comprises lists, then these lists are also flattened, unless the argument `recursive = FALSE` is set in `unlist`.
+
+## Dataframes
+
+We have already seen how to work in R with numbers, strings, and logical valuels. We have also worked with homogeneous collections of such objects, grouped into numeric, character, or logical vectors.
+
+The defining characteristic of the vector data structure in R is that all componenets must be of the same mode. Obviously, to work with datasets from real experiments, we need a way to group data of differing modes.
+
+Suppose to have the following dataset representing a forestry experiment in which we randomly selected a number of plots and then from each plot selected a number of trees.
+
+| Plot | Tree | Species | Diameter (cm) | Height (m) |
+|------|------|---------|---------------|------------|
+| 2    | 1    | DF      | 39            | 20.5       |
+| 2    | 2    | WL      | 48            | 33.0       |
+| 3    | 2    | GF      | 52            | 30.0       |
+| 3    | 5    | WC      | 36            | 20.7       |
+| 3    | 8    | WC      | 38            | 22.5       |
+| :    | :    | :       | :             | :          |
+
+For each tree, we measured its height and diameter (which are `numeric`), and also the species of tree (which is a `character` string).
+
+As experimental data collected in a table looks like an array, you may be tempted to represent it in R as a matrix. But in R, matrices cannot contain heterogeneous data (data of different modes, like `numeric` and `character`)
+
+Lists and dataframes are able to store much more complicated data structures than matrices. A dataframe is a list of vectors restricted to be of equal length. Each vector (column of the dataframe) can be of any of the basic modes of object. To create a dataframe, we write:
+
+```{r}
+mData <- data.frame(Plot = c(1, 2, 2, 5, 8, 8),
+                    Tree = c(2, 2, 3, 3, 3, 2),
+                    Species = c("DF", "WL", "GF", "WC", "WC", "GF"),
+                    Diameter = c(39, 48, 52, 35, 37, 30),
+                    Height = c(20.5, 33.0, 30.0, 20.7, 22.5, 20.1))
+```
+
+### Dataframes: Extract
+
+Each column, or variable, in a `dataframe` has a unique name. We can extract that variable by means of the dataframe name, the column name, the a dollar sign, or as we do for a matrix:
+
+```{r}
+mData$Diameter
+mData[["Diameter"]]
+mData[[4]]
+mData[, 4]
+mData[, "Diameter"]
+```
+
+### Dataframes: Assign
+
+To assign a new variable to a dataframe, we write:
+
+```{r}
+mData$newdata <- c(1, 2, 3, 4, 5, 6)
+```
+
+If the new variable is the same across all the observations, we can write:
+
+```{r}
+mData$newdata2 <- TRUE
+```
+
+This also works as long as the number of rows of the dataframe is a multiple of the length of the new variable (if it is not a multiple, we get an error):
+
+```{r}
+mData$newdata3 <- c("one", "two")
+mData
+```
+
+## Small exercises with logical operators, matrices, lists and dataframes
+
+- *Define a 10x4 matrix* `mA` *that holds the values from a vector of the sequence from 1 to 40 that increments by 1*.
+- *Print* `mA` *and visually determine if R fills in the matrix by column or by row*.
+- *Assign* `mA` *to the variable* `dfA` *as a dataframe (Try* `?as.data.frame`*)*.
+- *Assign the column names "one", "two", "three" and "four" to the data frame (Try* `?colnames`*)*.
+- *Assign a new variable called "five" that contains the logical FALSE to the data frame* `dfA`.
+- *Verify that* `dfA` *is indeed both considered a list and a data frame using a logical operator along with* `is.list` *and* `is.data.frame`.
+- *If time permits; remove the column named "two" from the data frame using a logical operator.*
+
+**Solution**
+
+```{r}
+mA <- matrix(1:40, 10, 4)
+mA # it's filled by columns
+dfA <- as.data.frame(mA) # convert to dataframe
+colnames(dfA) <- c("one", "two", "three", "four") # add headers
+dfA # view dataframe
+dfA$five <- FALSE
+dfA # view the new column
+is.list(dfA) # check if it's a list
+is.data.frame(dfA) # check if it's a dataframe
+dfA[, !(names(dfA) == "two")] # remove the column with the name two
+```
+
+## Additional code in R
+
+::: {.callout-note collapse="true"}
+## Click to view "Week1_lecture1.R"
+
+```{r, `code-line-numbers` = "1"}
+#| eval: false
+#0.
+rm(list = ls()) # Clear Environment
+cat("\014")     # Clear console: equivalent of ctrl+L
+
+#1. Manipulations with the directory
+#Check the current directory
+getwd() 
+
+#You can change it by typing a new address with a command setwd(".../Newdirectory")
+
+#You can create a new folder in the directory by typing  dir.create("NameOFtheFolder")
+
+#2. Interactions with the directory: Also have a look at the example1.R
+mX <- matrix(0, ncol = 3, nrow = 3) 
+save(mX, file = file.path(getwd(), "mX.RData"))
+load("mX.RData") 
+
+#Load the matrix from a particular folder
+load(file.path(getwd(),"mX.RData"))
+
+#Load the file containing some functions that we would like to use here
+source("example1_fun.R") 
+source(file.path(getwd(), "example1_fun.R")) 
+
+#3. some useful functions for strings
+sText_1 <- "hello"
+sText_2 <- "world"
+
+# Combine together
+sText_3 <- paste(sText_1, sText_2, sep = " ")
+
+# Manipulate with this line:it allows to extract parts of the expression
+substr(sText_3, 7, nchar(sText_3)) 
+
+#4. some useful numerical functions
+sqrt(2)
+sin(2)
+pi
+
+# Logarithms
+# Natural log
+log(exp(1)) # the log() function defaults to natural log
+
+# Log with base-10
+log(100, 10) 
+
+# Rounding numbers
+round(pi, 4)
+ceiling(pi)
+floor(pi)
+
+# Setting how many digits you want to have the numbers displayed
+options(digits = 10)
+
+# generating sequences
+seq(1, 9, by = 0.5)
+2:17 # quicker way of generating a sequence
+17:2
+
+# mod
+14 %% 3 
+vX <- seq(1, 10)
+vX %% 2
+
+#5. NAs and NANs
+# NaN: "Not a Number", used for things that cannot be calculated
+# NA: "Not Available", values that are unknown or missing
+
+# NaN examples:
+0/0      # is NaN
+sqrt(-1) # is NaN
+Inf-Inf  # is NaN
+NaN/NA   # is NaN
+
+#NAs 
+vA <- c(1, 2, NA)
+
+# The way NAs affect calculations
+mean(vA) 
+mean(vA, na.rm = TRUE) 
+
+# Similarly we can do
+vA[!is.na(vA)] 
+mean(vA[!is.na(vA)])
+
+# Or equivalently
+mean(vA[which(!is.na(vA))])
+
+##  NaNs
+vB <- c(1, 2, NaN, NA)
+
+is.nan(vB)
+any(is.nan(vB))
+is.na(vB)
+
+#6. Manipulations using logicals
+dX = 2
+dX == 3 # is equal to
+
+# | or:just one of the constraints is true
+((2 == 3) | (2 > 1)) 
+
+# & and:all constraints to be true
+((2 == 3) & (2 > 1)) 
+
+vX <- c(1, 2, 3)
+vY <- c(4, 5, 6)
+
+# In case of vectors logical operators check element-wise
+(vX < 2 | vY > 3) 
+(vX < 2 & vY > 3)
+
+
+#7. List and data frames
+# 7.1 List
+# Create an empty one and put elements in it
+lList1 <- list()
+
+lList1[[1]] <- c(1,2,3)
+lList1[[2]] <- matrix(1:4, ncol = 2)
+lList1[[3]] <- c(TRUE, FALSE, FALSE)
+names(lList1) <- c("vector", "matrix", "boolean")
+
+lList1$vector[2]
+lList1$matrix[1, 2]
+
+# Equivalently the list can be created this way
+lList2 <- list(vector = c(1,2,3), matrix = matrix(1:4, ncol = 2), boolean = c(TRUE, FALSE, FALSE))
+lList2
+
+lList2[[2]]
+lList2$matrix
+mX <- lList2$matrix
+
+# 7.2 Data-frame
+mData <- data.frame(Plot = c(1, 2, 2, 5, 8, 8), Tree = c(2, 2, 3, 3, 3, 2),
+                    Species = c("DF", "WL", "GF", "WC", "WC", "GF"), Diameter = c(39, 48, 52, 35, 37, 30),
+                    Height = c(20.5, 33.0, 30.0, 20.7, 22.5, 20.1))
+
+mX <- matrix(c(1, 2, "hello", TRUE), ncol = 2) # a matrix cannot contain both numerical values, characters, and booleans
+
+# accessing the contents of a dataframe is easy
+mData$Plot
+mData[, 2]
+mData[, "Height"]
+
+```
+
+:::

@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>8&nbsp; Numerical Optimization 1 – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./numericaloptimization2.html" rel="next">
+<link href="./rootfinding.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./numericaloptimization1.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#numerical-vs-analytical-optimization" id="toc-numerical-vs-analytical-optimization" class="nav-link active" data-scroll-target="#numerical-vs-analytical-optimization"><span class="header-section-number">8.1</span> Numerical vs Analytical Optimization</a>
+  <ul class="collapse">
+<li><a href="#optimization-and-root-finding" id="toc-optimization-and-root-finding" class="nav-link" data-scroll-target="#optimization-and-root-finding"><span class="header-section-number">8.1.1</span> Optimization and Root-finding</a></li>
+  <li><a href="#maximum-definition" id="toc-maximum-definition" class="nav-link" data-scroll-target="#maximum-definition"><span class="header-section-number">8.1.2</span> Maximum: Definition</a></li>
+  <li><a href="#numerical-optimization-local-search-techniques" id="toc-numerical-optimization-local-search-techniques" class="nav-link" data-scroll-target="#numerical-optimization-local-search-techniques"><span class="header-section-number">8.1.3</span> Numerical optimization: local search techniques</a></li>
+  <li><a href="#numerical-optimization-general-structure" id="toc-numerical-optimization-general-structure" class="nav-link" data-scroll-target="#numerical-optimization-general-structure"><span class="header-section-number">8.1.4</span> Numerical optimization: general structure</a></li>
+  <li><a href="#stopping-criteria" id="toc-stopping-criteria" class="nav-link" data-scroll-target="#stopping-criteria"><span class="header-section-number">8.1.5</span> Stopping criteria</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#the-newton-raphson-method---and-method-for-optimization." id="toc-the-newton-raphson-method---and-method-for-optimization." class="nav-link" data-scroll-target="#the-newton-raphson-method---and-method-for-optimization."><span class="header-section-number">8.2</span> The Newton-Raphson Method - and Method for Optimization.</a>
+  <ul class="collapse">
+<li><a href="#newtons-method-for-optimization" id="toc-newtons-method-for-optimization" class="nav-link" data-scroll-target="#newtons-method-for-optimization"><span class="header-section-number">8.2.1</span> Newton’s Method for Optimization</a></li>
+  <li><a href="#newtons-algorithm-convergence" id="toc-newtons-algorithm-convergence" class="nav-link" data-scroll-target="#newtons-algorithm-convergence"><span class="header-section-number">8.2.2</span> Newton’s algorithm convergence</a></li>
+  <li><a href="#newtons-method-example" id="toc-newtons-method-example" class="nav-link" data-scroll-target="#newtons-method-example"><span class="header-section-number">8.2.3</span> Newton’s method: Example</a></li>
+  <li><a href="#newtons-method-implementation-in-r" id="toc-newtons-method-implementation-in-r" class="nav-link" data-scroll-target="#newtons-method-implementation-in-r"><span class="header-section-number">8.2.4</span> Newton’s method: implementation in R</a></li>
+  <li><a href="#exercise" id="toc-exercise" class="nav-link" data-scroll-target="#exercise"><span class="header-section-number">8.2.5</span> Exercise</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#the-golden-section-method" id="toc-the-golden-section-method" class="nav-link" data-scroll-target="#the-golden-section-method"><span class="header-section-number">8.3</span> The Golden-section method</a>
+  <ul class="collapse">
+<li><a href="#the-idea-of-the-golden-section-method" id="toc-the-idea-of-the-golden-section-method" class="nav-link" data-scroll-target="#the-idea-of-the-golden-section-method"><span class="header-section-number">8.3.1</span> The idea of the Golden-section method</a></li>
+  <li><a href="#the-golden-ratio" id="toc-the-golden-ratio" class="nav-link" data-scroll-target="#the-golden-ratio"><span class="header-section-number">8.3.2</span> The Golden ratio</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#new-algorithm" id="toc-new-algorithm" class="nav-link" data-scroll-target="#new-algorithm"><span class="header-section-number">8.4</span> New algorithm</a>
+  <ul class="collapse">
+<li><a href="#notes" id="toc-notes" class="nav-link" data-scroll-target="#notes"><span class="header-section-number">8.4.1</span> Notes</a></li>
+  <li><a href="#the-golden-section-method-r-implementation" id="toc-the-golden-section-method-r-implementation" class="nav-link" data-scroll-target="#the-golden-section-method-r-implementation"><span class="header-section-number">8.4.2</span> The golden-section method: R implementation</a></li>
+  </ul>
+</li>
+  <li><a href="#optimization-in-r-univariate" id="toc-optimization-in-r-univariate" class="nav-link" data-scroll-target="#optimization-in-r-univariate"><span class="header-section-number">8.5</span> Optimization in R: univariate</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./numericaloptimization1.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="numerical-vs-analytical-optimization" class="level2" data-number="8.1"><h2 data-number="8.1" class="anchored" data-anchor-id="numerical-vs-analytical-optimization">
+<span class="header-section-number">8.1</span> Numerical vs Analytical Optimization</h2>
+<p>First, recall that any maximization problem can be converted into a minimization problem by multiplying the function by -1.</p>
+<p>Most economic, econometric, and statistical problems can be solved by maximizing/minimizing an objective function.</p>
+<ul>
+<li><p>Maximum likelihood estimation</p></li>
+<li><p>GMM</p></li>
+<li><p>Portfolio allocation</p></li>
+<li><p>…</p></li>
+</ul>
+<p>In some cases, the optimal points can be found analytically, but in most cases a closed form solution is not available. In these cases, we need numerical optimization methods.</p>
+<section id="optimization-and-root-finding" class="level3" data-number="8.1.1"><h3 data-number="8.1.1" class="anchored" data-anchor-id="optimization-and-root-finding">
+<span class="header-section-number">8.1.1</span> Optimization and Root-finding</h3>
+<p>Root-finding and optimization are very closely related subjects which often occur in practical applications.</p>
+<p>In fact, as you all know, optimizing a function, e.g., <span class="math inline">\(f(x)=\frac{x^3}{3}-x\)</span> is equivalent to finding the roots of its derivative, <span class="math inline">\(f'(x)=x^2-1\)</span>.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Therefore, the methods used for numerical optimization are closely related to the numerical root-finding methods that were seen in the last lecture.</p>
+</section><section id="maximum-definition" class="level3" data-number="8.1.2"><h3 data-number="8.1.2" class="anchored" data-anchor-id="maximum-definition">
+<span class="header-section-number">8.1.2</span> Maximum: Definition</h3>
+<p>In one dimension, we suppose that we have a function <span class="math inline">\(f : \mathbb{R} \rightarrow \mathbb{R}\)</span> with continuous first and second derivatives.</p>
+<p>The function <span class="math inline">\(f\)</span> has a <em>global maximum</em> at <span class="math inline">\(x^*\)</span> if <span class="math inline">\(f(x) \le f(x^*)\)</span> for all <span class="math inline">\(x\)</span>.</p>
+<p>The function <span class="math inline">\(f\)</span> has a <em>local maximum</em> at <span class="math inline">\(x^*\)</span> if <span class="math inline">\(f(x) \le f(x^*)\)</span> for all <span class="math inline">\(x\)</span> in a neighborhood of <span class="math inline">\(x^*\)</span>,</p>
+<p>A necessary condition for <span class="math inline">\(x^*\)</span> to be a local maximum of <span class="math inline">\(f\)</span> is <span class="math inline">\(f'(x^*)=0\)</span> and <span class="math inline">\(f''(x^*) \le 0\)</span>, a sufficient condition is <span class="math inline">\(f'(x^*)=0\)</span> and <span class="math inline">\(f''(x^*)&lt;0\)</span>.</p>
+</section><section id="numerical-optimization-local-search-techniques" class="level3" data-number="8.1.3"><h3 data-number="8.1.3" class="anchored" data-anchor-id="numerical-optimization-local-search-techniques">
+<span class="header-section-number">8.1.3</span> Numerical optimization: local search techniques</h3>
+<p>Clearly, finding a local maximum is much easier than finding a global maximum.</p>
+<p>All of the algorithms we consider for numerical optimization are local search techniques.</p>
+<p>These algorithms work by generating a series of points, <span class="math inline">\(x_0\)</span>, <span class="math inline">\(x_1\)</span>, <span class="math inline">\(x_2\)</span>, <span class="math inline">\(\cdots\)</span>, which (hopefully, but not necessarily) converge to a local maximum of <span class="math inline">\(f\)</span>.</p>
+<p>Given a prospective solution <span class="math inline">\(x_n\)</span>, we look for the next prospective solution <span class="math inline">\(x_{n+1}\)</span> in some neighborhood of <span class="math inline">\(x_n\)</span>.</p>
+<p>Because they never consider the whole space of possible solutions, local search techniques can only ever be guaranteed to find local maxima.</p>
+</section><section id="numerical-optimization-general-structure" class="level3" data-number="8.1.4"><h3 data-number="8.1.4" class="anchored" data-anchor-id="numerical-optimization-general-structure">
+<span class="header-section-number">8.1.4</span> Numerical optimization: general structure</h3>
+<p>These search techniques are iterative procedures with the following general structure.</p>
+<ol type="1">
+<li><p>Chose a starting point, <span class="math inline">\(x_0\)</span>;</p></li>
+<li><p>Check for optimality in <span class="math inline">\(x_0\)</span>;</p></li>
+<li><p>A series of instructions to select another candidate of an optimal point;</p></li>
+<li><p>Back to point 2 until an optimality criterion is satisfied;</p></li>
+<li><p>Final point, <span class="math inline">\(x_N\)</span>, is an approximation of the local optimal point, <span class="math inline">\(x^*\)</span>, for the function <span class="math inline">\(f(\cdot)\)</span>.</p></li>
+</ol>
+<p>A serach method is said to be <em>globally convergent</em> if it can reach a stationary point starting from any initial point. Otherwise, the method is said to be locally convergent.</p>
+</section><section id="stopping-criteria" class="level3" data-number="8.1.5"><h3 data-number="8.1.5" class="anchored" data-anchor-id="stopping-criteria">
+<span class="header-section-number">8.1.5</span> Stopping criteria</h3>
+<p>All algorithms require a stopping ceriteria to avoid that the routines keep running forever. The purpose is:</p>
+<ul>
+<li><p>Limit the number of iterations.</p></li>
+<li><p>Obtain an accurate solution.</p></li>
+</ul>
+<p>Typical stopping criteria are:</p>
+<ol type="1">
+<li><p><span class="math inline">\(|x_n-x_{n-1}| \le \varepsilon\)</span>, with <span class="math inline">\(\varepsilon &gt;0\)</span>;</p></li>
+<li><p><span class="math inline">\(|f(x_n)-f(x_{n-1})| \le \varepsilon\)</span>, with <span class="math inline">\(\varepsilon &gt;0\)</span>;</p></li>
+<li><p><span class="math inline">\(|f(x_n)| \le \varepsilon\)</span>, with <span class="math inline">\(\varepsilon &gt;0\)</span>;</p></li>
+<li><p>Maximum number of iterations reached, <span class="math inline">\(n=n_{max}\)</span>.</p></li>
+</ol>
+<p>If the sequence <span class="math inline">\(\{x_n\}_{n=1}^{\infty}\)</span> converges to a local maximum, the criteria 1-3 will all be satisfied, but the converse is not necessarily true. Thus, even when a local search technique appears to converge, we may still need to check that the final solution really is a local maximum.</p>
+<p>We may find that the algorithm does not converge at all; e.g., if <span class="math inline">\(f\)</span> is unbounded then possibly <span class="math inline">\(x_n \rightarrow \infty\)</span>. This is the reason that we need to specify a maximum number of iterations <span class="math inline">\(n_{max}\)</span>.</p>
+</section></section><section id="the-newton-raphson-method---and-method-for-optimization." class="level2" data-number="8.2"><h2 data-number="8.2" class="anchored" data-anchor-id="the-newton-raphson-method---and-method-for-optimization.">
+<span class="header-section-number">8.2</span> The Newton-Raphson Method - and Method for Optimization.</h2>
+<p>As we saw last time, the Newton-Raphson method uses information on the function <span class="math inline">\(f\)</span> and its derivative <span class="math inline">\(f'\)</span>. The original formulation of the NR method is intended to find the <em>roots</em> of a function, and it is based on the following recursive algorithm:</p>
+<ul>
+<li><p>Define inputs: <span class="math inline">\(f(x), x_0, \varepsilon, n_{max}\)</span>. For <span class="math inline">\(n=0,1,...\)</span> until stopping condition reached, do:</p></li>
+<li><p>Compute <span class="math inline">\(f(x_n)\)</span> and <span class="math inline">\(f'(x_n)\)</span>.</p></li>
+<li><p>Compute <span class="math inline">\(x_{n+1}=x_n-\frac{f(x_n)}{f'(x_n)}\)</span>.</p></li>
+<li>
+<p>Stopping conditions:</p>
+<ul>
+<li><p>If <span class="math inline">\(|f(x_n)| \le \varepsilon\)</span> then set <span class="math inline">\(x_n=a\)</span> and stop; algorithm converged.</p></li>
+<li><p>If <span class="math inline">\(n=m_{max}\)</span> then stop; maximum number of iterations has been reached, algorithm failed to converge.</p></li>
+</ul>
+</li>
+</ul>
+<section id="newtons-method-for-optimization" class="level3" data-number="8.2.1"><h3 data-number="8.2.1" class="anchored" data-anchor-id="newtons-method-for-optimization">
+<span class="header-section-number">8.2.1</span> Newton’s Method for Optimization</h3>
+<p>Since we deal with a problem of optimization, i.e., <span class="math inline">\(f'(x)=0\)</span>, Newton’s method for optimization replaces <span class="math inline">\(f(x)\)</span> with <span class="math inline">\(f'(x)\)</span> in the original Newton-Raphson method.</p>
+<p>Hence, the <span class="math inline">\(n\)</span>-th step in Newton’s method for optimization (for univariate functions) is:</p>
+<p><span class="math display">\[
+x_n = x_{n-1} - \frac{f'(x_{n-1})}{f''(x_{n-1})}
+\]</span></p>
+<p>The Newton’s method is such that the convergence is <em>local</em> and <em>quadratic</em>, meaning that near the solution, the convergence is very fast!</p>
+<p>The Newton’s method is really suitable when the first- and second-order information are readily and easily calculated.</p>
+</section><section id="newtons-algorithm-convergence" class="level3" data-number="8.2.2"><h3 data-number="8.2.2" class="anchored" data-anchor-id="newtons-algorithm-convergence">
+<span class="header-section-number">8.2.2</span> Newton’s algorithm convergence</h3>
+<p>When the Newton algorithm converges, we can end up with a minimum, or indeed a ‘flat spot’, just as easily as a maximum.</p>
+<p>The reason is that all such stationary points satisfy <span class="math inline">\(f'(x^*)=0\)</span>.</p>
+<p>It can be shown that if:</p>
+<ul>
+<li><p><span class="math inline">\(x^*\)</span> is a local maximum.</p></li>
+<li><p><span class="math inline">\(f'(x^*)=0\)</span></p></li>
+<li><p><span class="math inline">\(f''(x^*)&lt;0\)</span></p></li>
+<li><p><span class="math inline">\(\exists k \in \mathbb{R} : |f''(x) - f''(y)| \le k|x-y| \forall (x,y) \in \mathbb{R}^2\)</span> (that is, <span class="math inline">\(f''\)</span> is Lipschitz-continuous) in a neighborhood of <span class="math inline">\(x^*\)</span> then, provided that <span class="math inline">\(x_0\)</span> is close enough to <span class="math inline">\(x^*\)</span>, <span class="math inline">\(x_n \rightarrow x^*\)</span> quickly as <span class="math inline">\(n \rightarrow \infty\)</span>.</p></li>
+</ul>
+<p>We will revisit Newton’s method later in higher dimensions.</p>
+</section><section id="newtons-method-example" class="level3" data-number="8.2.3"><h3 data-number="8.2.3" class="anchored" data-anchor-id="newtons-method-example">
+<span class="header-section-number">8.2.3</span> Newton’s method: Example</h3>
+<p>Consider the function <span class="math inline">\(f(x)=2x(x-1)^2(x+2)\)</span></p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">&lt;-</span> <span class="fl">2</span> <span class="op">*</span> <span class="va">dX</span> <span class="op">*</span> <span class="op">(</span><span class="va">dX</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span> <span class="op">*</span> <span class="op">(</span><span class="va">dX</span> <span class="op">+</span> <span class="fl">2</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>with first derivative <span class="math inline">\(f'(x)=4-12x+8x^3\)</span></p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f_prime</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">&lt;-</span> <span class="fl">4</span> <span class="op">-</span> <span class="fl">12</span> <span class="op">*</span> <span class="va">dX</span> <span class="op">+</span> <span class="fl">8</span> <span class="op">*</span> <span class="va">dX</span><span class="op">^</span><span class="fl">3</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>and second derivative <span class="math inline">\(f''(x)=24x^2-12\)</span></p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">f_second</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">&lt;-</span> <span class="fl">24</span> <span class="op">*</span> <span class="va">dX</span><span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">12</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vX</span>, <span class="fu">f</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="newtons-method-implementation-in-r" class="level3" data-number="8.2.4"><h3 data-number="8.2.4" class="anchored" data-anchor-id="newtons-method-implementation-in-r">
+<span class="header-section-number">8.2.4</span> Newton’s method: implementation in R</h3>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">NM</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">f_prime</span>, <span class="va">f_sec</span>, <span class="va">dX0</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span>, <span class="va">n.max</span> <span class="op">=</span> <span class="fl">1000</span><span class="op">)</span><span class="op">{</span></span>
+<span>  <span class="va">dX</span> <span class="op">&lt;-</span> <span class="va">dX0</span></span>
+<span>  <span class="va">fx</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>  <span class="va">fpx</span> <span class="op">&lt;-</span> <span class="fu">f_prime</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>  <span class="va">fsx</span> <span class="op">&lt;-</span> <span class="fu">f_sec</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>  <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">fpx</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">&amp;&amp;</span> <span class="op">(</span><span class="va">n</span> <span class="op">&lt;</span> <span class="va">n.max</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">dX</span> <span class="op">&lt;-</span> <span class="va">dX</span> <span class="op">-</span> <span class="va">fpx</span><span class="op">/</span><span class="va">fsx</span></span>
+<span>    <span class="va">fx</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>    <span class="va">fpx</span> <span class="op">&lt;-</span> <span class="fu">f_prime</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>    <span class="va">fsx</span> <span class="op">&lt;-</span> <span class="fu">f_sec</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>    <span class="va">n</span> <span class="op">&lt;-</span> <span class="va">n</span> <span class="op">+</span> <span class="fl">1</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"At iteration"</span>, <span class="va">n</span>, <span class="st">"the value of x is:"</span>, <span class="va">dX</span>, <span class="st">"\n"</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">==</span> <span class="va">n.max</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">'newton failed to converge\n'</span><span class="op">)</span></span>
+<span>  <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>    <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Example: starting point <span class="math inline">\(x_0 = -2\)</span>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">x1</span> <span class="op">&lt;-</span> <span class="fu">NM</span><span class="op">(</span><span class="va">f</span>, <span class="va">f_prime</span>, <span class="va">f_second</span>, dX0 <span class="op">=</span> <span class="op">-</span><span class="fl">2</span><span class="op">)</span></span>
+<span><span class="co">#&gt; At iteration 1 the value of x is: -1.571429 </span></span>
+<span><span class="co">#&gt; At iteration 2 the value of x is: -1.398224 </span></span>
+<span><span class="co">#&gt; At iteration 3 the value of x is: -1.367014 </span></span>
+<span><span class="co">#&gt; At iteration 4 the value of x is: -1.366026 </span></span>
+<span><span class="co">#&gt; At iteration 5 the value of x is: -1.366025</span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">2</span>, <span class="fl">2</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vX</span>, <span class="fu">f</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="op">-</span><span class="fl">2</span>, col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span> <span class="co"># initial guess</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="op">-</span><span class="fl">1.571429</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="co"># first iteration</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="op">-</span><span class="fl">1.398224</span>, lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="co"># second iteration</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="op">-</span><span class="fl">1.367014</span> , lty<span class="op">=</span><span class="fl">2</span><span class="op">)</span> <span class="co"># third iteration</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">x1</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span> <span class="co"># solution</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Example: starting point <span class="math inline">\(x_0 = 1.5\)</span>:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>Example: starting point <span class="math inline">\(x_0 = -0.4\)</span>:</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="exercise" class="level3" data-number="8.2.5"><h3 data-number="8.2.5" class="anchored" data-anchor-id="exercise">
+<span class="header-section-number">8.2.5</span> Exercise</h3>
+<p><em>Find the local maximum and the local minimum of the function</em> <span class="math inline">\(f(x)=x^3+(6-x)^2\)</span> <em>on the interval</em> <span class="math inline">\([-5,5]\)</span> <em>using Newton’s method and the</em> <code>optimize</code> <em>function.</em></p>
+<p><em>Plot the function to pick starting points for Newton’s method.</em></p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Functions</span></span>
+<span><span class="va">fe1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">&lt;-</span> <span class="va">dX</span><span class="op">^</span><span class="fl">3</span> <span class="op">+</span> <span class="op">(</span><span class="fl">6</span><span class="op">-</span><span class="va">dX</span><span class="op">)</span><span class="op">^</span><span class="fl">2</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">feprime</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">&lt;-</span> <span class="fl">3</span> <span class="op">*</span> <span class="va">dX</span><span class="op">^</span><span class="fl">2</span> <span class="op">-</span> <span class="fl">2</span><span class="op">*</span><span class="op">(</span><span class="fl">6</span><span class="op">-</span><span class="va">dX</span><span class="op">)</span> </span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="va">fesecond</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">dX</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">dOut</span> <span class="op">&lt;-</span> <span class="fl">6</span> <span class="op">*</span> <span class="va">dX</span> <span class="op">+</span> <span class="fl">2</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dOut</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="co">#Solution</span></span>
+<span><span class="va">xe1</span> <span class="op">&lt;-</span> <span class="fu">NM</span><span class="op">(</span><span class="va">fe1</span>, <span class="va">feprime</span>, <span class="va">fesecond</span>, dX0 <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span> <span class="co"># minimum</span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vX</span>, <span class="fu">fe1</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="op">-</span><span class="fl">1</span>, col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span> <span class="co"># initial guess</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">xe1</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span> <span class="co"># solution</span></span>
+<span></span>
+<span><span class="va">xe2</span> <span class="op">&lt;-</span> <span class="fu">NM</span><span class="op">(</span><span class="va">fe1</span>, <span class="va">feprime</span>, <span class="va">fesecond</span>, dX0 <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="co"># maximum</span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="op">-</span><span class="fl">5</span>, <span class="fl">5</span>, <span class="fl">0.1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">vX</span>, <span class="fu">fe1</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, type <span class="op">=</span> <span class="st">"l"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="fl">4</span>, col<span class="op">=</span><span class="st">"blue"</span><span class="op">)</span> <span class="co"># initial guess</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html">abline</a></span><span class="op">(</span>v<span class="op">=</span><span class="va">xe2</span>, col<span class="op">=</span><span class="st">"red"</span><span class="op">)</span> <span class="co"># solution</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="numericaloptimization1_files/figure-html/unnamed-chunk-10-2.png" class="img-fluid figure-img" width="576"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="the-golden-section-method" class="level2" data-number="8.3"><h2 data-number="8.3" class="anchored" data-anchor-id="the-golden-section-method">
+<span class="header-section-number">8.3</span> The Golden-section method</h2>
+<p>The golden-section method works in one dimension only, but does not need <span class="math inline">\(f'\)</span>.</p>
+<p>This method is similar to the root-bracketing technique for root-finding.</p>
+<p>Let <span class="math inline">\(f : \mathbb{R} \rightarrow \mathbb{R}\)</span> be a continuous function (note, that we do not assume that we have a derivative).</p>
+<p>If we have two points <span class="math inline">\(x_l &lt; x_r\)</span> such that <span class="math inline">\(f(x_l)f(x_r) \le 0\)</span> then we know that there is a root in the interval <span class="math inline">\([x_l, x_r]\)</span>.</p>
+<p>To determine if we have a local maximum, we need three points: if <span class="math inline">\(x_l &lt; x_m &lt; x_r\)</span> and <span class="math inline">\(f(x_l) \le f(x_m)\)</span> and <span class="math inline">\(f(x_r) \le f(x_m)\)</span> then there must be a local maximum in the interval <span class="math inline">\([x_l, x_r]\)</span>.</p>
+<section id="the-idea-of-the-golden-section-method" class="level3" data-number="8.3.1"><h3 data-number="8.3.1" class="anchored" data-anchor-id="the-idea-of-the-golden-section-method">
+<span class="header-section-number">8.3.1</span> The idea of the Golden-section method</h3>
+<ol start="0" type="1">
+<li><p>Start with <span class="math inline">\(x_l &lt; x_m &lt; x_r\)</span> such that <span class="math inline">\(f(x_l) \le f(x_m)\)</span> and <span class="math inline">\(f(x_r) \le f(x_m)\)</span>.</p></li>
+<li><p>If <span class="math inline">\(x_r - x_l \le \varepsilon\)</span> then stop; set <span class="math inline">\(x^*=x_m\)</span>.</p></li>
+<li><p>If <span class="math inline">\(x_r - x_m &gt; x_m - x_l\)</span> then 2a.; otherwise do 2b.</p></li>
+</ol>
+<p>2a) Choose a point <span class="math inline">\(y \in (x_m, x_r)\)</span></p>
+<ul>
+<li><p>If <span class="math inline">\(f(y) \ge f(x_m)\)</span> then the maximum is <span class="math inline">\((x_m,x_r)\)</span> and we can redefine the interval: put <span class="math inline">\(x_l=x_m\)</span> and <span class="math inline">\(x_m = y\)</span>;</p></li>
+<li><p>Otherwise the maximum is in the interval <span class="math inline">\((x_l,y)\)</span> and we can redefine the interval: <span class="math inline">\(x_r=y\)</span>.</p></li>
+</ul>
+<p>2b) Choose a point <span class="math inline">\(y \in (x_l, x_m)\)</span></p>
+<ul>
+<li><p>If <span class="math inline">\(f(y) \ge f(x_m)\)</span> then the maximum is <span class="math inline">\((x_l,x_m)\)</span> and we can redefine the interval: put <span class="math inline">\(x_r=x_m\)</span> and <span class="math inline">\(x_m = y\)</span>;</p></li>
+<li><p>Otherwise the maximum is in the interval <span class="math inline">\((y,x_r)\)</span> and we can redefine the interval: <span class="math inline">\(x_l=y\)</span>.</p></li>
+</ul>
+<ol start="3" type="1">
+<li>Go back to step 1.</li>
+</ol></section><section id="the-golden-ratio" class="level3" data-number="8.3.2"><h3 data-number="8.3.2" class="anchored" data-anchor-id="the-golden-ratio">
+<span class="header-section-number">8.3.2</span> The Golden ratio</h3>
+<p>Other than saying that <span class="math inline">\(y\)</span> should be in the larger of the two intervals, <span class="math inline">\((x_l,x_m)\)</span> and <span class="math inline">\((x_m,x_r)\)</span>, how do we specify <span class="math inline">\(y\)</span>?</p>
+<p>Suppose <span class="math inline">\((x_m,x_r)\)</span> is the larger interval (as in the figure below), and let <span class="math inline">\(a=x_m-x_l\)</span>, <span class="math inline">\(b=x_r-x_m\)</span>, and <span class="math inline">\(c=y-x_m\)</span>.</p>
+<p>[<img src="GoldenSectionMethod.PNG" class="img-fluid">]</p>
+<p>The golden-section algortihm chooses <span class="math inline">\(y\)</span> such that the ratio of the lengths of the larger to the smaller interval stays the same at each iteration.</p>
+<p>That is, if the new breacketing interval is <span class="math inline">\([x_l,y]\)</span> then:</p>
+<p><span class="math display">\[
+\frac{a}{c} = \frac{b}{a}
+\]</span></p>
+<p>While if the new bracketing interval is <span class="math inline">\([x_m,x_r]\)</span> then:</p>
+<p><span class="math display">\[
+\frac{b-c}{c} = \frac{b}{a}
+\]</span></p>
+<p>Setting <span class="math inline">\(\phi = \frac{b}{a}\)</span> and using the two equations above to solve for <span class="math inline">\(\phi\)</span> and we can find the famous golden ratio:</p>
+<p><span class="math display">\[
+\phi^2 - \phi - 1 = 0 \Rightarrow \phi = \frac{1+\sqrt{5}}{2} \approx 1.618
+\]</span></p>
+<p>We then solve for <span class="math inline">\(c\)</span> using the second equation:</p>
+<p><span class="math display">\[
+\frac{b-c}{c} = \phi \Rightarrow c=b/(1+\phi)
+\]</span></p>
+<p>Choose <span class="math inline">\(y\)</span>:</p>
+<p><span class="math display">\[
+y = x_m + \underbrace{c}_{y-x_m} + x_m + \underbrace{b}_{x_r-x_m} / (1+\phi) = x_m + (x_r - x_m)/(1+\phi)
+\]</span></p>
+<p>An analogous argument applies if <span class="math inline">\((x_l,x_m)\)</span> is the larger interval.</p>
+<p>Using this method for choosing <span class="math inline">\(y\)</span>gives the following version of the algorithm:</p>
+</section></section><section id="new-algorithm" class="level2" data-number="8.4"><h2 data-number="8.4" class="anchored" data-anchor-id="new-algorithm">
+<span class="header-section-number">8.4</span> New algorithm</h2>
+<ol start="0" type="1">
+<li>Start with <span class="math inline">\(x_l &lt; x_m &lt; x_r\)</span> such that <span class="math inline">\(f(x_l) \le f(x_m)\)</span> and <span class="math inline">\(f(x_r) \le f(x_m)\)</span>.</li>
+<li>If <span class="math inline">\(x_r - x_l \le \varepsilon\)</span> then stop; set <span class="math inline">\(x^*=x_m\)</span>.</li>
+<li>If <span class="math inline">\(x_r - x_m &gt; x_m - x_l\)</span> then 2.i; otherwise do 2.ii.</li>
+</ol>
+<ol type="i">
+<li>Set <span class="math inline">\(y = x_m + (x_r-x_m)/(1+\phi)\)</span>. If <span class="math inline">\(f(y) \ge f(x_m)\)</span> then put <span class="math inline">\(x_l=x_m\)</span> and <span class="math inline">\(x_m = y\)</span>; otherwise put <span class="math inline">\(x_r = y\)</span>;</li>
+<li>Set <span class="math inline">\(y = x_m + (x_m-x_l)/(1+\phi)\)</span>. If <span class="math inline">\(f(y) \ge f(x_m)\)</span> then put <span class="math inline">\(x_r=x_m\)</span> and <span class="math inline">\(x_m = y\)</span>; otherwise put <span class="math inline">\(x_l = y\)</span>;</li>
+</ol>
+<ol start="3" type="1">
+<li>Go back to step 1.</li>
+</ol>
+<p>With <span class="math inline">\(\phi = \frac{1+\sqrt{5}}{2}\)</span> being the famous golden ratio.</p>
+<section id="notes" class="level3" data-number="8.4.1"><h3 data-number="8.4.1" class="anchored" data-anchor-id="notes">
+<span class="header-section-number">8.4.1</span> Notes</h3>
+<p>The length ratio of the new interval to the old is either <span class="math inline">\(b/(a+b)\)</span> or <span class="math inline">\((a+c)/(a+b)\)</span> (see figure to verify graphically), which both work out as <span class="math inline">\(\phi / (1+\phi)\)</span>.</p>
+<p>That implies that if we start with <span class="math inline">\(x_m\)</span> chosen so that the ratio <span class="math inline">\(\underbrace{(x_r-x_m)}_b / \underbrace{(x_m-x_l)}_a=\phi\)</span> or <span class="math inline">\(1/\phi\)</span> then at each iteration the width of the bracketing interval is reduced by a constant factor of <span class="math inline">\(\phi / (1+\phi)\)</span> and so must eventually go to zero.</p>
+<p>If you do not start with the ratio <span class="math inline">\((x_r-x_m) / (x_m-x_l)=\phi\)</span> or <span class="math inline">\(1/\phi\)</span> it is not a problem because as soon as you have an iteration that puts <span class="math inline">\(x_m=y\)</span>, this will be the case (by definition of how <span class="math inline">\(y\)</span> is chosen).</p>
+<p>Since <span class="math inline">\((x_r-x_l) \rightarrow 0\)</span> as <span class="math inline">\(n \rightarrow \infty\)</span>, to stop the golden-section algorithm it is sufficient to specify a tolerance <span class="math inline">\(\varepsilon &gt; 0\)</span> then stop when <span class="math inline">\(x_r-x_l \le \varepsilon\)</span>.</p>
+</section><section id="the-golden-section-method-r-implementation" class="level3" data-number="8.4.2"><h3 data-number="8.4.2" class="anchored" data-anchor-id="the-golden-section-method-r-implementation">
+<span class="header-section-number">8.4.2</span> The golden-section method: R implementation</h3>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">gsection</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">f</span>, <span class="va">dX.l</span>, <span class="va">dX.r</span>, <span class="va">dX.m</span>, <span class="va">dTol</span> <span class="op">=</span> <span class="fl">1e-9</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  </span>
+<span>  <span class="co"># golden ratio plus one</span></span>
+<span>  <span class="va">dGR1</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="op">+</span> <span class="op">(</span><span class="fl">1</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">/</span><span class="fl">2</span></span>
+<span>  </span>
+<span>  <span class="co"># successively refine x.l, x.r, and x.m</span></span>
+<span>  <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.l</span><span class="op">)</span></span>
+<span>  <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.r</span><span class="op">)</span></span>
+<span>  <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dX.m</span><span class="op">)</span></span>
+<span>  <span class="kw">while</span> <span class="op">(</span><span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span> <span class="op">&gt;</span> <span class="va">dTol</span><span class="op">)</span> <span class="op">{</span> </span>
+<span>    <span class="kw">if</span> <span class="op">(</span><span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.m</span><span class="op">)</span> <span class="op">&gt;</span> <span class="op">(</span><span class="va">dX.m</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span> <span class="co"># if the right segment is wider than the left </span></span>
+<span>      <span class="va">dY</span> <span class="op">&lt;-</span> <span class="va">dX.m</span> <span class="op">+</span> <span class="op">(</span><span class="va">dX.r</span> <span class="op">-</span> <span class="va">dX.m</span><span class="op">)</span><span class="op">/</span><span class="va">dGR1</span> <span class="co"># put Y into the right segment according to the golden ratio</span></span>
+<span>      <span class="va">f.y</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dY</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">f.y</span> <span class="op">&gt;=</span> <span class="va">f.m</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.l</span> <span class="op">&lt;-</span> <span class="va">dX.m</span></span>
+<span>        <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="va">f.m</span></span>
+<span>        <span class="va">dX.m</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.r</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span> <span class="co">#if the left segment is wider than the right</span></span>
+<span>      <span class="va">dY</span> <span class="op">&lt;-</span> <span class="va">dX.m</span> <span class="op">-</span> <span class="op">(</span><span class="va">dX.m</span> <span class="op">-</span> <span class="va">dX.l</span><span class="op">)</span><span class="op">/</span><span class="va">dGR1</span> <span class="co"># put Y into the left segment according to the golden ratio</span></span>
+<span>      <span class="va">f.y</span> <span class="op">&lt;-</span> <span class="fu">f</span><span class="op">(</span><span class="va">dY</span><span class="op">)</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">f.y</span> <span class="op">&gt;=</span> <span class="va">f.m</span><span class="op">)</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.r</span> <span class="op">&lt;-</span> <span class="va">dX.m</span></span>
+<span>        <span class="va">f.r</span> <span class="op">&lt;-</span> <span class="va">f.m</span></span>
+<span>        <span class="va">dX.m</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.m</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span> <span class="kw">else</span> <span class="op">{</span></span>
+<span>        <span class="va">dX.l</span> <span class="op">&lt;-</span> <span class="va">dY</span></span>
+<span>        <span class="va">f.l</span> <span class="op">&lt;-</span> <span class="va">f.y</span></span>
+<span>      <span class="op">}</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">dX.m</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu">gsection</span><span class="op">(</span><span class="va">f</span>, dX.l <span class="op">=</span> <span class="op">-</span><span class="fl">1</span>, dX.r <span class="op">=</span> <span class="fl">1</span>, dX.m <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 0.3660254</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="optimization-in-r-univariate" class="level2" data-number="8.5"><h2 data-number="8.5" class="anchored" data-anchor-id="optimization-in-r-univariate">
+<span class="header-section-number">8.5</span> Optimization in R: univariate</h2>
+<p>In one dimension, R provides the function <code>optimize</code>, which uses a combination of the golden-section algorithm with a technique called parabolic interpolation.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/optimize.html">optimize</a></span><span class="op">(</span><span class="va">f</span>, <span class="va">interval</span>, <span class="va">...</span>, lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">interval</span><span class="op">)</span>, upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">interval</span><span class="op">)</span>, maximum <span class="op">=</span> <span class="cn">FALSE</span>, tol <span class="op">=</span> <span class="va">.Machine</span><span class="op">$</span><span class="va">double.eps</span><span class="op">^</span><span class="fl">0.25</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that since <code>maximum = FALSE</code>, by default, <code>optimize</code> minimizes <span class="math inline">\(f\)</span>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/optimize.html">optimize</a></span><span class="op">(</span><span class="va">f</span>, lower <span class="op">=</span> <span class="op">-</span><span class="fl">0.4</span>, upper <span class="op">=</span> <span class="fl">0.8</span>, maximum <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $maximum</span></span>
+<span><span class="co">#&gt; [1] 0.3660215</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $objective</span></span>
+<span><span class="co">#&gt; [1] 0.6961524</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>For the example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Using built-in optimizer</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/optimize.html">optimize</a></span><span class="op">(</span><span class="va">fe1</span>, lower <span class="op">=</span> <span class="op">-</span><span class="fl">5</span>, upper <span class="op">=</span> <span class="fl">5</span>, maximum <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="co"># maximum</span></span>
+<span><span class="co">#&gt; $maximum</span></span>
+<span><span class="co">#&gt; [1] -2.360919</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $objective</span></span>
+<span><span class="co">#&gt; [1] 56.74535</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/optimize.html">optimize</a></span><span class="op">(</span><span class="va">fe1</span>, lower <span class="op">=</span> <span class="op">-</span><span class="fl">5</span>, upper <span class="op">=</span> <span class="fl">5</span><span class="op">)</span> <span class="co"># minimum</span></span>
+<span><span class="co">#&gt; $minimum</span></span>
+<span><span class="co">#&gt; [1] 1.694255</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $objective</span></span>
+<span><span class="co">#&gt; [1] 23.4028</span></span>
+<span></span>
+<span><span class="va">f2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="op">-</span><span class="fl">1</span><span class="op">*</span><span class="fu">fe1</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/stats/optimize.html">optimize</a></span><span class="op">(</span><span class="va">f2</span>, lower <span class="op">=</span> <span class="op">-</span><span class="fl">5</span>, upper <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="co">#&gt; $minimum</span></span>
+<span><span class="co">#&gt; [1] -2.360919</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; $objective</span></span>
+<span><span class="co">#&gt; [1] -56.74535</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./rootfinding.html" class="pagination-link" aria-label="Root-finding">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./numericaloptimization2.html" class="pagination-link" aria-label="Numerical Optimization 2">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.6.42">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>5&nbsp; Program Efficiency and Parallel Computing – Notes for 3611: Programming in Quantitative Economics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./introduction_to_simulation.html" rel="next">
+<link href="./programming_w_functions.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-ecba78ac1d23ec93bb40517a5fbc1f6e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+</head>
+<body class="nav-sidebar floating">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./efficiency_and_parallel_computing.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">Notes for 3611: Programming in Quantitative Economics</a> 
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./lectures.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Lectures</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./intro.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction to the Course</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./getting_started_with_r.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Getting Started with R</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./basic_programming.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Basic Programming</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./programming_w_functions.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./efficiency_and_parallel_computing.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./introduction_to_simulation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./rootfinding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Root-finding</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Numerical Optimization 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./numericaloptimization2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Numerical Optimization 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./constrainedandpitfalls.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Constrained Optimization and Pitfalls in Optimization</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./cpp.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Integration of C++ Code with Rcpp</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./packages.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Creating R packages with RStudio</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./problemsets.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Problem sets</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">
+<li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset1.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Exercise set 1</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset2.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Exercise set 2</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset3.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">15</span>&nbsp; <span class="chapter-title">Exercise set 3</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset4.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">16</span>&nbsp; <span class="chapter-title">Exercise set 4</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset5.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">17</span>&nbsp; <span class="chapter-title">Exercise set 5</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./problemset6.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">18</span>&nbsp; <span class="chapter-title">Exercise set 6</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2020.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">19</span>&nbsp; <span class="chapter-title">Ordinary exam 2020</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">20</span>&nbsp; <span class="chapter-title">Ordinary exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2021re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">21</span>&nbsp; <span class="chapter-title">Retake exam 2021</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">22</span>&nbsp; <span class="chapter-title">Ordinary exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2022re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">23</span>&nbsp; <span class="chapter-title">Retake exam 2022</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">24</span>&nbsp; <span class="chapter-title">Ordinary exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2023re.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">25</span>&nbsp; <span class="chapter-title">Retake exam 2023</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">26</span>&nbsp; <span class="chapter-title">Ordinary exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./exam2024retake.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">27</span>&nbsp; <span class="chapter-title">Retake exam 2024</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">28</span>&nbsp; <span class="chapter-title">Extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./advanced_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">29</span>&nbsp; <span class="chapter-title">Advanced exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./extra_extra_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">30</span>&nbsp; <span class="chapter-title">Extra extra exercises</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./likelihood_exercises.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">31</span>&nbsp; <span class="chapter-title">Likelihood Exercises</span></span></a>
+  </div>
+</li>
+      </ul>
+</li>
+    </ul>
+</div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+<li>
+<a href="#good-practice-for-programming" id="toc-good-practice-for-programming" class="nav-link active" data-scroll-target="#good-practice-for-programming"><span class="header-section-number">5.1</span> Good practice for programming</a>
+  <ul class="collapse">
+<li><a href="#programming-in-theory---plan-ahead" id="toc-programming-in-theory---plan-ahead" class="nav-link" data-scroll-target="#programming-in-theory---plan-ahead"><span class="header-section-number">5.1.1</span> Programming in theory - plan ahead</a></li>
+  <li><a href="#closer-to-practice" id="toc-closer-to-practice" class="nav-link" data-scroll-target="#closer-to-practice"><span class="header-section-number">5.1.2</span> Closer to practice:</a></li>
+  <li><a href="#use-of-functions-and-computational-efficiency" id="toc-use-of-functions-and-computational-efficiency" class="nav-link" data-scroll-target="#use-of-functions-and-computational-efficiency"><span class="header-section-number">5.1.3</span> Use of Functions and computational efficiency</a></li>
+  </ul>
+</li>
+  <li><a href="#code-execution-time" id="toc-code-execution-time" class="nav-link" data-scroll-target="#code-execution-time"><span class="header-section-number">5.2</span> Code execution time</a></li>
+  <li>
+<a href="#loops-versus-vectors" id="toc-loops-versus-vectors" class="nav-link" data-scroll-target="#loops-versus-vectors"><span class="header-section-number">5.3</span> Loops versus vectors</a>
+  <ul class="collapse">
+<li><a href="#but-if-you-have-to-use-a-loop-in-r" id="toc-but-if-you-have-to-use-a-loop-in-r" class="nav-link" data-scroll-target="#but-if-you-have-to-use-a-loop-in-r"><span class="header-section-number">5.3.1</span> But… If you have to use a loop in R…</a></li>
+  <li><a href="#the-flexibility-vs-speed-trade-off" id="toc-the-flexibility-vs-speed-trade-off" class="nav-link" data-scroll-target="#the-flexibility-vs-speed-trade-off"><span class="header-section-number">5.3.2</span> The flexibility vs speed trade-off</a></li>
+  <li><a href="#arithmetic-is-not-always-the-fastest" id="toc-arithmetic-is-not-always-the-fastest" class="nav-link" data-scroll-target="#arithmetic-is-not-always-the-fastest"><span class="header-section-number">5.3.3</span> Arithmetic is not always the fastest</a></li>
+  <li><a href="#vectorization-tips-and-tricks-for-speed" id="toc-vectorization-tips-and-tricks-for-speed" class="nav-link" data-scroll-target="#vectorization-tips-and-tricks-for-speed"><span class="header-section-number">5.3.4</span> Vectorization: Tips and Tricks for Speed</a></li>
+  <li><a href="#summing-the-columns-of-a-matrix" id="toc-summing-the-columns-of-a-matrix" class="nav-link" data-scroll-target="#summing-the-columns-of-a-matrix"><span class="header-section-number">5.3.5</span> Summing the columns of a matrix</a></li>
+  <li><a href="#comparison" id="toc-comparison" class="nav-link" data-scroll-target="#comparison"><span class="header-section-number">5.3.6</span> Comparison</a></li>
+  <li><a href="#vectorized-ifelse-statement" id="toc-vectorized-ifelse-statement" class="nav-link" data-scroll-target="#vectorized-ifelse-statement"><span class="header-section-number">5.3.7</span> Vectorized if/else statement</a></li>
+  <li><a href="#subsettingsubscripting-one-of-the-most-powerful-tools" id="toc-subsettingsubscripting-one-of-the-most-powerful-tools" class="nav-link" data-scroll-target="#subsettingsubscripting-one-of-the-most-powerful-tools"><span class="header-section-number">5.3.8</span> Subsetting/subscripting: One of the most powerful tools!</a></li>
+  <li><a href="#exercises-in-vectorization" id="toc-exercises-in-vectorization" class="nav-link" data-scroll-target="#exercises-in-vectorization"><span class="header-section-number">5.3.9</span> Exercises in vectorization</a></li>
+  </ul>
+</li>
+  <li>
+<a href="#parallel-processing" id="toc-parallel-processing" class="nav-link" data-scroll-target="#parallel-processing"><span class="header-section-number">5.4</span> Parallel processing</a>
+  <ul class="collapse">
+<li><a href="#warning-before-parallellization" id="toc-warning-before-parallellization" class="nav-link" data-scroll-target="#warning-before-parallellization"><span class="header-section-number">5.4.1</span> Warning before parallellization</a></li>
+  <li><a href="#parallel-processing-1" id="toc-parallel-processing-1" class="nav-link" data-scroll-target="#parallel-processing-1"><span class="header-section-number">5.4.2</span> Parallel Processing</a></li>
+  <li><a href="#creating-a-cluster" id="toc-creating-a-cluster" class="nav-link" data-scroll-target="#creating-a-cluster"><span class="header-section-number">5.4.3</span> Creating a cluster</a></li>
+  <li><a href="#running-jobs-in-parallel" id="toc-running-jobs-in-parallel" class="nav-link" data-scroll-target="#running-jobs-in-parallel"><span class="header-section-number">5.4.4</span> Running jobs in parallel</a></li>
+  <li><a href="#kill-your-cluster" id="toc-kill-your-cluster" class="nav-link" data-scroll-target="#kill-your-cluster"><span class="header-section-number">5.4.5</span> Kill your cluster</a></li>
+  <li><a href="#small-exercises-on-the-parallel-universe" id="toc-small-exercises-on-the-parallel-universe" class="nav-link" data-scroll-target="#small-exercises-on-the-parallel-universe"><span class="header-section-number">5.4.6</span> Small exercises on the parallel universe</a></li>
+  </ul>
+</li>
+  <li><a href="#memory-issues" id="toc-memory-issues" class="nav-link" data-scroll-target="#memory-issues"><span class="header-section-number">5.5</span> Memory issues</a></li>
+  <li><a href="#small-hints" id="toc-small-hints" class="nav-link" data-scroll-target="#small-hints"><span class="header-section-number">5.6</span> Small hints</a></li>
+  </ul></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./lectures.html">Lectures</a></li><li class="breadcrumb-item"><a href="./efficiency_and_parallel_computing.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span></a></li></ol></nav><div class="quarto-title">
+<h1 class="title">
+<span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Program Efficiency and Parallel Computing</span>
+</h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header><section id="good-practice-for-programming" class="level2" data-number="5.1"><h2 data-number="5.1" class="anchored" data-anchor-id="good-practice-for-programming">
+<span class="header-section-number">5.1</span> Good practice for programming</h2>
+<section id="programming-in-theory---plan-ahead" class="level3" data-number="5.1.1"><h3 data-number="5.1.1" class="anchored" data-anchor-id="programming-in-theory---plan-ahead">
+<span class="header-section-number">5.1.1</span> Programming in theory - plan ahead</h3>
+<ul>
+<li>Research question: What do I want to know?</li>
+<li>Data: What inputs do I have?</li>
+<li>Output: What kind of output do I expect/need?</li>
+<li>Modelling:
+<ul>
+<li>What is the structure of the problem?</li>
+<li>Can I write it down in equations?</li>
+</ul>
+</li>
+<li>Estimation: What procedure for estimation is needed (OLS, ML, GMM, etc)?</li>
+</ul></section><section id="closer-to-practice" class="level3" data-number="5.1.2"><h3 data-number="5.1.2" class="anchored" data-anchor-id="closer-to-practice">
+<span class="header-section-number">5.1.2</span> Closer to practice:</h3>
+<ul>
+<li>Blocks:
+<ul>
+<li>Is the project separable into blocks? What separate routines could I write?</li>
+<li>Are these blocks, independent, or possibly dependent?</li>
+<li>What separate routines could I write?</li>
+<li>Are there any routines available, in my own old code, or from other sources?</li>
+<li>Check to see if the routines are working, as well as how the program is running across multiple routines.</li>
+<li>How can I name functions and variables that I am confident I will remember later (i.e., after 3 months)? Make use of Hungarian notation.</li>
+</ul>
+</li>
+<li>On paper, define the following for each routine/step/function:
+<ul>
+<li>What inputs does it have? What are the outputs?</li>
+</ul>
+</li>
+</ul></section><section id="use-of-functions-and-computational-efficiency" class="level3" data-number="5.1.3"><h3 data-number="5.1.3" class="anchored" data-anchor-id="use-of-functions-and-computational-efficiency">
+<span class="header-section-number">5.1.3</span> Use of Functions and computational efficiency</h3>
+<p>Why all the small functions when you could do everything in one?</p>
+<ul>
+<li>Avoiding the use of duplicate code. You don’t want to type in the entire code for a specific operation every time.</li>
+<li>Helps to identify where things go wrong.</li>
+<li>Using previously written code.</li>
+<li>Code sharing.</li>
+</ul>
+<p>Once you’ve identified a bottleneck, you must speed it up:</p>
+<ul>
+<li>Look for existing solutions.</li>
+<li>Vectorize.</li>
+<li>Parallelize.</li>
+<li>Avoid copies.</li>
+</ul>
+<p>When using a computer to perform intensive numerical calculations, we must keep two things in mind: code efficiency and execution time. Advanced topics and other parallelization strategies not covered in this lecture are available at the “High-Performance and Parallel Computing with R” CRAN Task View: <a href="https://CRAN.R-project.org/view=HighPerformanceComputing" class="uri">https://CRAN.R-project.org/view=HighPerformanceComputing</a></p>
+</section></section><section id="code-execution-time" class="level2" data-number="5.2"><h2 data-number="5.2" class="anchored" data-anchor-id="code-execution-time">
+<span class="header-section-number">5.2</span> Code execution time</h2>
+<p>Ultimately, we measure how efficient a program is by how long it takes to run, which will depend on the language it is written in and the computer it is run on.</p>
+<p>Also, computers typically are doing a number of things at once, so the time taken to run a program will also depend on what else the computer is doing at the same time.</p>
+<p>R provides the function <code>system.time</code> to measure how many CPU (Computer Processing Unit) seconds are spent evaluating an expression:</p>
+<div class="cell">
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">mA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">1000</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span>, <span class="fl">1000</span>, <span class="fl">1000</span><span class="op">)</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/r/base/solve.html">solve</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    1.11    0.00    1.19</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>We know that in R, creating or changing the size of a vector (also called redimensioning an array) is relatively slow. Consequently, operations like:</p>
+<div class="cell">
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1e5</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">vX</span>, <span class="va">i</span><span class="op">)</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Should be avoided in favour of:</p>
+<div class="cell">
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1e5</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1e5</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vX</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="va">i</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Indeed, the code speeds up by a factor of about 537x:</p>
+<div class="cell">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">vX</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1e5</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="va">vX</span>, <span class="va">i</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    8.78    1.75   10.56</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fl">1e5</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">1e5</span><span class="op">)</span> <span class="op">{</span></span>
+<span>   <span class="va">vX</span><span class="op">[</span><span class="va">i</span> <span class="op">+</span> <span class="fl">1</span><span class="op">]</span> <span class="op">=</span> <span class="va">i</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;       0       0       0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="loops-versus-vectors" class="level2" data-number="5.3"><h2 data-number="5.3" class="anchored" data-anchor-id="loops-versus-vectors">
+<span class="header-section-number">5.3</span> Loops versus vectors</h2>
+<p>In R, vectorized operations are faster than equivalent loops. The difference is because R is a very high-level language.</p>
+<p>In R, it is relatively easy to create and manipulate variables. The price we pay for this flexibility is speed.</p>
+<p>When you evaluate an expression in R, it is ‘translated’ into a faster lower-level language before being evaluated, then the result is translated back into R. The translation is what takes much of the time, and vectorization saved on the amount of translation required.</p>
+<p>Take the following code to square each element of <code>vX</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span> <span class="va">vX</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">vX</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">^</span><span class="fl">2</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Each time we evaluate the expression <code>vX[i] &lt;- vX[i]^2</code>, we translate <code>vX</code> all at once and then square it, before translating the answer back: all the work takes place in our faster lower-level language.</p>
+<p>Many of R’s functions are vectorized, which means that if the first argument is a vector, then the output will be a vector of the same length, computed by applying the function element-wise to the input vector.</p>
+<section id="but-if-you-have-to-use-a-loop-in-r" class="level3" data-number="5.3.1"><h3 data-number="5.3.1" class="anchored" data-anchor-id="but-if-you-have-to-use-a-loop-in-r">
+<span class="header-section-number">5.3.1</span> But… If you have to use a loop in R…</h3>
+<p>Sometimes, loops can be intuitive and more easily visualized than vectorized code or matrix operations. For instance, many algorithms stated in academic papers are listed in terms of for-loop syntax.</p>
+<p>If vectorization simply takes too long time or simply is impossible then by all means use a loop, but…</p>
+<ul>
+<li>Pre-allocate vector/matrix prior to the loop</li>
+<li>Iterate as few times as possible</li>
+</ul>
+<p>Basically, everything that is not needed in the loop should not be in it! But, do avoid loops in R if possible! The penalty of loops in R is simply much larger than lower level languages, i.e., C++. Note that it’s relatively easy to make R code much faster!</p>
+</section><section id="the-flexibility-vs-speed-trade-off" class="level3" data-number="5.3.2"><h3 data-number="5.3.2" class="anchored" data-anchor-id="the-flexibility-vs-speed-trade-off">
+<span class="header-section-number">5.3.2</span> The flexibility vs speed trade-off</h3>
+<p>The <code><a href="https://rdrr.io/r/base/mean.html">mean()</a></code> function example:</p>
+<div class="cell">
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/joshuaulrich/microbenchmark/">"microbenchmark"</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'microbenchmark' was built under R version 4.3.3</span></span>
+<span><span class="va">vY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1E7</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: milliseconds</span></span>
+<span><span class="co">#&gt;                expr     min       lq      mean   median       uq     max neval</span></span>
+<span><span class="co">#&gt;  sum(vY)/length(vY)  7.6395  7.66935  7.731422  7.72375  7.75925  8.0807   100</span></span>
+<span><span class="co">#&gt;            mean(vY) 15.3455 15.43570 15.528918 15.46365 15.51770 16.4608   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>… also you would probably not have too hard of a time programming a tailored simple linear regression function that beats the <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> built-in R function. But <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code> offers a lot of flexibility…</p>
+</section><section id="arithmetic-is-not-always-the-fastest" class="level3" data-number="5.3.3"><h3 data-number="5.3.3" class="anchored" data-anchor-id="arithmetic-is-not-always-the-fastest">
+<span class="header-section-number">5.3.3</span> Arithmetic is not always the fastest</h3>
+<div class="cell">
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/joshuaulrich/microbenchmark/">"microbenchmark"</a></span><span class="op">)</span></span>
+<span><span class="va">vY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1E5</span><span class="op">)</span></span>
+<span><span class="va">mX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/lapply.html">replicate</a></span><span class="op">(</span><span class="fl">10</span>, <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1E5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="va">vY</span><span class="op">^</span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;      expr    min      lq     mean  median      uq  max neval</span></span>
+<span><span class="co">#&gt;  vY^(1/2) 2462.8 2514.10 2658.327 2711.40 2739.55 2896   100</span></span>
+<span><span class="co">#&gt;  sqrt(vY)  345.6  374.45  560.680  568.15  593.90 4573   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="va">vY</span><span class="op">^</span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">2</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">mX</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">vY</span>, <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html">crossprod</a></span><span class="op">(</span><span class="va">mX</span>, <span class="va">vY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: milliseconds</span></span>
+<span><span class="co">#&gt;               expr    min      lq     mean  median     uq     max neval</span></span>
+<span><span class="co">#&gt;       t(mX) %*% vY 3.0532 3.11030 3.787389 3.16155 3.2645 10.8240   100</span></span>
+<span><span class="co">#&gt;  crossprod(mX, vY) 1.6651 1.70045 1.724691 1.71520 1.7392  1.9011   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/t.html">t</a></span><span class="op">(</span><span class="va">mX</span><span class="op">)</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">vY</span>, <span class="fu"><a href="https://rdrr.io/r/base/crossprod.html">crossprod</a></span><span class="op">(</span><span class="va">mX</span>, <span class="va">vY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="vectorization-tips-and-tricks-for-speed" class="level3" data-number="5.3.4"><h3 data-number="5.3.4" class="anchored" data-anchor-id="vectorization-tips-and-tricks-for-speed">
+<span class="header-section-number">5.3.4</span> Vectorization: Tips and Tricks for Speed</h3>
+<ul>
+<li>Vector-based programming (also mentioned in previous lectures)</li>
+<li>Vectorized functions</li>
+<li>Vectorized if/else?</li>
+<li>Subsetting/subscripting of data structures</li>
+</ul></section><section id="summing-the-columns-of-a-matrix" class="level3" data-number="5.3.5"><h3 data-number="5.3.5" class="anchored" data-anchor-id="summing-the-columns-of-a-matrix">
+<span class="header-section-number">5.3.5</span> Summing the columns of a matrix</h3>
+<p>Consider the problem of evaluating the sum of the columns of a 10000 x 10000 matrix <code>mA</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">1e8</span><span class="op">)</span>, nrow <span class="op">=</span> <span class="fl">10000</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To solve our problem, we have several options:</p>
+<ol type="1">
+<li>A double loop of summations</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">vColSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">s</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>      <span class="va">s</span> <span class="op">&lt;-</span> <span class="va">s</span> <span class="op">+</span> <span class="va">mA</span><span class="op">[</span><span class="va">j</span>, <span class="va">i</span><span class="op">]</span></span>
+<span>    <span class="op">}</span></span>
+<span>    <span class="va">vColSum</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">s</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    3.41    0.00    3.41</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="2" type="1">
+<li>The use of apply</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span></span>
+<span>  <span class="va">vColSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="va">mA</span>, <span class="fl">2</span>, <span class="va">sum</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.69    0.37    1.06</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="3" type="1">
+<li>A single loop of sums</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">vColSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="va">vColSum</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">mA</span><span class="op">[</span>, <span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.29    0.33    0.62</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="4" type="1">
+<li>Exploit the mathematical formulation: <span class="math inline">\(\textbf{\textit{u'A}}\)</span>, where <span class="math inline">\(\textbf{\textit{u}}\)</span> is a vector of ones with length equal to the number for columns of <span class="math inline">\(\textbf{\textit{u}}\)</span>:</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">vU</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">vColSum</span> <span class="op">&lt;-</span> <span class="va">vU</span> <span class="op"><a href="https://rdrr.io/r/base/matmult.html">%*%</a></span> <span class="va">mA</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.17    0.00    0.17</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<ol start="5" type="1">
+<li>Using the dedicated R function:</li>
+</ol>
+<div class="cell">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="op">{</span></span>
+<span>  <span class="va">vColSum</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/colSums.html">colSums</a></span><span class="op">(</span><span class="va">mA</span><span class="op">)</span></span>
+<span><span class="op">}</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.08    0.00    0.08</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="comparison" class="level3" data-number="5.3.6"><h3 data-number="5.3.6" class="anchored" data-anchor-id="comparison">
+<span class="header-section-number">5.3.6</span> Comparison</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 36%">
+<col style="width: 19%">
+<col style="width: 44%">
+</colgroup>
+<thead><tr class="header">
+<th>Strategy</th>
+<th>CPU Time</th>
+<th>Gain over double loop</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Double loop</td>
+<td>3,7</td>
+<td></td>
+</tr>
+<tr class="even">
+<td><code>apply</code></td>
+<td>1,29</td>
+<td>287%</td>
+</tr>
+<tr class="odd">
+<td>One loop with sum</td>
+<td>0,77</td>
+<td>481%</td>
+</tr>
+<tr class="even">
+<td><span class="math inline">\(\textbf{\textit{u'A}}\)</span></td>
+<td>0,17</td>
+<td>2176%</td>
+</tr>
+<tr class="odd">
+<td><code>colSums</code></td>
+<td>0,08</td>
+<td>4625%</td>
+</tr>
+</tbody>
+</table>
+<p>Sometimes the easiest solution is also the preferred one.</p>
+</section><section id="vectorized-ifelse-statement" class="level3" data-number="5.3.7"><h3 data-number="5.3.7" class="anchored" data-anchor-id="vectorized-ifelse-statement">
+<span class="header-section-number">5.3.7</span> Vectorized if/else statement</h3>
+<p>THe <code>if else</code> statement in R is one of the few things that does not take vector inputs.</p>
+<p>One possibility is to use loops around the if-statements. Another is to use the <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> function that takes vector/matrix inputs. For a single vector, this should be faster than a for-loop approach.</p>
+<p>A simple for-loop if-statement function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vY</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">iN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vY</span><span class="op">)</span> <span class="co"># Number of elements</span></span>
+<span>  <span class="va">vD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">numeric</a></span><span class="op">(</span><span class="va">iN</span><span class="op">)</span> <span class="co"># Pre-allocate vector</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="kw">if</span><span class="op">(</span><span class="va">vY</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="va">vD</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span> <span class="kw">else</span> <span class="va">vD</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">vD</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Vs. the vectorized function <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">vY</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Using the <code>microbenchmark</code> package to time the two functions a 100 times. Which function is the fastest?</p>
+<div class="cell">
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="st"><a href="https://github.com/joshuaulrich/microbenchmark/">"microbenchmark"</a></span><span class="op">)</span></span>
+<span><span class="va">vY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Uniform.html">runif</a></span><span class="op">(</span><span class="fl">1E5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu">fun</span><span class="op">(</span><span class="va">vY</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">vY</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: milliseconds</span></span>
+<span><span class="co">#&gt;                     expr    min      lq     mean  median     uq     max neval</span></span>
+<span><span class="co">#&gt;                  fun(vY) 6.5357 6.57100 6.658758 6.61520 6.6590 10.1134   100</span></span>
+<span><span class="co">#&gt;  ifelse(vY &lt; 0.5, -1, 1) 3.1296 3.19465 3.300467 3.27565 3.3952  3.5818   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu">fun</span><span class="op">(</span><span class="va">vY</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">vY</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p><code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> is definitely faster and simpler!</p>
+<p>Suppose:</p>
+<div class="cell">
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">mY</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">4E2</span>, <span class="fl">200</span>, <span class="fl">200</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>The function now is:</p>
+<div class="cell">
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fun3</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">iN</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">mY</span><span class="op">)</span> <span class="co"># Number of rows of mY</span></span>
+<span>  <span class="va">iK</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mY</span><span class="op">)</span> <span class="co"># Number of columns of mY</span></span>
+<span>  <span class="va">mD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="fl">0</span>, <span class="va">iN</span>, <span class="va">iK</span><span class="op">)</span> <span class="co"># Pre-allocate to avoid growing objects!</span></span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">iN</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Outer loop</span></span>
+<span>    <span class="kw">for</span> <span class="op">(</span><span class="va">j</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="va">iK</span><span class="op">)</span> <span class="op">{</span> <span class="co"># Nested loop</span></span>
+<span>      <span class="kw">if</span> <span class="op">(</span><span class="va">mY</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span><span class="op">]</span> <span class="op">&lt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="va">mD</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span> <span class="co"># If true</span></span>
+<span>      <span class="kw">else</span> <span class="va">mD</span><span class="op">[</span><span class="va">i</span>, <span class="va">j</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># Otherwise</span></span>
+<span>    <span class="op">}</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="va">mD</span></span>
+<span><span class="op">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>While, <code>ifelse</code> is still <code>ifelse(mY &lt; 0.5, -1, 1)</code>. And obviously, faster:</p>
+<div class="cell">
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">mY</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu">fun3</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;                     expr    min      lq     mean  median     uq    max neval</span></span>
+<span><span class="co">#&gt;  ifelse(mY &lt; 0.5, -1, 1)  413.2  698.30  848.213  919.75  961.7 1521.9   100</span></span>
+<span><span class="co">#&gt;                 fun3(mY) 2947.6 3046.95 3153.900 3084.00 3131.8 8442.4   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">mY</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu">fun3</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="subsettingsubscripting-one-of-the-most-powerful-tools" class="level3" data-number="5.3.8"><h3 data-number="5.3.8" class="anchored" data-anchor-id="subsettingsubscripting-one-of-the-most-powerful-tools">
+<span class="header-section-number">5.3.8</span> Subsetting/subscripting: One of the most powerful tools!</h3>
+<p>Subsetting is usually overlooked when attempting to vectorize code in R, but is usually quite effective and nearly always faster than alternatives.</p>
+<p>You have already used it (or at least seen it in action) plenty of times, for extracting or removing rows/columns on different data structures.</p>
+<p>In practice, subscripting is an invaluable tool for data management, i.e., cleaning or sample selection of data.</p>
+<p>On a 200x200 matrix <code>mY</code>:</p>
+<div class="cell">
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">fun2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">mBool</span> <span class="op">&lt;-</span> <span class="op">(</span><span class="va">mY</span> <span class="op">&lt;</span> <span class="fl">0.5</span><span class="op">)</span> <span class="co"># Matrix of booleans</span></span>
+<span>  <span class="va">mY</span><span class="op">[</span><span class="va">mBool</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span><span class="fl">1</span> <span class="co"># If true</span></span>
+<span>  <span class="va">mY</span><span class="op">[</span><span class="op">!</span><span class="va">mBool</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">1</span> <span class="co"># If false</span></span>
+<span>  <span class="va">mY</span> <span class="co"># output</span></span>
+<span><span class="op">}</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">mY</span> <span class="op">&lt;</span> <span class="fl">0.5</span>, <span class="op">-</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span>, <span class="fu">fun2</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span>, <span class="fu">fun3</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;                     expr    min      lq     mean  median      uq    max neval</span></span>
+<span><span class="co">#&gt;  ifelse(mY &lt; 0.5, -1, 1)  394.3  913.15  841.074  942.55  970.85 1127.3   100</span></span>
+<span><span class="co">#&gt;                 fun2(mY)  226.7  518.45  529.344  528.60  543.00 2609.2   100</span></span>
+<span><span class="co">#&gt;                 fun3(mY) 2953.3 3058.20 3092.473 3079.25 3109.85 3339.5   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu">fun2</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span>, <span class="fu">fun3</span><span class="op">(</span><span class="va">mY</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="exercises-in-vectorization" class="level3" data-number="5.3.9"><h3 data-number="5.3.9" class="anchored" data-anchor-id="exercises-in-vectorization">
+<span class="header-section-number">5.3.9</span> Exercises in vectorization</h3>
+<ul>
+<li><p><em>Reformulate exercise 5 from Exercise set 2 (the if else statement one) in terms of the</em> <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> <em>function (Hint: some functions take functions as input).</em></p></li>
+<li><p><em>Suppose you use a vector of draws from a standard normal dist. as input instead. Can you beat the</em> <code><a href="https://rdrr.io/r/base/ifelse.html">ifelse()</a></code> <em>you just made somehow? Write a function that is faster than the code you wrote in the above question. Compare using the microbenchmark package.</em></p></li>
+<li><p><em>Find a way to vectorize calculations of rowMeans of a 100 by 100 matrix of 10000 random draws from a uniform distribution.</em></p></li>
+</ul>
+<p><strong>Solution:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Using ifelse()</span></span>
+<span><span class="va">slowSolution</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="co"># ifelse(vInput &lt;= 0, vInput &lt;- - vInput ^ 3, ifelse(vInput &lt;= 1, vInput &lt;- vInput ^ 2, sqrt(vInput)))</span></span>
+<span>  </span>
+<span>  <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">0</span>, <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span> <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">^</span> <span class="fl">3</span>, <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;=</span> <span class="fl">1</span>, <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">^</span> <span class="fl">2</span>, <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>    <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&gt;</span> <span class="fl">1</span>, <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span>, <span class="va">vInput</span><span class="op">[</span><span class="va">i</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="op">}</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># Fast solution using indexing</span></span>
+<span><span class="va">fastSolution</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="va">vInput</span><span class="op">[</span><span class="va">vInput</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="op">-</span> <span class="va">vInput</span><span class="op">[</span><span class="va">vInput</span> <span class="op">&lt;=</span> <span class="fl">0</span><span class="op">]</span> <span class="op">^</span> <span class="fl">3</span></span>
+<span>  <span class="va">vInput</span><span class="op">[</span><span class="va">vInput</span> <span class="op">&lt;=</span> <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="va">vInput</span><span class="op">[</span><span class="va">vInput</span> <span class="op">&lt;=</span> <span class="fl">1</span><span class="op">]</span> <span class="op">^</span> <span class="fl">2</span></span>
+<span>  <span class="va">vInput</span><span class="op">[</span><span class="va">vInput</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">sqrt</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">[</span><span class="va">vInput</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">vInput</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">10</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu">slowSolution</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, <span class="fu">fastSolution</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;              expr  min   lq    mean median   uq    max neval</span></span>
+<span><span class="co">#&gt;  slowSolution(vX) 37.1 37.8 115.337   38.1 39.0 7713.8   100</span></span>
+<span><span class="co">#&gt;  fastSolution(vX)  2.0  2.2  48.662    2.5  2.9 4593.5   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu">slowSolution</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span>, <span class="fu">fastSolution</span><span class="op">(</span><span class="va">vX</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span>
+<span></span>
+<span><span class="co"># Vectorization of rowMeans</span></span>
+<span><span class="va">vX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/Normal.html">rnorm</a></span><span class="op">(</span><span class="fl">10000</span><span class="op">)</span></span>
+<span><span class="va">mX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/matrix.html">matrix</a></span><span class="op">(</span><span class="va">vX</span>, <span class="fl">100</span>, <span class="fl">100</span><span class="op">)</span></span>
+<span><span class="va">fRowMeans</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">mInput</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowSums</a></span><span class="op">(</span><span class="va">mInput</span><span class="op">)</span> <span class="op">/</span> <span class="fu"><a href="https://rdrr.io/r/base/nrow.html">ncol</a></span><span class="op">(</span><span class="va">mInput</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/microbenchmark/man/microbenchmark.html">microbenchmark</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="va">mX</span><span class="op">)</span>, <span class="fu">fRowMeans</span><span class="op">(</span><span class="va">mX</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Unit: microseconds</span></span>
+<span><span class="co">#&gt;           expr  min   lq   mean median   uq    max neval</span></span>
+<span><span class="co">#&gt;   rowMeans(mX) 20.8 21.0 21.972   21.1 21.4   41.4   100</span></span>
+<span><span class="co">#&gt;  fRowMeans(mX) 21.6 21.8 39.252   21.9 22.1 1548.9   100</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/all.equal.html">all.equal</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/colSums.html">rowMeans</a></span><span class="op">(</span><span class="va">mX</span><span class="op">)</span>, <span class="fu">fRowMeans</span><span class="op">(</span><span class="va">mX</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] TRUE</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="parallel-processing" class="level2" data-number="5.4"><h2 data-number="5.4" class="anchored" data-anchor-id="parallel-processing">
+<span class="header-section-number">5.4</span> Parallel processing</h2>
+<section id="warning-before-parallellization" class="level3" data-number="5.4.1"><h3 data-number="5.4.1" class="anchored" data-anchor-id="warning-before-parallellization">
+<span class="header-section-number">5.4.1</span> Warning before parallellization</h3>
+<p>Optimizing code to make it run faster is an iterative process:</p>
+<ol type="1">
+<li><p>Find the biggest bottleneck (the slowest part of your code).</p></li>
+<li><p>Try to eliminate it (you may not succeed but that’s ok)</p></li>
+<li><p>Repeat until your code is “fast enough”.</p></li>
+</ol>
+<p>This sounds easy, but it’s not. Parallel processing should first be considered when you cannot achieve efficiency gains by any other means… Or if you are really pressured on time.</p>
+</section><section id="parallel-processing-1" class="level3" data-number="5.4.2"><h3 data-number="5.4.2" class="anchored" data-anchor-id="parallel-processing-1">
+<span class="header-section-number">5.4.2</span> Parallel Processing</h3>
+<p>Consider the problem of summing a vector of length <em>n</em>, which requires <em>n - 1</em> separate additions. If each addition takes 1 second, and we do them one after another, then the whole calculation takes <em>n - 1</em> seconds.</p>
+<p>Now, suppose we split the vector into two and give each half to a different calculator. Each calculator spend <em>n/2 - 1</em> seconds adding up their half, which happens concurrently, then we spend 1 second adding together the two bits, for a total of <em>n/2</em> seconds.</p>
+<p>Note, however, that communications between the processors requires time: i.e., the total time is usually <em>n/2 +</em> <span class="math inline">\(\varepsilon\)</span>.</p>
+<p>Clearly, parallelization requires multiple CPU’s, or cores (computers). The R community has developed tools that support the splitting of computations among different machines on a network, and among different cores on a single machine.</p>
+<p>The base package <strong>parallel</strong> provides tools that will work across most of the platforms that are supported by R. We first load the package and determine how many cores can be detected on the machine:</p>
+<div class="cell">
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] 6</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="creating-a-cluster" class="level3" data-number="5.4.3"><h3 data-number="5.4.3" class="anchored" data-anchor-id="creating-a-cluster">
+<span class="header-section-number">5.4.3</span> Creating a cluster</h3>
+<p>We initialize a cluster using the <code>makeCluster</code> function:</p>
+<div class="cell">
+<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span><span class="op">(</span><span class="fl">2</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>A <em>cluster</em> with 2 <em>workers</em> has been created and its details are collected in the object <code>cluster</code>.</p>
+<p>If you now open the Task Manager, you will find 2 new R instances. Having made the cluster, we can then test the cluster by using a simple example that calls a function using each worker within the cluster.</p>
+<div class="cell">
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html">clusterCall</a></span><span class="op">(</span><span class="va">cluster</span>, <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="st">"Pick me!"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [[1]]</span></span>
+<span><span class="co">#&gt; [1] "Pick me!"</span></span>
+<span><span class="co">#&gt; </span></span>
+<span><span class="co">#&gt; [[2]]</span></span>
+<span><span class="co">#&gt; [1] "Pick me!"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="running-jobs-in-parallel" class="level3" data-number="5.4.4"><h3 data-number="5.4.4" class="anchored" data-anchor-id="running-jobs-in-parallel">
+<span class="header-section-number">5.4.4</span> Running jobs in parallel</h3>
+<p>Provided that our job can run in parallel (there is nothing recursive that cannot be allocated to different workers), we can exploit the parallelised version of the <code>apply</code> family of functions. For instance:</p>
+<ul>
+<li><p><code>apply</code> <span class="math inline">\(\rightarrow\)</span> <code>parApply</code></p></li>
+<li><p><code>lapply</code> <span class="math inline">\(\rightarrow\)</span> <code>parLapply</code></p></li>
+<li><p><code>sapply</code> <span class="math inline">\(\rightarrow\)</span> <code>parSapply</code></p></li>
+</ul>
+<p>The use of these functions is exactly analogous to the ones belonging to the <code>apply</code> family. The only difference is that they accept an extra argument <code>cl</code> which accepts a <code>cluster</code> object. FOr instance:</p>
+<div class="cell">
+<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">waste.of.time</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10000</span><span class="op">)</span> <span class="va">i</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">lapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">10000</span>, <span class="va">waste.of.time</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.98    0.00    0.98</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html">parLapply</a></span><span class="op">(</span>cl <span class="op">=</span> <span class="va">cluster</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">10000</span>, <span class="va">waste.of.time</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="co">#&gt;    user  system elapsed </span></span>
+<span><span class="co">#&gt;    0.00    0.00    0.42</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section><section id="kill-your-cluster" class="level3" data-number="5.4.5"><h3 data-number="5.4.5" class="anchored" data-anchor-id="kill-your-cluster">
+<span class="header-section-number">5.4.5</span> Kill your cluster</h3>
+<p>Once the cluster is no longer necessary, we kill it with:</p>
+<div class="cell">
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>If we omitted this command, then the cluster would be disbanded only when the R session that created it is terminated. This means that until you close R, your computer’s resources will be occupied by unnecessary processes.</p>
+</section><section id="small-exercises-on-the-parallel-universe" class="level3" data-number="5.4.6"><h3 data-number="5.4.6" class="anchored" data-anchor-id="small-exercises-on-the-parallel-universe">
+<span class="header-section-number">5.4.6</span> Small exercises on the parallel universe</h3>
+<ul>
+<li><p><em>Install and load the package “<em><code>parallel</code></em>” into your R session.</em></p></li>
+<li><p><em>Detect how many cores R can detect on your system.</em></p></li>
+<li><p><em>If more than 1, then form a cluster using all but one of the cores detected above.</em></p></li>
+<li><p><em>Use the function(s)</em> <code>waste.of.time()</code> <em>and/or</em> <code>fibo()</code><em>(</em><code>fibo()</code> <em>can be found in the script from the last exercise from last lecture)</em></p></li>
+<li><p><em>Pass your function to the</em> <code><a href="https://rdrr.io/r/base/lapply.html">sapply()</a></code> <em>function and pass inputs 1 to 30 by</em> <code>sapply</code> <em>to your function.</em></p></li>
+<li><p><em>Instead, pass the function to the</em> <code><a href="https://rdrr.io/r/parallel/clusterApply.html">parSapply()</a></code> <em>function. (Remember to export the function to the clusters)</em></p></li>
+<li><p><em>Is</em> <code><a href="https://rdrr.io/r/parallel/clusterApply.html">parSapply()</a></code> <em>faster than regular</em> <code>sapply</code><em>? (Don’t do too many repetitions of</em> <code><a href="https://rdrr.io/r/base/lapply.html">sapply()</a></code><em>/</em><code><a href="https://rdrr.io/r/parallel/clusterApply.html">parSapply()</a></code><em>; only at most 1:30 with</em> <code>fibo()</code><em>.)</em></p></li>
+<li><p><em>Terminate the assigned cluster!</em></p></li>
+</ul>
+<p><strong>Solution:</strong></p>
+<div class="cell">
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Install if necessary and load the library quietly</span></span>
+<span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st">"parallel"</span><span class="op">)</span><span class="op">)</span> <span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"parallel"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/message.html">suppressMessages</a></span><span class="op">(</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">parallel</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Make cluster with more cores than 1 if possible</span></span>
+<span><span class="kw">if</span> <span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">1</span><span class="op">)</span> <span class="va">cluster</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">makeCluster</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/detectCores.html">detectCores</a></span><span class="op">(</span><span class="op">)</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">waste.of.time</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span> <span class="kw">for</span> <span class="op">(</span><span class="va">i</span> <span class="kw">in</span> <span class="fl">1</span><span class="op">:</span><span class="fl">10000</span><span class="op">)</span> <span class="va">i</span></span>
+<span><span class="va">fibo</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">n</span><span class="op">)</span> <span class="op">{</span></span>
+<span>  <span class="kw">if</span> <span class="op">(</span><span class="va">n</span> <span class="op">&lt;</span> <span class="fl">2</span><span class="op">)</span> <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">n</span><span class="op">)</span></span>
+<span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="fu">fibo</span><span class="op">(</span><span class="va">n</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span> <span class="fu">fibo</span><span class="op">(</span><span class="va">n</span> <span class="op">-</span> <span class="fl">2</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="op">}</span></span>
+<span></span>
+<span><span class="co"># `fibo` is a recursive function and thus needs to be exported to the cluster</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html">clusterExport</a></span><span class="op">(</span><span class="va">cluster</span>, <span class="st">"fibo"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Without a cluster</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">waste.of.time</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html">sapply</a></span><span class="op">(</span><span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">fibo</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Using the cluster</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html">parSapply</a></span><span class="op">(</span>cl <span class="op">=</span> <span class="va">cluster</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">waste.of.time</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/system.time.html">system.time</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/parallel/clusterApply.html">parSapply</a></span><span class="op">(</span>cl <span class="op">=</span> <span class="va">cluster</span>, <span class="fl">1</span><span class="op">:</span><span class="fl">30</span>, <span class="va">fibo</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Kill the cluster</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/parallel/makeCluster.html">stopCluster</a></span><span class="op">(</span><span class="va">cluster</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section></section><section id="memory-issues" class="level2" data-number="5.5"><h2 data-number="5.5" class="anchored" data-anchor-id="memory-issues">
+<span class="header-section-number">5.5</span> Memory issues</h2>
+<p>Computer memory comes in a variety of forms. For most purposes it is sufficient to think in terms of RAM (random access memory), which is fast, and the hard disk, which is slow.</p>
+<p>Variables require memory. R stores variables in virtual memory, which is a seamless combination of RAM and hard disk space, managed by the underlying operating system.</p>
+<p>The operating system will use R in preference to disk space, but if your variables require more memory than the amount of RAM physically installed, then it will have to use disk space as well, and your program will slow down as a result.</p>
+<p>As soon as a vector (or list) is too large to store in RAM all at once, the speed at which you can use it will drop dramatically.</p>
+<p>If the vector is sufficiently large, then it may not be possible to store it at all, in which case you are said to have run out of memory.</p>
+<p>Also note that R has an absolute limit on the length of a vector of <span class="math inline">\(2^{31}-1=2,147,483,647\)</span>.</p>
+<p>In the case your code runs out of memory, you will need to break you vectors down into small subvectors and deal with each in turn.</p>
+<p>Alternatively, you can use the <code>rm</code> function to delete objects from memory and free space:</p>
+<div class="cell">
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">dA</span> <span class="op">&lt;-</span> <span class="fl">5</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/ls.html">ls</a></span><span class="op">(</span><span class="op">)</span></span>
+<span><span class="co">#&gt; [1] "dA"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/rm.html">rm</a></span><span class="op">(</span><span class="st">"dA"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To remove all objects, you can use <code>rm(list = ls())</code>.</p>
+</section><section id="small-hints" class="level2" data-number="5.6"><h2 data-number="5.6" class="anchored" data-anchor-id="small-hints">
+<span class="header-section-number">5.6</span> Small hints</h2>
+<ul>
+<li>Adding / subtracting tends to be better than multiplying.</li>
+<li>Hence, log-likelihood <span class="math inline">\(\sum \log L_i\)</span> is better than likelihood <span class="math inline">\(\prod L_i\)</span>
+</li>
+<li>Simplify your equations, minimize number of operations.</li>
+<li>Don’t do <span class="math inline">\(x = \exp(\log(z))\)</span> if you can avoid it.</li>
+<li>Split your program into smaller tasks. Keep it simple!</li>
+</ul>
+
+
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const onCopySuccess = function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
+  });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+    const config = {
+      allowHTML: true,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start',
+    };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            div.style.left = 0;
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script><nav class="page-navigation"><div class="nav-page nav-page-previous">
+      <a href="./programming_w_functions.html" class="pagination-link" aria-label="Programming with Functions">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Programming with Functions</span></span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./introduction_to_simulation.html" class="pagination-link" aria-label="Introduction to Simulation">
+        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Introduction to Simulation</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+
+
+
+</body></html>

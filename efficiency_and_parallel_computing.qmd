@@ -1,0 +1,565 @@
+# Program Efficiency and Parallel Computing
+
+```{r}
+#| echo: false
+Sys.setenv(LANG = "en")
+```
+
+
+## Good practice for programming
+
+### Programming in theory - plan ahead
+
+* Research question: What do I want to know?
+* Data: What inputs do I have?
+* Output: What kind of output do I expect/need?
+* Modelling:
+  * What is the structure of the problem?
+  * Can I write it down in equations?
+* Estimation: What procedure for estimation is needed (OLS, ML, GMM, etc)?
+
+### Closer to practice:
+
+* Blocks:
+  * Is the project separable into blocks? What separate routines could I write?
+  * Are these blocks, independent, or possibly dependent?
+  * What separate routines could I write?
+  * Are there any routines available, in my own old code, or from other sources?
+  * Check to see if the routines are working, as well as how the program is running across multiple routines.
+  * How can I name functions and variables that I am confident I will remember later (i.e., after 3 months)? Make use of Hungarian notation.
+
+* On paper, define the following for each routine/step/function:
+  * What inputs does it have? What are the outputs?
+
+### Use of Functions and computational efficiency
+
+Why all the small functions when you could do everything in one?
+
+  * Avoiding the use of duplicate code. You don't want to type in the entire code for a specific operation every time.
+  * Helps to identify where things go wrong.
+  * Using previously written code.
+  * Code sharing.
+
+Once you've identified a bottleneck, you must speed it up:
+
+  * Look for existing solutions.
+  * Vectorize.
+  * Parallelize.
+  * Avoid copies.
+
+When using a computer to perform intensive numerical calculations, we must keep two things in mind: code efficiency and execution time. Advanced topics and other parallelization strategies not covered in this lecture are available at the "High-Performance and Parallel Computing with R" CRAN Task View: <https://CRAN.R-project.org/view=HighPerformanceComputing>
+
+## Code execution time
+
+Ultimately, we measure how efficient a program is by how long it takes to run, which will depend on the language it is written in and the computer it is run on.
+
+Also, computers typically are doing a number of things at once, so the time taken to run a program will also depend on what else the computer is doing at the same time.
+
+R provides the function `system.time` to measure how many CPU (Computer Processing Unit) seconds are spent evaluating an expression:
+
+```{r}
+system.time({
+  mA <- matrix(rnorm(1000^2), 1000, 1000)
+  solve(mA)
+})
+```
+
+We know that in R, creating or changing the size of a vector (also called redimensioning an array) is relatively slow. Consequently, operations like:
+
+```{r}
+#| eval: false
+vX <- 0
+for (i in 1:1e5) {
+  vX <- c(vX, i)
+}
+```
+
+Should be avoided in favour of:
+
+```{r}
+#| eval: false
+vX <- numeric(1e5 + 1)
+for (i in 1:1e5) {
+  vX[i + 1] = i
+}
+```
+
+Indeed, the code speeds up by a factor of about 537x:
+
+```{r}
+system.time({
+  vX <- 0
+  for (i in 1:1e5) {
+    vX <- c(vX, i)
+  }
+})
+
+system.time({
+  vX <- numeric(1e5 + 1)
+  for (i in 1:1e5) {
+   vX[i + 1] = i
+  }
+})
+```
+
+## Loops versus vectors
+
+In R, vectorized operations are faster than equivalent loops. The difference is because R is a very high-level language.
+
+In R, it is relatively easy to create and manipulate variables. The price we pay for this flexibility is speed.
+
+When you evaluate an expression in R, it is 'translated' into a faster lower-level language before being evaluated, then the result is translated back into R. The translation is what takes much of the time, and vectorization saved on the amount of translation required.
+
+Take the following code to square each element of `vX`:
+
+```{r}
+#| eval: false
+for (i in 1:length(vX)) vX[i] <- vX[i]^2
+```
+
+Each time we evaluate the expression `vX[i] <- vX[i]^2`, we translate `vX` all at once and then square it, before translating the answer back: all the work takes place in our faster lower-level language.
+
+Many of R's functions are vectorized, which means that if the first argument is a vector, then the output will be a vector of the same length, computed by applying the function element-wise to the input vector.
+
+### But... If you have to use a loop in R...
+
+Sometimes, loops can be intuitive and more easily visualized than vectorized code or matrix operations. For instance, many algorithms stated in academic papers are listed in terms of for-loop syntax.
+
+If vectorization simply takes too long time or simply is impossible then by all means use a loop, but...
+
+* Pre-allocate vector/matrix prior to the loop
+* Iterate as few times as possible
+
+Basically, everything that is not needed in the loop should not be in it! But, do avoid loops in R if possible! The penalty of loops in R is simply much larger than lower level languages, i.e., C++.
+Note that it's relatively easy to make R code much faster!
+
+### The flexibility vs speed trade-off
+
+The `mean()` function example:
+
+```{r}
+library("microbenchmark")
+vY <- runif(1E7)
+microbenchmark(sum(vY) / length(vY), mean(vY))
+all.equal(sum(vY) / length(vY), mean(vY))
+```
+
+... also you would probably not have too hard of a time programming a tailored simple linear regression function that beats the `lm()` built-in R function. But `lm()` offers a lot of flexibility...
+
+### Arithmetic is not always the fastest
+
+```{r}
+library("microbenchmark")
+vY <- runif(1E5)
+mX <- replicate(10, runif(1E5))
+microbenchmark(vY^(1/2), sqrt(vY))
+all.equal(vY^(1/2), sqrt(vY))
+microbenchmark(t(mX) %*% vY, crossprod(mX, vY))
+all.equal(t(mX) %*% vY, crossprod(mX, vY))
+```
+
+### Vectorization: Tips and Tricks for Speed
+
+* Vector-based programming (also mentioned in previous lectures)
+* Vectorized functions
+* Vectorized if/else?
+* Subsetting/subscripting of data structures
+
+### Summing the columns of a matrix
+
+Consider the problem of evaluating the sum of the columns of a 10000 x 10000 matrix `mA`:
+
+```{r}
+mA <- matrix(rnorm(1e8), nrow = 10000)
+```
+
+To solve our problem, we have several options:
+
+1. A double loop of summations
+
+```{r}
+system.time({
+  vColSum <- rep(NA, ncol(mA))
+  for (i in 1:ncol(mA)) {
+    s <- 0
+    for (j in 1:nrow(mA)) {
+      s <- s + mA[j, i]
+    }
+    vColSum[i] <- s
+  }
+})
+```
+
+2. The use of apply
+
+```{r}
+system.time(
+  vColSum <- apply(mA, 2, sum)
+)
+```
+
+3. A single loop of sums
+
+```{r}
+system.time({
+  vColSum <- numeric(ncol(mA))
+  for (i in 1:ncol(mA)) {
+    vColSum[i] <- sum(mA[, i])
+  }
+})
+```
+
+4. Exploit the mathematical formulation: $\textbf{\textit{u'A}}$, where $\textbf{\textit{u}}$ is a vector of ones with length equal to the number for columns of $\textbf{\textit{u}}$:
+
+```{r}
+vU <- rep(1, ncol(mA))
+system.time({
+  vColSum <- vU %*% mA
+})
+```
+
+5. Using the dedicated R function:
+
+```{r}
+system.time({
+  vColSum <- colSums(mA)
+})
+```
+
+### Comparison
+
+| Strategy          | CPU Time | Gain over double loop |
+|-------------------|----------|-----------------------|
+| Double loop       | 3,7      |                       |
+| `apply`             | 1,29     | 287%                  |
+| One loop with sum | 0,77     | 481%                  |
+| $\textbf{\textit{u'A}}$               | 0,17     | 2176%                 |
+| `colSums`         | 0,08     | 4625%                 |
+
+Sometimes the easiest solution is also the preferred one.
+
+### Vectorized if/else statement
+
+THe `if else` statement in R is one of the few things that does not take vector inputs.
+
+One possibility is to use loops around the if-statements. Another is to use the `ifelse()` function that takes vector/matrix inputs. For a single vector, this should be faster than a for-loop approach.
+
+A simple for-loop if-statement function:
+
+```{r}
+fun <- function(vY) {
+  iN <- length(vY) # Number of elements
+  vD <- numeric(iN) # Pre-allocate vector
+  for (i in 1:iN) {
+    if(vY[i] < 0.5) vD[i] <- -1 else vD[i] <- 1
+  }
+  vD
+}
+```
+
+Vs. the vectorized function `ifelse()`:
+
+```{r}
+#| eval: false
+ifelse(vY < 0.5, -1, 1)
+```
+
+Using the `microbenchmark` package to time the two functions a 100 times. Which function is the fastest?
+
+```{r}
+library("microbenchmark")
+vY <- runif(1E5)
+microbenchmark(fun(vY), ifelse(vY < 0.5, -1, 1))
+all.equal(fun(vY), ifelse(vY < 0.5, -1, 1))
+```
+
+`ifelse()` is definitely faster and simpler!
+
+Suppose:
+
+```{r}
+mY <- matrix(4E2, 200, 200)
+```
+
+The function now is:
+
+```{r}
+fun3 <- function(mY) {
+  iN <- nrow(mY) # Number of rows of mY
+  iK <- ncol(mY) # Number of columns of mY
+  mD <- matrix(0, iN, iK) # Pre-allocate to avoid growing objects!
+  for (i in 1:iN) { # Outer loop
+    for (j in 1:iK) { # Nested loop
+      if (mY[i, j] < 0.5) mD[i, j] <- -1 # If true
+      else mD[i, j] <- 1 # Otherwise
+    }
+  }
+  mD
+}
+```
+
+While, `ifelse` is still `ifelse(mY < 0.5, -1, 1)`. And obviously, faster:
+
+```{r}
+microbenchmark(ifelse(mY < 0.5, -1, 1), fun3(mY))
+all.equal(ifelse(mY < 0.5, -1, 1), fun3(mY))
+```
+
+### Subsetting/subscripting: One of the most powerful tools!
+
+Subsetting is usually overlooked when attempting to vectorize code in R, but is usually quite effective and nearly always faster than alternatives.
+
+You have already used it (or at least seen it in action) plenty of times, for extracting or removing rows/columns on different data structures.
+
+In practice, subscripting is an invaluable tool for data management, i.e., cleaning or sample selection of data.
+
+On a 200x200 matrix `mY`:
+
+```{r}
+fun2 <- function(mY) {
+  mBool <- (mY < 0.5) # Matrix of booleans
+  mY[mBool] <- -1 # If true
+  mY[!mBool] <- 1 # If false
+  mY # output
+}
+microbenchmark(ifelse(mY < 0.5, -1, 1), fun2(mY), fun3(mY))
+all.equal(fun2(mY), fun3(mY))
+```
+
+### Exercises in vectorization
+
+- *Reformulate exercise 5 from Exercise set 2 (the if else statement one) in terms of the* `ifelse()` *function (Hint: some functions take functions as input).*
+
+- *Suppose you use a vector of draws from a standard normal dist. as input instead. Can you beat the* `ifelse()` *you just made somehow? Write a function that is faster than the code you wrote in the above question. Compare using the microbenchmark package.*
+
+- *Find a way to vectorize calculations of rowMeans of a 100 by 100 matrix of 10000 random draws from a uniform distribution.*
+
+**Solution:**
+
+```{r}
+# Using ifelse()
+slowSolution <- function(vInput) {
+  # ifelse(vInput <= 0, vInput <- - vInput ^ 3, ifelse(vInput <= 1, vInput <- vInput ^ 2, sqrt(vInput)))
+  
+  for (i in 1:length(vInput)) {
+    ifelse(vInput[i] <= 0, vInput[i] <- - vInput[i] ^ 3, vInput[i])
+    ifelse(vInput[i] <= 1, vInput[i] <- vInput[i] ^ 2, vInput[i])
+    ifelse(vInput[i] > 1, vInput[i] <- sqrt(vInput[i]), vInput[i])
+  }
+  return(vInput)
+}
+
+# Fast solution using indexing
+fastSolution <- function(vInput) {
+  vInput[vInput <= 0] <- - vInput[vInput <= 0] ^ 3
+  vInput[vInput <= 1] <- vInput[vInput <= 1] ^ 2
+  vInput[vInput > 1] <- sqrt(vInput[vInput > 1])
+  return(vInput)
+}
+
+set.seed(1)
+vX <- rnorm(10)
+
+microbenchmark(slowSolution(vX), fastSolution(vX))
+all.equal(slowSolution(vX), fastSolution(vX))
+
+# Vectorization of rowMeans
+vX <- rnorm(10000)
+mX <- matrix(vX, 100, 100)
+fRowMeans <- function(mInput) {
+  return(rowSums(mInput) / ncol(mInput))
+}
+
+microbenchmark(rowMeans(mX), fRowMeans(mX))
+all.equal(rowMeans(mX), fRowMeans(mX))
+
+
+```
+
+
+## Parallel processing
+
+### Warning before parallellization
+
+Optimizing code to make it run faster is an iterative process:
+
+1. Find the biggest bottleneck (the slowest part of your code).
+
+2. Try to eliminate it (you may not succeed but that's ok)
+
+3. Repeat until your code is "fast enough".
+
+This sounds easy, but it's not. Parallel processing should first be considered when you cannot achieve efficiency gains by any other means... Or if you are really pressured on time.
+
+### Parallel Processing
+
+Consider the problem of summing a vector of length *n*, which requires *n - 1* separate additions. If each addition takes 1 second, and we do them one after another, then the whole calculation takes *n - 1* seconds.
+
+Now, suppose we split the vector into two and give each half to a different calculator. Each calculator spend *n/2 - 1* seconds adding up their half, which happens concurrently, then we spend 1 second adding together the two bits, for a total of *n/2* seconds.
+
+Note, however, that communications between the processors requires time: i.e., the total time is usually *n/2 +* $\varepsilon$.
+
+Clearly, parallelization requires multiple CPU's, or cores (computers). The R community has developed tools that support the splitting of computations among different machines on a network, and among different cores on a single machine.
+
+The base package **parallel** provides tools that will work across most of the platforms that are supported by R. We first load the package and determine how many cores can be detected on the machine:
+
+```{r}
+library(parallel)
+detectCores()
+```
+
+### Creating a cluster
+
+We initialize a cluster using the `makeCluster` function:
+
+```{r}
+cluster <- makeCluster(2)
+```
+
+A *cluster* with 2 *workers* has been created and its details are collected in the object `cluster`.
+
+If you now open the Task Manager, you will find 2 new R instances. Having made the cluster, we can then test the cluster by using a simple example that calls a function using each worker within the cluster.
+
+```{r}
+clusterCall(cluster, function(x) print("Pick me!"))
+```
+
+### Running jobs in parallel
+
+Provided that our job can run in parallel (there is nothing recursive that cannot be allocated to different workers), we can exploit the parallelised version of the `apply` family of functions. For instance:
+
+* `apply` $\rightarrow$ `parApply`
+
+* `lapply` $\rightarrow$ `parLapply`
+
+* `sapply` $\rightarrow$ `parSapply`
+
+The use of these functions is exactly analogous to the ones belonging to the `apply` family. The only difference is that they accept an extra argument `cl` which accepts a `cluster` object. FOr instance:
+
+```{r}
+waste.of.time <- function(x) for (i in 1:10000) i
+system.time(lapply(1:10000, waste.of.time))
+system.time(parLapply(cl = cluster, 1:10000, waste.of.time))
+```
+
+### Kill your cluster
+
+Once the cluster is no longer necessary, we kill it with:
+
+```{r}
+stopCluster(cluster)
+```
+
+If we omitted this command, then the cluster would be disbanded only when the R session that created it is terminated. This means that until you close R, your computer's resources will be occupied by unnecessary processes.
+
+### Small exercises on the parallel universe
+
+- *Install and load the package "*`parallel`*" into your R session.*
+
+- *Detect how many cores R can detect on your system.*
+
+- *If more than 1, then form a cluster using all but one of the cores detected above.*
+
+- *Use the function(s)* `waste.of.time()` *and/or* `fibo()`*(*`fibo()` *can be found in the script from the last exercise from last lecture)*
+
+- *Pass your function to the* `sapply()` *function and pass inputs 1 to 30 by* `sapply` *to your function.*
+
+- *Instead, pass the function to the* `parSapply()` *function. (Remember to export the function to the clusters)*
+
+- *Is* `parSapply()` *faster than regular* `sapply`*? (Don't do too many repetitions of* `sapply()`*/*`parSapply()`*; only at most 1:30 with* `fibo()`*.)*
+
+- *Terminate the assigned cluster!*
+
+**Solution:**
+
+```{r message=FALSE, results='hide', warning=FALSE}
+# Install if necessary and load the library quietly
+if(!require("parallel")) install.packages("parallel")
+suppressMessages(library(parallel))
+
+# Make cluster with more cores than 1 if possible
+if (detectCores() > 1) cluster <- makeCluster(detectCores() - 1)
+
+waste.of.time <- function(x) for (i in 1:10000) i
+fibo <- function(n) {
+  if (n < 2) return(n)
+  return(fibo(n - 1) + fibo(n - 2))
+}
+
+# `fibo` is a recursive function and thus needs to be exported to the cluster
+clusterExport(cluster, "fibo")
+
+# Without a cluster
+system.time(sapply(1:30, waste.of.time))
+system.time(sapply(1:30, fibo))
+
+# Using the cluster
+system.time(parSapply(cl = cluster, 1:30, waste.of.time))
+system.time(parSapply(cl = cluster, 1:30, fibo))
+
+# Kill the cluster
+stopCluster(cluster)
+```
+
+
+## Memory issues
+
+Computer memory comes in a variety of forms. For most purposes it is sufficient to think in terms of RAM (random access memory), which is fast, and the hard disk, which is slow.
+
+Variables require memory. R stores variables in virtual memory, which is a seamless combination of RAM and hard disk space, managed by the underlying operating system.
+
+The operating system will use R in preference to disk space, but if your variables require more memory than the amount of RAM physically installed, then it will have to use disk space as well, and your program will slow down as a result.
+
+As soon as a vector (or list) is too large to store in RAM all at once, the speed at which you can use it will drop dramatically.
+
+If the vector is sufficiently large, then it may not be possible to store it at all, in which case you are said to have run out of memory.
+
+Also note that R has an absolute limit on the length of a vector of $2^{31}-1=2,147,483,647$.
+
+In the case your code runs out of memory, you will need to break you vectors down into small subvectors and deal with each in turn.
+
+Alternatively, you can use the `rm` function to delete objects from memory and free space:
+
+```{r}
+#| echo: false
+rm(list = ls())
+```
+
+
+```{r}
+dA <- 5
+ls()
+rm("dA")
+```
+
+To remove all objects, you can use `rm(list = ls())`.
+
+## Small hints
+
+* Adding / subtracting tends to be better than multiplying.
+* Hence, log-likelihood $\sum \log L_i$ is better than likelihood $\prod L_i$
+* Simplify your equations, minimize number of operations.
+* Don't do $x = \exp(\log(z))$ if you can avoid it.
+* Split your program into smaller tasks. Keep it simple!
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

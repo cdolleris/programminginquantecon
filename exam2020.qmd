@@ -1,0 +1,325 @@
+# Ordinary exam 2020
+
+## Problem 1:
+
+In this first part of the exam you are tasked with several independent problems. If you are unable to solve an exercise move on to the next. Set and use the seed 1337 for all exercises in **Problem 1**.
+
+1.  Create a data structure of the type `data.frame` consisting of two equal length columns. The first column should contain 100 draws from the Gaussian (normal) distribution with mean 10 and variance 100, i.e. $N(10, 100)$. The second column should contain 100 draws from the standard uniform distribution, i.e. $U(0,1)$. Assign the two columns in the `data.frame` the names *"rnorm"* and *"runif"*. Calculate and print the mean and standard deviation of each column of this `data.frame`.
+
+Solution:
+
+```{r}
+set.seed(1337)
+dfData <- data.frame(
+  rvnorm = rnorm(100, 10, sqrt(100)),
+  rvunif = runif(100)
+)
+
+colMeans(dfData)
+apply(dfData, 2, sd)
+```
+
+2.  Count the number of strictly positive ($>0$) numerically valued elements in
+    
+```{r}
+mA <- matrix(rnorm(10000), nrow = 100, ncol = 100)
+```
+    
+  Print your result to the console. Then define a new matrix equal to `mA` with every second row and every fifth column removed. Print to the console the second column of your new smaller matrix.
+
+Solution:
+
+```{r}
+set.seed(1337)
+mA <- matrix(rnorm(10000), nrow = 100, ncol = 100)
+sum(mA > 0)
+
+indices <- seq(1, nrow(mA))
+mB <- mA[indices %% 2 != 0, indices %% 5 != 0]
+mB[, 2]
+```
+
+3.  Using $10^7$ draws from the appropriate uniform distribution use Monte Carlo integration to approximate,
+    $$ I = \int_3^{20} (x^3 - x^2 + 9)dx. $$
+    Print your approximation of $I$ to the console.
+
+Solution:
+
+```{r}
+set.seed(1337)
+MonteCarlo.Integration <- function(f, n, a, b) {
+  
+  U <- runif(n, min = a, max = b)
+  return( (b-a)*mean(f(U)) )
+  
+}
+MonteCarlo.Integration(function(x) (x^3 - x^2 + 9), 1e7, 3, 20)
+```
+
+4.  Consider the following function to calculate the diagonal of the sample covariance matrix between two matrices, `mX` and `mY`
+
+```{r}
+diag.covar <- function(mX, mY) {
+      varcov <- 0
+      for(j in 1:10) {
+        dsum <- 0
+        for(i in 1:10) {
+          dsum <- dsum + (mX[i,j] - mean(mX[,j]))*(mY[i,j] - mean(mY[,j]))
+        }
+        varcov[j] <- dsum/(dim(mX)[1]-1)
+      }
+      return(varcov)
+    }
+```
+
+  (The above function is included in the `diagcovar.R` file in the exam hand-out.)
+
+  Create a new function, say `diag.covarVec`, that is fully vectorized (or as vectorized as possible). Compare the run time of the two functions using,
+
+```{r}
+mX <- matrix(rnorm(100), nrow = 10, ncol = 10)
+mY <- matrix(rnorm(100), nrow = 10, ncol = 10)
+```
+
+  You may, but do not need to, use the functionalities of the `microbenchmark` package. How much faster is your new function? If you cannot implement the vectorization, explain potential causes for inefficiencies and poor programming practices in the `diag.covar` function via comments in your script. If your code is not faster, comment briefly in the script why that might be the case.
+
+Solution:
+
+```{r}
+set.seed(1337)
+diag.covar <- function(mX, mY) {
+  varcov <- 0
+  for(j in 1:10) {
+    dsum <- 0
+    for(i in 1:10) {
+      dsum <- dsum + (mX[i,j] - mean(mX[,j]))*(mY[i,j] - mean(mY[,j]))
+    }
+    varcov[j] <- dsum/(dim(mX)[1]-1)
+  }
+  return(varcov)
+}
+
+diag.covarVec <- function(mX, mY) {
+  mSum <- (t(mX) - colMeans(mX)) * (t(mY) - colMeans(mY))
+  varcov <- rowSums(mSum) / (dim(mX)[1]-1)
+  return(varcov)
+}
+
+mX <- matrix(rnorm(100), nrow = 10, ncol = 10)
+mY <- matrix(rnorm(100), nrow = 10, ncol = 10)
+
+diag.covar(mX, mY)
+diag.covarVec(mX, mY)
+
+suppressMessages(library(microbenchmark))
+microbenchmark(diag.covar(mX, mY), diag.covarVec(mX, mY))
+
+```
+
+
+5.  Construct a function that uses the inversion method to generate random variables, $X \sim \text{Gumbel}(\mu, \beta)$, where $\mu \in \mathbb{R}$ is the location parameter and $\beta > 0$ the scale parameter of a Gumbel distribution. The Gumbel has the following cumulative distribution function,
+    $$ F_X(x) = \exp\left(-\exp\left(-\frac{x-\mu}{\beta}\right)\right), \quad \beta > 0, \mu, x \in \mathbb{R} $$
+    with probability density function,
+    $$ f_X(x) = \frac{1}{\beta} \exp\left(-\left(\frac{x-\mu}{\beta} + \exp\left(-\frac{x-\mu}{\beta}\right)\right)\right), \quad \beta > 0, \mu, x \in \mathbb{R}. $$
+    Use your function to generate a sequence of 10,000 random variables from $\text{Gumbel}(0.5, 2)$. Produce a histogram of your generated random variable sequence using the built-in function `hist()`. In the histogram set breaks equal to 141 and limit the range for the x-axis of the plot from the smallest to the largest value in your generated sequence of random Gumbels. In addition superimpose the theoretical probability density function for comparison. In order to superimpose the theoretical probability density unto the histogram use the built-in `lines()` function with appropriate inputs (one input could be the `seq()` function that generates a sequence from -5 to 20 by step increments of 0.05).
+
+Solution:
+
+```{r}
+set.seed(1337)
+Gumbel <- function(mu, beta, size) {
+  U <- runif(size)
+  return(mu - beta * log(-log(U)))
+}
+
+vX <- Gumbel(0.5, 2, 10000)
+hist(vX, 
+     freq = FALSE,
+     breaks = 141,
+     col = "cornflowerblue", 
+     xlab = "",
+     ylab = "Density",
+     main = "",
+     xlim = c(min(vX), max(vX)))
+
+vInput <- seq(-5, 20, 0.05)
+
+fGumbelPdf <- function(mu, beta, x) {
+  return(1/beta * exp(-((x-mu)/beta + exp(-(x-mu)/beta))))
+}
+
+lines(vInput, fGumbelPdf(0.5, 2, vInput), type = "l", col = "red", lwd = 2)
+
+legend("topright",
+       legend = c("simulated", "actual"),
+       col = c("cornflowerblue", "red"),
+       lwd = 2)  
+
+```
+
+## Problem 2:
+
+Consider the following function $f: \mathbb{R} \to \mathbb{R}$ and its derivatives:
+$$ f(x) = \sin(x + \pi - 1) \quad (1.1) $$
+$$ f'(x) = \cos(x + \pi - 1) \quad (1.2) $$
+$$ f''(x) = -\sin(x + \pi - 1) \quad (1.3) $$
+
+1.  Write three R functions with input $x$ that return $f(x)$, $f'(x)$, and $f''(x)$. Provide a line plot of the function and its first derivative on the interval [-1,1].
+
+Solution:
+
+```{r}
+f <- function(x) {
+  return(sin(x + pi - 1))
+}
+
+fPrime <- function(x) {
+  return(cos(x + pi - 1))
+}
+
+fDoublePrime <- function(x) {
+  return(-sin(x + pi - 1))
+}
+
+vX <- seq(-1, 1, 0.01)
+plot(vX, f(vX), type = "l", col = "cornflowerblue", lwd = 2, ylim = c(-1, 1))
+lines(vX, fPrime(vX), type = "l", col = "red", lwd = 2)
+
+legend("topright",
+       legend = c("f", "fprime"),
+       col = c("cornflowerblue", "red"),
+       lwd = 2)
+
+```
+
+2.  Write an R function that maximizes R scalar functions using the simple Newton-Raphson method with analytical derivatives. The function should also have a starting value input, two reasonable options for the convergence criterion that can be specified by the user, and not run indefinitely. It should return a list with the following elements:
+    (a) the maximizer
+    (b) the function value at the optimum
+    (c) the number of iterations used
+    (d) a short description which stopping criterion was used and whether convergence was achieved
+
+Solution:
+
+```{r}
+NM <- function(f, f_prime, f_sec, dX0, dTol = 1e-9, n.max = 1000){
+  dX <- dX0
+  fx <- f(dX)
+  fpx <- f_prime(dX)
+  fsx <- f_sec(dX)
+  n <- 0
+  while ((abs(fpx) > dTol) && (n < n.max)) {
+    dX <- dX - fpx/fsx
+    fx <- f(dX)
+    fpx <- f_prime(dX)
+    fsx <- f_sec(dX)
+    n <- n + 1
+  }
+  if (n == n.max) {
+    return(list(
+      maximizer = dX,
+      function.val = f(dX),
+      n.iter = n,
+      msg = "Failed to converge. Max number of iterations reached."
+    ))
+  } else {
+    return(list(
+      maximizer = dX,
+      function.val = f(dX),
+      n.iter = n,
+      msg = "Convergence reached."
+    ))
+  }
+}
+```
+
+3.  Write a C++ function using Rcpp and RcppArmadillo that can be loaded via `sourceCpp()`. The function should contain a bisection method to find the root of a scalar function. The function should be able to take any R scalar function as input. Set the default interval for the root between [-1,1]. It should return or print a warning if the starting conditions for the bisection method are not fulfilled. Else it should return a list with the following elements:
+    (a) the root
+    (b) the function value at the root
+    (c) the number of iterations used
+    *Remark: If you cannot solve it in C++ you can earn some points for doing it in R*
+
+```{cpp}
+#| eval: false
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+
+using namespace arma;
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+List bisection_cpp(Function f, double dXLeft = -1.0, double dXRight = 1.0, double dTol = 0.0001, int maxIter = 1000) {
+  if (dXLeft >= dXRight) {
+    stop("Starting conditions not met");
+  }
+  double fLeft = as<double>(f(dXLeft));
+  double fRight = as<double>(f(dXRight));
+  if (fLeft == 0) {
+    List lOut;
+    lOut["root"] = dXLeft;
+    lOut["func_at_root"] = fLeft;
+    lOut["num_ite"] = 0;
+    return lOut;
+  } else if (fRight == 0) {
+    List lOut;
+    lOut["root"] = dXRight;
+    lOut["func_at_root"] = fRight;
+    lOut["num_ite"] = 0;
+    return lOut;
+  } else if (fLeft * fRight > 0) {
+    stop("error: f(x.l)*f(x.r) > 0");
+  }
+  
+  int iter = 0;
+  while ((dXRight - dXLeft) > dTol && (iter < maxIter)) {
+    double dXMid = (dXLeft + dXRight)/2;
+    double fMid = as<double>(f(dXMid));
+    if (fMid == 0) {
+      return(dXMid);
+    } else if (fLeft * fMid < 0) {
+      dXRight = dXMid;
+      fRight = fMid;
+    } else {
+      dXLeft = dXMid;
+      fLeft = fMid;
+    }
+    iter = iter + 1;
+  }
+  
+  List lOut;
+  lOut["root"] = (dXLeft + dXRight)/2;
+  lOut["func_at_root"] = as<double>(f((dXLeft + dXRight)/2));
+  lOut["num_ite"] = iter;
+  return lOut;
+}
+```
+
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp('exam2020cpp.cpp')
+```
+
+4.  Use the functions from 2.) and 3.) and the build-in functions `optim()` and `uniroot()` to find the maximizer of $f(x)$ in the interval [-1,1]. Use appropriate starting values. Also provide a benchmark comparing their computation times.
+    *Remark: If you cannot solve 2.) and/or 3.) you can still earn points for using the remaining functions only.*
+
+Solution:
+
+
+```{r}
+NM(f, fPrime, fDoublePrime, 0)$maximizer
+bisection_cpp(fPrime, dXLeft = -1, dXRight = 1)$root
+optim(0, f, method = "L-BFGS-B", lower = -1, upper = 1, control=list(fnscale=-1))$par
+uniroot(fPrime, c(-1, 1))$root
+
+suppressMessages(library(microbenchmark))
+microbenchmark(
+  NM = NM(f, fPrime, fDoublePrime, 0)$maximizer,
+  Bisection = bisection_cpp(fPrime, dXLeft = -1, dXRight = 1)$root,
+  Optim = optim(0, f, method = "L-BFGS-B", lower = -1, upper = 1, control=list(fnscale=-1))$par,
+  UniRoot = uniroot(fPrime, c(-1, 1))$root
+)
+```
+
+5.  Create an R package that contains the functions from 2.) and 3.) and edit the title description to "This is my exam package". Export the package as a bundled development version.
+    *Remark: If you cannot solve 2.) or 3.) you can still earn points. Create a package that contains an R and a C++ function with single scalar inputs that always return the number 5.*
