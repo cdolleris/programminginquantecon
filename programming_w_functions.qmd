@@ -1,0 +1,630 @@
+# Programming with Functions
+
+We have already seen and used a number of different pre-defined functions, such as:
+
+- `matrix(data = NA, nrow = 1, ncol = 1, byrow = FALSE, dimnames = NULL)`
+
+- `mean(x)`, `sd(x)`, `median(x)`
+
+- `read.table(file, header = FALSE, sep = "", dec = ".", row.names, col.names, na.strings = "NA", skip = 0, ...`
+
+- `write.table(x, file = "", quote = TRUE, sep = " ", na = "NA", dec = ".", row.names = TRUE, col.names = TRUE, ...)`
+
+- `plot(x, y, ...)`
+
+## Definition of functions in R
+
+A function is a piece of code that takes input (in the form of variables), performs a specified action using the input, and produces output (variables, or a table of numbers, or a graph, etc.).
+
+A function has the general form:
+
+```{r}
+#| eval: false
+name <- function(argument_1, argument_2, ...) {
+  expression_1
+  expression_2
+  #<some other expression>
+  return(output)
+}
+```
+
+- `argument_1`, `argument_2`, etc., are the names of variables (the input).
+
+- `expression_1`, `expression_2`, and `output` are all regular R expressions.
+
+- `name` is the name of the function.
+
+### Running a Function
+
+To call or run a function, we type (as an example):
+
+```{r}
+#| eval: false
+name(x1, x2)
+```
+
+The value of this expression is the value of the expression output.
+
+To calculate the value of output, the function first copies the value of `x1` to `argument_1`, the value of `x2` to `argument_2`, and so on. The arguments have then been passed to the function and act as variables within the function.
+
+Next, the function evaluates the grouped expressions contained in the braces {}, and the value of the expression `output` is returned as the value of the function.
+
+### Examples
+
+**Example 1**
+
+Consider the following example of a very simple function that computes the value of `x` to the power of `y`:
+
+```{r}
+power_fct <- function(vX, power) {
+  return(vX ^ power)
+}
+```
+
+The function is then carried out as:
+
+```{r}
+power_fct(vX = 2, power = 3)
+```
+
+**Example 2**
+
+Consider the following example of a function that swaps the values of the first and second elements of a vector:
+
+```{r}
+swap <- function(vZ) {
+  dTemp <- vZ[2]
+  vZ[2] <- vZ[1]
+  vZ[1] <- dTemp
+  return(vZ)
+}
+```
+
+The function is then carried out as:
+
+```{r}
+swap(vZ = c(7, 8, 9))
+```
+
+### Notes on Functions
+
+Note that some functions have no arguments, e.g., `getwd()`. If there is no `return(output)` statements then the value returned by the function is the value of the last expression in the braces.
+
+### Small Exercises
+
+- *Write a function that returns the sum of the first N natural numbers.*
+
+```{r}
+## There are multiple solutions to this:
+# The efficient
+fEfficientSum <- function(iN) {
+  # Input validation: Check if n is a non-negative integer
+  if (!is.numeric(iN) || iN < 0 || iN %% 1 != 0) {
+    stop("Input must be a non-negative integer.")
+  }
+  return(iN * (iN + 1) / 2)
+}
+# The for loop
+fForSum <- function(iN) {
+  sum <- 0
+  for (iIndex in 1:iN) {
+    sum = sum + iIndex
+  }
+  return(sum)
+}
+# The recursive
+fRecursiveSum <- function(iN) {
+  if (iN <= 0) {
+    return(iN)
+  } else {
+    return(iN + fRecursiveSum(iN - 1))
+  }
+}
+fEfficientSum(5)
+fForSum(5)
+fRecursiveSum(5)
+```
+
+- *Create a function that removes missing values from its vector input if it contains any.*
+
+```{r}
+fRemoveMissing <- function(vInput) {
+  if (any(is.na(vInput)) == TRUE) {
+    return(na.omit(vInput))
+  } else {
+    return(vInput)
+  }
+}
+vVector <- c(1, NA, 2)
+vVector <- fRemoveMissing(vVector)
+#> 1 2
+```
+
+### Example: roots of a quadratic function
+
+Assume we want to find the roots of:
+$$
+ax^2 + bx + c = 0
+$$
+The analytic solution is:
+$$
+(x_1, x_2) = \frac{-b \pm \sqrt{b^2 - 4ac}}{2a}
+$$
+The associated code can be written as a function:
+
+```{r}
+rootfinder <- function(dA, dB, dC) {
+  vOut = numeric(2)
+  vOut[1] = (-dB + sqrt(dB ^ 2 - 4 * dA * dC)) / (2 * dA)
+  vOut[2] = (-dB - sqrt(dB ^ 2 - 4 * dA * dC)) / (2 * dA)
+  return(vOut)
+}
+```
+
+But there are some problems related to the efficiency of the code. We are computing the algebraic operations too many times, and we are not exploiting vector-operations.
+
+- What if $a=b=c=0$?
+- What if $a=b=0$?
+- What if $a=0$?
+- What if $b^2-4ac=0$?
+- What is $b^2-4ac<0$?
+
+Reformulate the analytical solution as:
+
+$$
+(x_1, x_2) = 
+\begin{cases} 
+\mathbb{R}, & \text{if } a=b=c=0 \\ 
+\emptyset, & \text{if } a=b=0 \wedge c \ne 0 \\ 
+-\frac{c}{b}, & \text{if } a=0 \wedge b \ne 0 \wedge c \ne 0 \\ 
+\frac{-b \pm \sqrt{\lvert\Delta\rvert} \sqrt{sgn(\Delta)}}{2a}, & \text{otherwise} 
+\end{cases}
+$$
+
+Where $\Delta = b^2 - 4ac$. Note that:
+
+$$
+\sqrt{sgn(\Delta)} = 
+\begin{cases}
+1, \text{if } \Delta \ge 0 \\
+i, \text{if } \Delta < 0
+\end{cases}
+$$
+
+Thus, we modify our function:
+
+```{r}
+rootfinder <- function(dA, dB, dC) {
+  if (dA == 0 && dB == 0 && dC == 0) {
+    vRoots <- Inf
+  } else if (dA == 0 && dB == 0) {
+    vRoots <- NULL
+  } else if (dA == 0) {
+    vRoots <- -dC / dB
+  } else {
+    # calculate the discriminant
+    dDelta <- dB^2 - 4 * dA * dC
+    if (dDelta > 0) {
+      vRoots <- (-dB + c(1, -1) * sqrt(dDelta)) / (2 * dA)
+    } else if (dDelta == 0) {
+      vRoots <- rep(-dB / (2 * dA), 2)
+    } else {
+      di <- complex(1, 0, 1)
+      vRoots <- (-dB + c(1, -1) * sqrt(-dDelta) * di) / (2 * dA)
+    }
+  }
+  return(vRoots)
+}
+```
+
+Suppose we have saved the function `rootfinder` in the script `rootfinder.R` which is located int he script folder inside our working directory.
+
+To use the function, we first load it (using source or by copying and pasting into R), then call it, supplying suitable arguments.
+
+```{r}
+# source("./scripts/rootfinder.r)
+rootfinder(dA = 1, dB = 1, dC = 0)
+rootfinder(dA = 1, dB = 0, dC = -1)
+rootfinder(dA = 1, dB = -2, dC = 1)
+rootfinder(dA = 1, dB = 1, dC = 1)
+```
+
+### Advantages of coding with functions
+
+Once a function is loaded, it can be used again and again without having to reload it.
+
+User-defined functions can be used in the same way as predefined functions are used in R. In particular, they can be used within other functions.
+
+The use of functions allows you to break down a programming task into smaller, logical units.
+
+Large programs are typically made up of a number of smaller functions, each of which does a simple, well-defined task.
+
+### Variables inside a function
+
+The arguments and variables that are defined within a function exist only within that function.
+
+If you define and use a variable `x` inside a function, it does not exist outside the function.
+
+```{r}
+#| eval: false
+test <- function(x) {
+  y <- x + 1
+  return(y)
+}
+test(1)
+x # This will return an error
+y # This will return an error
+```
+
+### The scope of a variable
+
+If variables with the same name exist inside and outside a function, then they are separate and do not interact at all.
+
+You can think of a function as a separate environment that communicates with the outside world only through the values of its arguments and its output expression.
+
+That part of a program in which a variable is defined is called its scope. Restricting the scope of variables within a function provides an assurance that calling the function will not modify variables outside the function, except by assigning the returned value.
+
+Beware, however, the scope of a variable is not symmetric!
+
+Variables defined inside a fucntion cannot be seen outside, but variables defined outside the function can be seen inside the function, *provided there is not a variable with the same name defined inside*.
+
+Consider for example:
+
+```{r}
+test2 <- function(x) {
+  y <- x + z
+  return(y)
+}
+z <- 1
+test2(1)
+z <- 2
+test2(1)
+```
+
+Best practice is always to pass variables to be used inside the function as additional arguments:
+
+```{r}
+test2 <- function(x, z) {
+  y <- x + z
+  return(y)
+}
+```
+
+## Arguments of a function
+
+The arguments of a function can be mandatory or optional depending on the function specification.
+
+The arguments of an existing function can be obtained by calling the `formals` function:
+
+```{r}
+formals(rootfinder)
+```
+
+### Default arguments
+
+In order to simplify calling functions, some arguments may be assigned default values.
+Default values are used in the case where the argument is not provided in the call to the function:
+
+```{r}
+test3 <- function(x = 1) {
+  return(x)
+}
+test3(2)
+test3()
+```
+
+Calling `formals` on a function with default arguments, the value of the default arguments will be stated as well
+
+```{r}
+formals(matrix)
+matrix()
+```
+
+If an argument is omitted in a function call, R automatically assigns arguments to variables from the left and uses the default values for the unassigned arguments:
+
+```{r}
+test4 <- function(x = 1, y = 1, z = 1) {
+  return(x * 100 + y * 10 + z)
+}
+test4(2, 2)
+test4(y = 2, z = 2)
+```
+
+In general, naming the arguments in the function call is good practice, because it increases the readability and eliminates one potential source of errors.
+
+### Default arguments: Partial matching
+
+Sometimes you will want to define arguments so that they can take only a small number of different values, and the function will stop informatively if an inappropriate value is passed.
+
+When writing the function, we include a vector of the permissable values for any such argument, and then check them using the `match.arg` function. For example:
+
+```{r}
+MyFunc <- function(vX, method = c("add", "multiply")) {
+  method <- match.arg(method)
+  if (method == "add") {
+    return(sum(vX))
+  } else {
+    return(prod(vX))
+  }
+}
+MyFunc(c(1, 2, 3, 4), method = "multiply")
+MyFunc(c(1, 2, 3, 4), method = "add")
+```
+
+The R function `ar`, for example, which fits an autoregressive time series model to data, takes (among others) the argument specifying the method by which the model is estimated.
+
+```{r}
+#| eval: false
+method = c("yule-walker", "burg", "ols", "mle", "yw")
+```
+
+## Ellipsis
+
+R provides a very useful means of passing arguments, unaltered, from the function that is being called to the functions that are called within it.
+
+These arguments do not need to be named explicitly in the outer function, hence providing great flexibility.
+
+The use this facility, you need to include ... in your argument list. These three dots (an ellipsis) act as a placeholder for any extra arguments given to the function.
+
+Consider for example the function 'square of the mean':
+
+```{r}
+SquareMean <- function(vX, ...) {
+  dSM <- mean(vX, ...)^2
+  return(dSM)
+}
+SquareMean(c(1, 3, 5, NA))
+SquareMean(c(1, 3, 5, NA), na.rm = TRUE)
+```
+
+## Vector-based programming using functions
+
+Many R functions are vectorized, meaning that given vector input the function acts on each element separately, and a vector output is return, e.g.:
+
+```{r}
+vX <- c(1, NA, 3, 8)
+is.na(vX)
+```
+
+This is a very powerful aspect of R that allows for compact, efficient, and readable code. Moreover, for many R functions, applying the function to a vector is much faster than if we were to write a loop to apply it to each element one at a time.
+
+To further facilitate vector-based programming, R provides a family of powerful and flexible functions that make it easier for user-defined functions to handle vector inputs. These belong to the `apply` family of functions.
+
+Here we cover, `apply`, `sapply`, `lapply`, and `mapply`. Other functions belonging to this family are: `tapply`, `vapply`, and `eapply`, which require a bit of advanced R programming knowledge.
+
+### `sapply`
+
+The effect of `sapply(vX, FUN)` is to apply the function `FUN` to every element of vector `vX`. That is, `sapply` returns a vector whose *i*-th element is the value of the expression `FUN(vX[i])`.
+
+Consider the function, `f`, "sum of all integers lower than X":
+
+```{r}
+f <- function(dX) {
+  if (dX < 0) {
+    stop("dX needs to be positive.")
+  }
+  dSum = 0.0
+  iC = 0
+  while (iC <= dX) {
+    dSum = dSum + iC
+    iC = iC + 1
+  }
+  return(dSum)
+}
+```
+
+Suppose we want to apply the function `f` to the following vector of observations `vX = c(1, 4, 9.478, 6, 75, 0.48)`. We can of course write a `for` loop:
+
+```{r}
+vX <- c(1, 4, 9.478, 6, 75, 0.48)
+vSum <- numeric(length(vX))
+for (i in 1:length(vSum)) {
+  vSum[i] <- f(vX[i])
+}
+vSum
+```
+
+Or we can use the `sapply` function:
+
+```{r}
+vSum <- sapply(vX, f)
+vSum
+```
+
+Note that R performs a loop over the elements of `vX`, so execution of this code is not faster than execution of an equivalent loop - it is just faster to type.
+
+If `FUN` has arguments other than `X[i]`, then they can be included using the three dots (an ellipsis) as shown above. That is, `sapply(X, FUN, ...)` returns `FUN(X[i]; ...)` as the *i*-th element.
+
+```{r}
+g <- function(dX, iN) {
+  if (dX < 0) {
+    stop("dX needs to be positive.")
+  }
+  dSum <- 0.0
+  iC <- 0
+  while (iC <= dX) {
+    dSum <- dSum + iC^iN
+    iC <- iC + 1
+  }
+  return(dSum)
+}
+sapply(vX, g, iN = 2)
+```
+
+`lapply` does the same as `sapply` but always returns a `list`.
+
+### `sapply` and `lapply`
+
+That is, the arguments ... are passed directly from `sapply` to `FUN`, thus allowing you to use a function with more than one argument.
+
+Note that the values of the arguments ... are the same for each of the different arguments of `vx`. In order to vectorize over more than one argument (over both `vX` and ...) we need to use `mapply`.
+
+`lapply` does the same as `sapply`, but always returns a list.
+
+### `mapply`
+
+`mapply` is a multivariate version of `sapply` and can be used to call a function `FUN` over vectorized arguments one index at a time. In other words, the function is first called over elements at index 1 of all vectors (or lists), it is then called over all elements at index 2 and so on.
+
+Consider for example the function `rep` which takes arguments: `x` and `times`. `mapply` allows you to write:
+
+```{r}
+mapply(rep, times = c(4, 3), x = c(2, 4))
+```
+
+Or using `mapply` on our `power_fct(vX, power)`:
+
+```{r}
+mapply(power_fct, vX = 1:4, power = c(2, 2, 3, 3))
+```
+
+### `apply`
+
+If you wish to apply a function that takes a vector argument to each of the rows (or columns) of a matrix (or array), then use the function `apply`. Its formula is:
+
+```{r}
+#| eval: false
+apply(X, MARGIN, FUN, ...)
+```
+
+Where:
+
+- `X` is an `array`.
+
+- `MARGIN` is the index/indices of the `array` to which apply `FUN`.
+
+- `FUN` is the function to apply.
+
+- ... are extra arguments for `FUN`.
+
+Note that `MARGIN` can be a vector of indices. If `X` is a `matrix` (an array of 2 dimensions), then `MARGINS = 1` indicates rows, while `MARGINS = 2` indicates columns.
+
+**Example with** `apply`
+
+To compute the cumulative sum over the columns of a matrix `mX` we write:
+
+```{r}
+mX <- matrix(1:16, 4, 4)
+mX
+apply(mX, 2, cumsum)
+```
+
+### Exercise
+
+- *Define the 3 x 4 matrix: *
+$$
+mA = 
+\begin{bmatrix}
+1 & 10 & 7 & 4 \\
+8 & 5 & 2 & 11 \\
+6 & 3 & 9 & 12 
+\end{bmatrix}
+$$
+
+- *Use the* `apply` *function to compute the row sums and the column sums of your matrix.*
+- *Use the* `apply` *function to sort the columns of mA in a decreasing order and the rows of mA in an increasing order.*
+- *Use the* `sapply` *function to find sine of all elements of the first row of mA and cosine of all elements of the second column of mA. Is this the easiest way to find the sine and cosine of a row/column of mA?*
+
+**Solution**
+
+```{r}
+mA <- matrix(c(1, 10, 7, 4, 8, 5, 2, 11, 6, 3, 9, 12), 3, 4, byrow = TRUE)
+mA
+t(apply(mA, 1, cumsum)) # compute the row sums
+apply(mA, 2, cumsum) # compute the column sums
+apply(mA, 2, sort, decreasing = TRUE) # sort columns in decreasing order
+t(apply(mA, 1, sort, decreasing = FALSE)) # sort rows in increasing order
+sapply(mA[1, ], sin) # sine of first row using sapply
+sapply(mA[, 2], cos) # # cosine of second column using sapply
+# the easier way is to do 'sin(mA[, 1])'
+```
+
+### Recursive programming
+
+Recursive programming is a powerful programming technique, made possible by functions. A recursive program is simply one that calls itself. This is useful because many algorithms are recursive in nature.
+
+Consider for example the evaluation of $n!$, i.e., the factorial of the non-negative integer $n$. We know that $n! = n(n-1)!$, such that we can write a function like:
+
+```{r}
+myfactorial <- function(iN) {
+  if ((iN == 0) | (iN == 1)) {
+    return(1)
+  } else {
+    return(iN * myfactorial(iN - 1))
+  }
+}
+myfactorial(5)
+```
+
+### Multiple outputs
+
+A function can generate multiple output values. 
+
+Example: parameter estimates, their standard errors, and the optimized log-likelihood value. 
+
+A strategy in R is to create a `list` with all your outputs and return it as a single output of a function. For example:
+
+```{r}
+#| eval: false
+lOut = list(Par = vParam, SE = vStdErr, LLK = dLogLik)
+return(lOut)
+```
+
+## Comments
+
+Remember, you often want to re-use a code. It is often hard to read code that someone else has written, or code that you have written yourself months ago. Using sensible function and variable names, and Hungarian notation helps... somewhat.
+
+But also: **comment your code!**
+
+In R, # signals a comment to the end of the line:
+```{r}
+#| eval: false
+vBeta <- c(0, 1, -5) # Initial values
+```
+
+It is best practice to declare what a script does at its beginning. Furthermore, at the start of *every* function, put something like:
+
+```{r}
+##
+## FunctionName(Inputs)
+##
+## Purpose:
+##  Description of what the function does
+##
+## Input:
+##  List of inputs, describing what they represent
+##
+## Output:
+##  List of outputs, describing what they represent
+##
+## Return value:
+##  List of return values, describing what they represent
+##
+```
+
+In RStudio, you can use the `Ctrl+Shift+C` shortcut to comment multiple lines at once.
+
+In addition, add a general description of the program at the top of the .R file. This should include your name and the date for future reference. It may seem like a lot of work, but it will par off in the end. So: comment a lot!
+
+### Exercise
+
+- *Define a function,* `f`*, that calculates the output of the following recursive algorithm, where* $n \ge 0$ *is an integer.*
+  1. *If* $n<2$, *return* $n$.
+  2. *If* $n \ge 2$, *return* $f(n)=f(n-1)+f(n-2)$
+- *Run the function*
+- *Now pass the function in* `sapply` *along with the additional vector of integers, e.g.,* `(1:20)`*, do you recognize the pattern?*
+- *Bonus: Comment the code*
+
+**Solution**
+
+```{r}
+f <- function(iN) {
+  if (iN < 2) { # stopping criterion
+    return(iN)
+  } else {
+    return(f(iN - 1) + f(iN - 2)) # recursive part
+  }
+}
+sapply(1:20, f) # apply function f to a vector
+# regarding the output: it's the fibonacci series
+```
+

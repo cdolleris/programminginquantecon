@@ -1,0 +1,283 @@
+# Exercise set 2
+
+## **(1)**
+
+*Give R assignment statements that set the variable* $z$ *to.*
+
+*(a).* $x^{a^b}$
+
+Solution: 
+
+```{r}
+x <- 2
+a <- 3
+b <- 2
+z <- x ^ (a ^ b)
+z
+```
+
+*(b).* $(x^a)^b$
+
+Solution:
+
+```{r}
+z <- (x ^ a) ^ b
+z
+```
+
+*(c).* $3x^3 + 2x^2 + 6x + 1$
+
+Solution:
+
+```{r}
+z <- 3 * x ^ 3 + 2 * x ^ 2 + 6 * x + 1
+z
+```
+
+*(d).* $z+1$
+
+Solution:
+
+```{r}
+z <- z + 1
+z
+```
+
+
+## **(2)**
+
+*Give R expressions that return the following matrices and vectors:*
+
+*(a).* $(1,2,3,4,5,6,7,8,7,6,5,4,3,2,1)$
+
+Solution:
+
+```{r}
+c(1:8, 7:1) # Simple concatenation, but notice how 7:1 returns a decreasing vector of integers 1 to 7.
+```
+
+*(b).* $(1,2,2,3,3,3,4,4,4,4,5,5,5,5,5)$
+
+Solution:
+
+```{r}
+rep.int(x = 1:5, times = 1:5) # `rep.int` is faster than `rep` and only requires two arguments. We're essentially pairing the n'th input in the vector given in the x argument to the n'th input in the vector given in the times argument.
+```
+
+*(c).*
+
+  $$
+  \left(
+  \begin{matrix}
+  0 & 1 & 1 \\
+  1 & 0 & 1 \\
+  1 & 1 & 0
+  \end{matrix}
+  \right)
+  $$
+
+Solution:
+
+```{r}
+1 - diag(3) # We create a matrix of ones and subtract an identity matrix of size 3
+```
+
+*(d).*
+
+  $$
+  \left(
+  \begin{matrix}
+  0 & 2 & 3 \\
+  0 & 4 & 0 \\
+  7 & 0 & 0
+  \end{matrix}
+  \right)
+  $$
+
+Solution:
+
+```{r}
+matrix(c(0, 0, 7, 2, 4, 0, 3, 0, 0), 3, 3) # Manually creating the matrix seems to be the easiest solution :-)
+```
+
+## **(3)**
+
+*Use R to produce vector containing all integers from 1 to 100 that are not divisible by 2, 3, or 7.*
+
+Solution:
+
+```{r}
+vX <- 1:100
+vX[(vX %% 2 != 0) & (vX %% 3 != 0) & (vX %% 7 != 0)] # We use the modulo operator for indexing since it will be equal to 0 when a value in the vector is divisible by one of the three values.
+```
+
+## **(4)**
+
+*Build a 10 x 10 identity matrix. Then make all the non-zero elements 5. Do this latter step in at least two different ways.*
+
+Solution:
+
+```{r}
+mI <- diag(10) # 10 x 10 identity matrix
+mI[mI != 0] <- 5 # Making the non-zero elements 5 by using indexing
+mI
+
+# Other solutions
+mA <- diag(10)
+mA <- ifelse(mA != 0, 5, mA) # Using if-else
+all.equal(mI, mA)
+
+mB <- diag(10)
+diag(mB) <- 5 # Modify the diagonal directly
+all.equal(mI, mB)
+
+
+```
+
+## **(5)**
+
+*Consider the function* $y=f(x)$ *defined by:*
+
+  $$
+  f(x)=
+  \begin{cases}
+  -x^3, \text{ if } x \le 0 \\
+  x^2, \text{ if } x \in (0,1] \\
+  \sqrt{x}, \text{ if } x > 1
+  \end{cases}
+  $$
+  *Supposing that you are given* $x$*, write an R expression for* $y$ *using* `if` *statements.*
+
+Solution:
+
+```{r}
+f <- function(iX) {
+  if (iX <= 0) {
+    return(- iX ^ 3)
+  } else if (iX <= 1) {
+    return(iX ^ 2)
+  } else {
+    return(sqrt(iX))
+  }
+}
+
+set.seed(1)
+x <- runif(n = 1, min = -1, max = 2) # Random variable with equal probability of being in the three categories.
+
+cat("x is: ", x, " and y is: ", f(x))
+
+# Bonus: the function in one-line: f <- function(iX) ifelse(iX <= 0, -iX ^ 3, ifelse(iX <= 1, iX ^ 2, sqrt(iX)))
+```
+
+## **(6)**
+
+*Let* $h(x,n)=1+x+x^2+x^3+\cdots+x^n=\sum_{i=0}^{n}x^i$*. Write an R program to calculate* $h(x,n)$ *using a* `for` *loop.*
+
+Solution:
+
+```{r}
+# Note, this is just a finite geometric series
+iX <- 5 # Example values
+iN <- 4
+iGeoSum <- 0
+for (iIte in 0:iN) {
+  iGeoSum <- iGeoSum + iX ^ iIte
+}
+iGeoSum
+```
+
+## **(7)**
+
+*First, write a program that achieves the same result as in Exercise 6 but using a* `while` *loop.*
+
+*Then, write a program that does this using vector-operations (and no loops).*
+
+Solution:
+
+```{r}
+iX <- 5 # Example values
+iN <- 4
+iGeoSum <- 0
+iIte <- 0
+while (iIte <= iN) {
+  iGeoSum <- iGeoSum + iX ^ iIte
+  iIte <- iIte + 1
+}
+iGeoSum
+
+sum(iX ^ (0:iN)) # Vector-operations. The one-liner uses element-wise exponentiation against a vector of increasing integers. This creates a vector of the individual x^i's that we then sum.
+```
+
+## **(8)**
+
+*How would you find the sum of every third element of a vector* $x$*?*
+
+Solution:
+
+```{r}
+vX <- 1:100
+sum(vX[seq.int(3, length(vX), 3)]) # We use some smart indexing of our vector x. `seq.int` is faster than `seq` and creates the vector "3, 6, 9, ..." up until the final value in x. This vector can then be used for indexing x. Finally, the indexed values are summed.
+```
+
+## **(9)**
+
+*Write a program that uses a loop to find the minimum of a vector* $x$*, without using any predefined functions like* `min` *or* `sort`*.*
+
+Solution:
+
+```{r}
+set.seed(1)
+vX <- runif(n = 250) # 250 random values
+dMin <- vX[1]
+for (iN in 1:length(vX)) {
+  if (vX[iN] < dMin) dMin <- vX[iN] # We loop over the vector vX and assign the value at the index iN if it is lower than our current lowest value
+}
+dMin # Print the minimum value
+min(vX) # Verifying the result
+```
+
+## **(10)**
+
+*A room contains 100 toggle switches, originally all turned off. 100 people enter the room in turn. The first toggles every switch, the second toggles every second switch, the third every third switch, and so on, to the last person who toggles the last switch only. At the end of this process, which switches are turned on?*
+
+Solution:
+
+```{r}
+vX <- rep(0L, 100)
+
+for (i in 1:100) {
+  
+  vX[seq_along(vX) %% i == 0] <- bitwXor(vX[seq_along(vX) %% i == 0], 1) # Using bitwise logical operations is slightly overkill
+  
+  # This also works
+  # vX[seq_along(vX) %% i == 0] <- !vX[seq_along(vX) %% i == 0]
+  
+}
+
+vX
+
+which(vX == 1) # Perfect squares! :-)
+
+```
+
+## **(11)**
+
+*Load the historical prices of MAERSK from the file* `MAERSK-B.CO.csv` *available in blackboard. Compute the percentage log-returns and plot the associated time-series. Add a red coloured horizontal line to the plot indicating the average value. Add one standard deviation confidence bands to the average value as dashed blue lines.*
+
+Solution:
+
+```{r}
+mMaerskData <- read.csv("MAERSK-B.CO.csv", header = TRUE, sep = ",", na.strings = "null")
+
+vY <- diff(log(na.omit(mMaerskData[, "Adj.Close"]))) # Log-returns
+
+# Line plot
+plot(1:length(vY), vY, type = "l", ylim = c(-0.2, 0.2), ylab = "Log returns", xlab = paste0("Day(s) since ", min(mMaerskData$Date))) 
+
+# Mean
+lines(1:length(vY), rep(mean(vY), length(vY)), col = "red", lwd = "1")
+
+# Confidence bands
+lines(1:length(vY), rep((mean(vY) + sqrt(var(vY))), length(vY)), col = "blue", lwd = "3", lty = 6)
+lines(1:length(vY), rep((mean(vY) - sqrt(var(vY))), length(vY)), col = "blue", lwd = "3", lty = 6)
+```

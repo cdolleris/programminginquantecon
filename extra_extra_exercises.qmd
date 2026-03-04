@@ -1,0 +1,516 @@
+# Extra extra exercises
+
+# Exercise Set 13: R Fundamentals and Data Structures (Review)
+
+## **(1)**
+
+*   a) Create a sequence of numbers from 10 down to -10, decreasing by 0.5, and store it in a vector `vSeq`.
+*   b) How many elements are in `vSeq`?
+*   c) Create a logical vector `bIsPositive` which is `TRUE` for elements of `vSeq` greater than 0, and `FALSE` otherwise.
+*   d) Calculate the product of all elements in `vSeq` that are strictly between 1 and 5 (exclusive of 1 and 5).
+
+```{r}
+vSeq <- seq(10, -10, -0.5)
+length(vSeq)
+bIsPositive <- vSeq > 0
+prod(vSeq[vSeq > 1 & vSeq < 5])
+```
+
+## **(2)**
+
+*   a) Construct a 4x4 matrix `mIdentity` which is an identity matrix.
+*   b) Construct a 4x4 matrix `mValues` where elements are integers from 1 to 16, filled row-wise.
+*   c) Compute the matrix product `mC = mIdentity %*% mValues`. What is `mC`?
+*   d) Replace the diagonal elements of `mValues` with 0.
+
+```{r}
+mIdentity <- diag(4)
+mValues <- matrix(1:16, 4, 4, byrow = TRUE)
+mC <- mIdentity %*% mValues
+mC
+diag(mValues) <- 0
+mValues
+```
+
+## **(3)**
+
+*   Write an R script that:
+    *   Initializes a counter `iCount` to 0 and a sum `dRunningSum` to 0.
+    *   Uses a `repeat` loop. Inside the loop:
+        *   Generate a random integer between 1 and 20 (inclusive).
+        *   Add this integer to `dRunningSum`.
+        *   Increment `iCount`.
+        *   If `dRunningSum` exceeds 100 or `iCount` reaches 15, `break` the loop.
+    *   Print the final `dRunningSum` and `iCount`. Set seed to 777.
+
+```{r}
+set.seed(777)
+
+iCount <- 0
+dRunningSum <- 0
+
+repeat {
+  dRunningSum <- dRunningSum + sample(1:20, 1)
+  iCount <- iCount + 1
+  
+  if (dRunningSum > 100 || iCount > 15) {
+    break
+  }
+}
+
+print(paste("Sum:", dRunningSum, "Count:", iCount))
+```
+
+## **(4)**
+
+*   Create a list `lExperiment` with the following structure:
+    *   `sExpID`: "EXP007"
+    *   `dParams`: A named numeric vector with `alpha = 0.05`, `beta = 1.2`.
+    *   `lResults`: An inner list containing:
+        *   `vObservations`: `c(10.2, 11.1, NA, 9.8, 10.5, NA, 10.9)`
+        *   `sStatus`: "Preliminary"
+*   a) Access the `beta` parameter.
+*   b) Calculate the mean of `vObservations`, ignoring NAs.
+*   c) Change `sStatus` to "Completed".
+
+```{r}
+lExperiment <- list(
+  sExpID = "EXP007",
+  dParams = c(alpha = 0.05, beta = 1.2),
+  lResults = list(
+    vObservations = c(10.2, 11.1, NA, 9.8, 10.5, NA, 10.9),
+    sStatus = "Preliminary"
+  )
+)
+
+lExperiment[["dParams"]][["beta"]]
+mean(lExperiment[["lResults"]][["vObservations"]], na.rm = TRUE)
+lExperiment[["lResults"]][["sStatus"]] <- "Completed"
+lExperiment[["lResults"]][["sStatus"]]
+```
+
+## **(5)**
+
+*   a) Create a data frame `dfSales` with columns `Month` (character: "Jan", "Feb", "Mar", "Apr"), `ProductA_Units` (numeric: 100, 120, 90, 110), `ProductB_Units` (numeric: 80, 85, 95, 70).
+*   b) Add a new column `Total_Units` which is the sum of `ProductA_Units` and `ProductB_Units`.
+*   c) Create a new column `ProductA_Share` which is `ProductA_Units / Total_Units`.
+*   d) Find the month(s) where `ProductB_Units` were greater than 90.
+
+```{r}
+dfSales <- data.frame(
+  Month = c("Jan", "Feb", "Mar", "Apr"),
+  ProductA_Units = c(100, 120, 90, 110),
+  ProductB_Units = c(80, 85, 95, 70)
+)
+dfSales <- transform(dfSales, ProductA_Share = ProductA_Units / (ProductA_Units + ProductB_Units))
+dfSales$Month[dfSales$ProductB_Units > 90]
+```
+
+## **(6)**
+
+*   Using `ifelse()`, create a character vector `vCategory` based on a numeric vector `vScores = c(45, 88, 62, 95, 70, 55)`.
+*   `vCategory` should be "Fail" if score < 50, "Pass" if 50 <= score < 70, "Merit" if 70 <= score < 90, and "Distinction" if score >= 90. (Hint: you might need nested `ifelse` statements).
+
+```{r}
+vScores <- c(45, 88, 62, 95, 70, 55)
+vCategory <- ifelse(vScores < 50, "Fail", ifelse(vScores < 70, "Pass", ifelse(vScores < 90, "Merit", "Distinction")))
+vCategory
+```
+
+## **(7)**
+
+*   Write a `for` loop that iterates 10 times. In each iteration `k`:
+    *   If `k` is even, print `k` is even.
+    *   If `k` is odd and also a multiple of 3, print `k` is odd and a multiple of 3.
+    *   Otherwise (if `k` is odd and not a multiple of 3), print `k` is odd.
+
+```{r}
+for (k in 1:10) {
+  if (k %% 2 == 0) {
+    print(paste0(k, " is even."))
+  } else if (k %% 3 == 0) {
+    print(paste0(k, " is odd and a multiple of 3."))
+  } else {
+    print(paste0(k, " is odd."))
+  }
+}
+```
+
+## **(8)**
+
+*   a) Create a character vector `vsSentences = c("R is fun", "Data analysis with R", "Missing data NA", "Another sentence")`.
+*   b) Use `grep()` or `grepl()` to find which sentences contain the word "R" (case sensitive).
+*   c) Use `sub()` or `gsub()` to replace "R" with "R Language" in all sentences.
+*   d) Split the second sentence ("Data analysis with R") into individual words.
+
+```{r}
+vsSentences <- c("R is fun", "Data analysis with R", "Missing data NA", "Another sentence")
+grep("R", vsSentences)
+sub("R", "R Language", vsSentences)
+strsplit(vsSentences[2], " ")
+```
+
+# Exercise Set 14: Functions, Scope, and Vectorization Focus
+
+## **(1)**
+
+*   Write an R function `fNormalizeVector` that takes a numeric vector `vX` as input.
+*   The function should return a "normalized" vector where each element `x_i` is transformed to `(x_i - mean(vX)) / sd(vX)`.
+*   The function should handle cases where `sd(vX)` is 0 (e.g., if all elements are the same) by returning a vector of zeros or NAs, with a warning.
+*   Test with `c(1,2,3,4,5)` and `c(5,5,5,5)`.
+
+```{r}
+fNormalizeVector <- function(vX) {
+  if (sd(vX) == 0) {
+    warning("Standard deviation is 0 or all NA. Returning NAs or zeros.")
+    return(rep(NA, length(vX))) # Or zeros: numeric(length(vX)
+  } else {
+    return((vX - mean(vX)) / sd(vX))
+  }
+}
+
+fNormalizeVector(c(1,2,3,4,5))
+fNormalizeVector(c(5,5,5,5))
+```
+
+## **(2)**
+
+*   What is lexical scoping in R? Provide a simple example with a function defined inside another function, where the inner function uses a variable from the outer function's environment.
+
+```{r}
+fOuter <- function(a) {
+      b <- a * 2
+      fInner <- function(c) {
+        return(b + c) # 'b' is from fOuter's environment
+      }
+      return(fInner)
+    }
+myInnerFunc <- fOuter(10)
+result <- myInnerFunc(5)
+result
+```
+
+  Explain what `result` will be and why.
+
+Result will be 25. `fInner` “closes over” the environment of `fOuter` where `b` (which is 20) was defined.
+
+## **(3)**
+
+*   Write a function `fCountValuesInRanges` that takes a numeric vector `vData` and a vector of `vBreakpoints` (sorted) as input.
+*   The function should count how many values in `vData` fall into each interval defined by `vBreakpoints`. For example, if `vBreakpoints = c(0, 10, 20, 30)`, the intervals are `(-Inf, 0]`, `(0, 10]`, `(10, 20]`, `(20, 30]`, `(30, Inf)`.
+*   Implement this using:
+    *   a) A loop structure.
+    *   b) R's `cut()` or `findInterval()` function.
+*   Compare their outputs for `vData = rnorm(1000, mean=15, sd=10)` and `vBreakpoints = c(0, 10, 20, 30)`.
+
+```{r}
+# a
+fCountValuesInRanges <- function(vData, vBreakpoints) {
+  full_breaks <- c(-Inf, sort(unique(vBreakpoints)), Inf)
+  counts <- numeric(length(full_breaks) - 1)
+  for (val in vData) {
+    for (j in 1:(length(full_breaks) - 1)) {
+      if (val > full_breaks[j] && val <= full_breaks[j + 1]) {
+        counts[j] <- counts[j] + 1
+        break
+      }
+    }
+  }
+  names(counts) <- cut((full_breaks[-1] + full_breaks[-length(full_breaks)])/2 , breaks=full_breaks, include.lowest=TRUE, right=TRUE) # approx interval names
+  return(counts)
+}
+
+fCountValuesInRangesCut <- function(vData, vBreakpoints) {
+  full_breaks <- c(-Inf, sort(unique(vBreakpoints)), Inf)
+  return(table(cut(vData, breaks = full_breaks, include.lowest = TRUE, right = TRUE)))
+}
+
+vData <- rnorm(1000, mean = 15, sd = 10)
+vBreakpoints <- c(0, 10, 20, 30)
+fCountValuesInRanges(vData, vBreakpoints)
+fCountValuesInRangesCut(vData, vBreakpoints)
+```
+
+## **(4)**
+
+*   Write a recursive R function `fRecursiveSum` that computes the sum of elements in a numeric vector `vX` without using the built-in `sum()` function or any loops. (Hint: sum of `vX` is `vX[1]` + sum of `vX[-1]`). Define the base case.
+
+```{r}
+fRecursiveSum <- function(vX) {
+  if (length(vX) == 0) return(0)
+  return(vX[1] + fRecursiveSum(vX[-1]))
+}
+fRecursiveSum(1:5)
+```
+
+## **(5)**
+
+*   Create a list of matrices, where each matrix has 3 columns but a random number of rows (between 5 and 10) and contains random integers.
+
+```{r}
+set.seed(1)
+lMatrices <- lapply(1:5, function(i) matrix(sample(1:50, sample(5:10,1)*3, replace=TRUE), ncol=3))
+```
+
+*   Use `lapply` (or `sapply` if appropriate) to return a vector where each element is the sum of the diagonal elements (trace) of the corresponding matrix in `lMatrices`.
+
+```{r}
+sapply(lMatrices, function(x) sum(diag(x)))
+```
+
+## **(6)**
+
+*   Explain the difference between `apply()`, `lapply()`, `sapply()`, and `tapply()`. For each, provide a very brief example of a situation where it would be the most appropriate choice.
+
+`apply()`: applies function over margins of an array/matrix. Ex: `apply(myMatrix, 1, sum)` for row sums. 
+`lapply()`: applies function to each element of a list, returns a list. Ex: `lapply(myList, mean)`. 
+`sapply()`: similar to lapply, but tries to simplify result to vec- tor/matrix. Ex: `sapply(myList, length)`. 
+`tapply()`: applies function to subsets of a vector, grouped by another vector (factor). Ex: `tapply(iris$Sepal.Length, iris$Species, mean)`
+
+## **(7)**
+
+*   Consider a task: for each number `i` from 1 to 1,000,000, if `i` is even, calculate `i/2`, if `i` is odd, calculate `3*i+1`.
+*   Implement this using:
+    *   a) A `for` loop storing results in a pre-allocated vector.
+    *   b) A vectorized approach using `ifelse()`.
+*   Compare their performance using `microbenchmark`.
+
+```{r}
+suppressMessages(library(microbenchmark))
+
+fLoopApproach <- function(x) {
+  vResults <- numeric(x)
+  for (i in 1:x) {
+    if (i %% 2 == 0) {
+      vResults[i] <- i / 2
+    } else {
+      vResults[i] <- 3 * i + 1
+    }
+  }
+  return(vResults)
+}
+
+fVectorizedApproach <- function(x) {
+  return(ifelse(x %% 2 == 0, x / 2, 3 * x + 1))
+}
+
+microbenchmark(fLoopApproach(100000), fVectorizedApproach(100000))
+```
+
+## **(8)**
+
+*   You have a data frame:
+
+```{r}
+df <- data.frame(
+      group = rep(c("A", "B", "C"), each = 4),
+      value = rnorm(12)
+    )
+```
+
+*   Using `tapply` (or `aggregate` or `dplyr` if allowed), calculate the range (max - min) of `value` for each `group`.
+
+```{r}
+tapply(df$value, df$group, function(x) diff(range(x)))
+```
+
+# Exercise Set 15: Likelihood Functions and Optimization (Medium/Hard)
+
+## **(1) Likelihood of a Poisson Process**
+
+*   A Poisson process models the number of events occurring in a fixed interval of time or space, given a constant average rate $\lambda$. The probability of observing $k$ events is $P(K=k | \lambda) = \frac{\lambda^k e^{-\lambda}}{k!}$.
+*   Suppose you observe the following number of events in $n=5$ independent intervals: `vCounts = c(2, 3, 1, 2, 4)`.
+*   a) Write an R function `fPoissonLogLik` that takes a rate parameter `dLambda` and the vector `vCounts` as input, and returns the total log-likelihood for the observed counts.
+*   b) The MLE for $\lambda$ is simply the sample mean of the counts. Calculate this $\hat{\lambda}_{MLE}$.
+*   c) Plot the log-likelihood function for $\lambda \in [0.1, 5]$. Mark the MLE on your plot.
+*   d) Use `optimize()` to find the value of $\lambda$ that maximizes your `fPoissonLogLik` function (remember `optimize` minimizes by default). Compare it to your analytical MLE.
+*   e) (C++) Write a C++ function `poisson_log_lik_point_cpp(int k, double lambda)` that calculates the log-likelihood for a single count `k` and a given `lambda`. Then, write another C++ function `total_poisson_log_lik_cpp(Rcpp::IntegerVector counts, double lambda)` that iterates through the counts vector and sums the log-likelihoods using your point function. Test this against your R version.
+
+```{r}
+fPoissonLogLik <- function(dLambda, vCounts) {
+  dSum <- 0
+  for (i in 1:length(vCounts)) {
+    dSum <- dSum + vCounts[i] * log(dLambda) - dLambda - factorial(vCounts[i])
+  }
+  return(dSum)
+}
+
+vCounts <- c(2, 3, 1, 2, 4)
+
+vX <- seq(0.1, 5, 0.01)
+plot(vX, fPoissonLogLik(vX, vCounts), type = "l")
+abline(v = mean(vCounts), col = "red")
+
+mean(vCounts)
+optimize(fPoissonLogLik, interval = c(0.1, 5), vCounts = vCounts, maximum = TRUE)
+```
+
+```{cpp}
+#| eval: false 
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace arma;
+
+//[[Rcpp::export]]
+double poisson_log_lik_cpp(int k, double lambda) {
+  return (k * log(lambda) - lambda - tgamma(k + 1));
+}
+
+//[[Rcpp::export]]
+double total_poisson_log_lik_cpp(Rcpp::IntegerVector counts, double lambda) {
+  double dSum = 0.0;
+  for (int i = 0; i < counts.size(); i++) {
+    dSum += poisson_log_lik_cpp(counts[i], lambda);
+  }
+  return dSum;
+}
+```
+
+```{r}
+suppressMessages(library(Rcpp))
+sourceCpp("extra_extra_cpp.cpp")
+
+total_poisson_log_lik_cpp(vCounts, mean(vCounts))
+fPoissonLogLik(mean(vCounts), vCounts)
+```
+
+## **(2) Optimization of a Bimodal Likelihood (Reparameterization)**
+
+*   Consider a custom likelihood function (unnormalized PDF) that is known to be bimodal for a parameter $\theta$: $L(\theta | \text{data}) \propto \exp(-(\theta^2 - 4)^2 + 0.5\theta)$.
+*   a) Write an R function `fBimodalNegLogLik` for the negative log-likelihood (ignoring any normalizing constant for the data part, just use the function of $\theta$).
+*   b) Plot this negative log-likelihood function for $\theta \in [-3, 3]$ to observe its shape and local minima.
+*   c) Use `optim()` with method "BFGS" and several different starting values (e.g., -2, 0, 2) to find local minima. Do you find different minima?
+*   d) Suppose you know one mode is positive and one is negative. If you want to find the positive mode, how could you use reparameterization to restrict `optim`'s search? For example, use $\theta = \exp(\tilde{\theta})$ to ensure $\theta > 0$. Define the new negative log-likelihood in terms of $\tilde{\theta}$ and optimize for $\tilde{\theta}$. Transform the result back to $\theta$.
+*   e) Similarly, to find the negative mode, you might use $\theta = -\exp(\tilde{\theta})$. Implement this.
+
+```{r}
+fBimodalNegLogLik <- function(dTheta) {
+  return(-(dTheta^2 - 4)^2 + 0.5 * dTheta)
+}
+
+vX <- seq(-3, 3, 0.01)
+plot(vX, fBimodalNegLogLik(vX), type = "l")
+
+optim(-2, fBimodalNegLogLik, method = "BFGS")$par
+optim(0, fBimodalNegLogLik, method = "BFGS")$par
+optim(2, fBimodalNegLogLik, method = "BFGS")$par
+
+fBimodalNegLogLik_Pos <- function(dTheta_tilde) {
+  dTheta <- exp(dTheta_tilde)
+  return(-(dTheta^2 - 4)^2 + 0.5 * dTheta)
+}
+
+dTheta_tilde_optim <- optim(0, fBimodalNegLogLik_Pos, method = "BFGS")$par
+dTheta_optim <- exp(dTheta_tilde_optim)
+dTheta_optim
+
+fBimodalNegLogLik_Neg <- function(dTheta_tilde) {
+  dTheta <- -exp(dTheta_tilde)
+  return(-(dTheta^2 - 4)^2 + 0.5 * dTheta)
+}
+
+dTheta_tilde_optim <- optim(0, fBimodalNegLogLik_Neg, method = "BFGS")$par
+dTheta_optim <- -exp(dTheta_tilde_optim)
+dTheta_optim
+```
+
+## **(3) Likelihood for Linear Regression with Known Variance**
+
+*   Consider a simple linear regression $y_i = \beta_0 + \beta_1 x_i + \epsilon_i$, where $\epsilon_i \sim N(0, \sigma^2)$. Assume $\sigma^2 = 1$ is known.
+*   Parameters to estimate are $\theta = (\beta_0, \beta_1)$.
+*   Data: `set.seed(123); x_data = 1:20; y_data = 0.5 + 2*x_data + rnorm(20, 0, 1);`
+*   a) Write an R function `fRegressNegLogLik(vBeta, vY, vX)` that calculates the negative log-likelihood. `vBeta` is a vector `c(beta0, beta1)`.
+        (Hint: $L(\beta_0, \beta_1 | y, x, \sigma^2) = \prod_{i=1}^n \frac{1}{\sqrt{2\pi\sigma^2}} \exp\left(-\frac{(y_i - (\beta_0 + \beta_1 x_i))^2}{2\sigma^2}\right)$).
+*   b) Use `optim()` (e.g., method "Nelder-Mead" or "BFGS") to find the MLEs for $\beta_0$ and $\beta_1$. Use starting values like `c(0,0)`.
+*   c) Compare your estimates with the coefficients obtained from `lm(y_data ~ x_data)`. They should be similar (though `lm` also estimates $\sigma^2$ if not fixed).
+*   d) (Conceptual) If $\sigma^2$ were also unknown, how would your parameter vector $\theta$ and your reparameterization strategy for $\sigma^2$ (to ensure positivity) change?
+
+```{r}
+set.seed(12)
+x_data <- 1:20
+y_data <- 0.5 + 2 * x_data + rnorm(20, 0, 1)
+
+fRegressNegLogLik <- function(vBeta, vY, vX, dSigma2 = 1) {
+  dSum <- 0
+  for (i in 1:length(vY)) {
+    dSum <- dSum + (vY[i] - (vBeta[1] + vBeta[2] * vX[i]))^2 / (2 * dSigma2)
+  }
+  return(dSum)
+}
+
+optim(c(0, 0), fRegressNegLogLik, vY = y_data, vX = x_data, method = "BFGS")$par
+
+coef(lm(y_data ~ x_data))
+```
+
+## **(4) Optimization with Constraints using `constrOptim` (or Penalty)**
+
+*   Minimize $f(x, y) = (x-1)^2 + (y-2)^2$ subject to the linear constraint $x + y \ge 4$.
+*   **Method 1: `constrOptim` (if familiar or allowed as it's base R but more advanced)**
+    *   a) The constraint can be written as $1x + 1y - 4 \ge 0$. `constrOptim` requires constraints in the form $U\theta - C \ge 0$. Define $U$ and $C$.
+    *   b) Use `constrOptim` to solve this. You'll need to provide the objective function `f`, its gradient (optional, `constrOptim` can approximate), `ui` (U matrix), and `ci` (C vector). Choose a starting point that satisfies the constraint e.g., (3,3).
+*   **Method 2: Penalty Function**
+    *   c) Define a penalized objective function $f_p(x, y) = f(x,y) + P \cdot \max(0, 4 - (x+y))^2$, where $P$ is a large penalty constant (e.g., 1000).
+    *   d) Use `optim` with "BFGS" or "Nelder-Mead" to minimize $f_p(x,y)$ without explicit constraints.
+    *   e) Compare results from both methods if possible. The analytical solution is $(x,y) = (1.5, 2.5)$.
+
+```{r}
+f <- function(vX) {
+  return((vX[1] - 1)^2 + (vX[2] - 2)^2)
+}
+
+p <- function(vX) {
+  return(max(0, 4 - (vX[1] + vX[2]))^2)
+}
+
+f_p <- function(vX, ...) {
+  return(f(vX) + 1000 * p(vX))
+}
+
+optim(c(3, 3), f_p, method = "BFGS")$par
+
+```
+
+## **(5) Profile Likelihood**
+
+*   Revisit the Poisson likelihood from Q1 (`vCounts = c(2, 3, 1, 2, 4)`). Suppose we have a more complex model with two parameters, $\lambda_1$ and $\lambda_2$, and the log-likelihood is $LL(\lambda_1, \lambda_2)$.
+*   Often, we are interested in inference for one parameter (e.g., $\lambda_1$) while treating the other as a nuisance parameter. The profile log-likelihood for $\lambda_1$ is defined as $PL(\lambda_1) = \max_{\lambda_2} LL(\lambda_1, \lambda_2)$.
+*   Let $LL(\lambda_1, \lambda_2) = \sum_{i=1}^3 \log(\text{dpois}(vCounts[i], \lambda_1)) + \sum_{i=4}^5 \log(\text{dpois}(vCounts[i], \lambda_2))$.
+    (This is an artificial separation for demonstration).
+*   a) Write an R function `fCombinedLogLik(vLambda, vC)` where `vLambda = c(lambda1, lambda2)`.
+*   b) Write an R function `fProfileLogLik_L1(dLambda1_fixed, vC)` that, for a fixed `dLambda1_fixed`, uses `optimize` to find the `dLambda2` that maximizes `fCombinedLogLik` (with that `dLambda1_fixed`), and returns this maximized log-likelihood value.
+*   c) Create a sequence of `dLambda1_fixed` values (e.g., from 0.5 to 3.5). For each value, calculate `fProfileLogLik_L1`.
+*   d) Plot the profile log-likelihood $PL(\lambda_1)$ against `dLambda1_fixed`. The maximum of this plot gives an estimate for $\lambda_1$. From this plot, can you estimate an approximate confidence interval for $\lambda_1$? (e.g., points where $PL(\lambda_1) > \max(PL) - \text{qchisq}(0.95, 1)/2$).
+
+```{r}
+vCounts <- c(2, 3, 1, 2, 4)
+
+fCombinedLogLik <- function(vLambda, vC) {
+  dSum1 <- 0.0
+  dSum2 <- 0.0
+  for (i in 1:3) {
+    dSum1 <- dSum1 + log(dpois(vCounts[i], vLambda[1]))
+  }
+  for (i in 4:5) {
+    dSum2 <- dSum2 + log(dpois(vCounts[i], vLambda[2]))
+  }
+  return(dSum1 + dSum2)
+}
+
+fProfileLogLik_L1 <- function(dLambda1_fixed, vC) {
+  # Objective for optimize: function of lambda2
+  obj_for_lambda2 <- function(dLambda2) {
+    fCombinedLogLik(c(dLambda1_fixed, dLambda2), vC)
+  }
+  # Optimize returns list, $maximum is the value of objective function
+  optimize(obj_for_lambda2, interval=c(0.01, 10), maximum=TRUE)$objective
+}
+
+lambda1_seq <- seq(0.5, 4.5, 0.1)
+profile_loglik_values <- sapply(lambda1_seq, fProfileLogLik_L1, vC=vCounts)
+
+plot(lambda1_seq, profile_loglik_values, type="l", xlab="Lambda1", ylab="Profile Log-Likelihood")
+abline(h = max(profile_loglik_values) - qchisq(0.95,1)/2, col="red", lty=2)
+
+```

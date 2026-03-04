@@ -1,0 +1,1580 @@
+# Extra exercises
+
+# Exercise Set 1: R Basics, Data Structures, and Control Flow
+
+## **(1)**
+
+*   a) Create a vector `vNumbers` containing integers from 1 to 50.
+*   b) Calculate the sum of all even numbers in `vNumbers`.
+*   c) Create a new vector `vLog` containing the natural logarithm of each number in `vNumbers`. Handle any potential warnings or errors if numbers were 0 or negative (though not the case here).
+*   d) What is the data type of `vLog`?
+
+```{r}
+vNumbers <- 1:50
+sum(vNumbers[vNumbers %% 2 == 0])
+vLog <- log(vNumbers)
+typeof(vLog)
+```
+
+## **(2)**
+
+*   a) Create a 5x5 matrix `mRandom` with elements drawn from a uniform distribution between -10 and 10. Set the seed to 42.
+*   b) Replace all negative values in `mRandom` with NA.
+*   c) Calculate the sum of each row, ignoring NA values.
+*   d) Calculate the mean of each column, ignoring NA values.
+
+```{r}
+set.seed(42)
+mRandom <- matrix(runif(25, -10, 10), 5, 5)
+mRandom[mRandom < 0] <- NA
+rowSums(mRandom, na.rm = TRUE)
+colMeans(mRandom, na.rm = TRUE)
+```
+
+## **(3)**
+
+*   Write an R script that does the following:
+    *   Initializes a variable `dTotalSum` to 0.
+    *   Uses a `for` loop to iterate from 1 to 100.
+    *   In each iteration, if the current number `i` is a multiple of 3 or a multiple of 5, add `i` to `dTotalSum`.
+    *   Print the final `dTotalSum`.
+
+```{r}
+dTotalSum <- 0
+for (i in 1:100) {
+  if (i %% 3 == 0 | i %% 5 == 0) {
+    dTotalSum <- dTotalSum + i
+  }
+}
+dTotalSum
+```
+
+## **(4)**
+
+*   Create a list `lMyList` with the following named elements:
+    *   `sName`: Your name (as a string).
+    *   `vLuckyNumbers`: A vector of your 3 favorite numbers.
+    *   `mMatrixA`: A 2x2 identity matrix.
+    *   `dfInnerData`: A data frame with two columns: `Month` (Jan, Feb, Mar) and `Rainfall_mm` (50, 30, 65).
+*   Access and print the `Rainfall_mm` for February.
+*   Add a new element to the list called `sCourse` with the value "PQE".
+
+```{r}
+lMyList <- list(
+  sName = "MyName",
+  vLuckyNumbers = c(1, 3, 5),
+  mMatrixA = identity(2),
+  dfInnerData = data.frame(
+    Month = c("Jan", "Feb", "Mar"),
+    Rainfall_mm = c(50, 30, 65)
+  )
+)
+lMyList$dfInnerData$Rainfall_mm[lMyList$dfInnerData$Month == "Feb"]
+lMyList$sCourse <- "PQE"
+```
+
+
+## **(5)**
+
+*   a) Create a data frame `dfStudents` with 5 students and 3 variables: `StudentID` (101 to 105), `Grade` (A, B, C, A, B), and `Age` (20, 21, 20, 22, 21).
+*   b) Convert the `Grade` column to an ordered factor with levels C < B < A.
+*   c) Add a new column `Pass` which is `TRUE` if `Grade` is A or B, and `FALSE` otherwise.
+*   d) Create a subset of `dfStudents` containing only students older than 20.
+
+```{r}
+dfStudents <- data.frame(
+  StudentID = 101:105,
+  Grade = c("A", "B", "C", "A", "B"),
+  Age = c(20, 21, 20, 22, 21)
+)
+dfStudents$Grade <- factor(dfStudents$Grade, levels = c("C", "B", "A"), ordered = TRUE)
+dfStudents$Pass <- ifelse(dfStudents$Grade == "A" | dfStudents$Grade == "B", TRUE, FALSE)
+dfStudents[dfStudents$Age > 20, ]
+```
+
+## **(6)**
+
+*   Using `ifelse()`, create a vector `vSign` of length 20. For each element `i` from -9 to 10, `vSign[i+10]` should be -1 if `i` is negative, 0 if `i` is zero, and 1 if `i` is positive. (Adjust indexing as R vectors are 1-indexed).
+
+```{r}
+vI <- -9:10
+vSign <- ifelse(vI < 0, -1, ifelse(vI == 0, 0, 1))
+vSign
+```
+
+## **(7)**
+
+*   Write a `while` loop that simulates flipping a fair coin (0 for Tails, 1 for Heads) until 3 consecutive Heads are observed. Count and print the total number of flips. Set seed to 101.
+
+```{r}
+set.seed(101)
+iFlipCount <- 0
+iConsecHeads <- 0
+while (iConsecHeads < 3) {
+  iFlip <- sample(0:1, 1)
+  iFlipCount <- iFlipCount + 1
+  if (iFlip == 1) {
+    iConsecHeads <- iConsecHeads + 1
+  } else {
+    iConsecHeads <- 0
+  }
+}
+iFlipCount
+```
+
+## **(8)**
+
+*   a) Create a character vector `vsFruits` with elements: "apple", "banana", "cherry", NA, "date".
+*   b) How many missing values are in `vsFruits`?
+*   c) Create a new vector `vsFruitsClean` by removing NA values from `vsFruits`.
+*   d) For each fruit in `vsFruitsClean`, print the fruit name and its number of characters using `nchar()`.
+
+```{r}
+vsFruits <- c("apple", "banana", "cherry", NA, "date")
+sum(is.na(vsFruits))
+vsFruitsClean <- vsFruits[which(!is.na(vsFruits))]
+for (fruit in vsFruitsClean) {
+  print(fruit)
+  print(nchar(fruit))
+}
+```
+
+## **(9)**
+
+*   Explain the difference between `&` and `&&`, and between `|` and `||` in R. Provide a small example where `&&` or `||` would be preferred over `&` or `|` due to short-circuiting, especially when dealing with potentially undefined objects or expensive computations.
+
+```{r}
+#| eval: false
+#`&` and `|` are element-wise. `&&` and `||` are short-circuiting, evaluating only the first element. Example:
+
+x <- NULL
+# No error
+if (FALSE && x[1] > 5) {
+  print("Not evaluated")
+} else {
+  print("OK")
+}
+# Error if x[1] is problematic
+if (FALSE & x[1] > 5) {
+  print("Error here")
+}
+
+```
+
+## **(10)**
+
+*   Consider the matrix `mA <- matrix(1:12, nrow=4, byrow=TRUE)`.
+*   Extract the second row.
+*   Extract the third column.
+*   Extract the element in the 1st row and 2nd column.
+*   Create a new matrix `mB` by selecting rows 1 and 3, and columns 2 and 3 from `mA`.
+
+```{r}
+mA <- matrix(1:12, nrow = 4, byrow = TRUE)
+mA[2, ]
+mA[, 3]
+mA[1, 2]
+mB <- mA[c(1, 3), c(2, 3)]
+mB
+```
+
+# Exercise Set 2: Functions, Scope, and Efficiency
+
+## **(1)**
+
+*   Write an R function `fCalculateStats` that takes a numeric vector as input.
+*   The function should return a list containing:
+    *   `dMean`: The mean of the vector.
+    *   `dMedian`: The median of the vector.
+    *   `dSD`: The standard deviation of the vector.
+    *   `iNAs`: The number of NA values in the vector.
+*   The function should handle NA values gracefully by removing them before calculating mean, median, and SD.
+*   Test your function with `vTest <- c(1, 5, NA, 7, 3, NA, 8)`.
+
+```{r}
+fCalculateStats <- function(vInput) {
+  outputList <- list(
+    dMean = mean(vInput, na.rm = TRUE),
+    dMedian = median(vInput, na.rm = TRUE),
+    dSD = sqrt(var(vInput, na.rm = TRUE)),
+    iNAs = sum(is.na(vInput))
+  )
+  return(outputList)
+}
+vTest <- c(1, 5, NA, 7, 3, NA, 8)
+fCalculateStats(vTest)
+
+```
+
+## **(2)**
+
+*   Consider the following R code:
+
+```{r}
+x <- 10
+my_func <- function(y) {
+  x <- 5
+  return(x + y)
+}
+z <- my_func(3)
+```
+
+*   What are the values of `x` and `z` in the global environment after this code is executed? Explain R's scoping rules in this context.
+
+The value of `z` is 8, and the value of `x` is 10. `x` is local within the function.
+
+## **(3)**
+
+*   Write a function `fSumSquaresUpToN` that calculates the sum of squares of integers from 1 up to `n` (i.e., $1^2 + 2^2 + ... + n^2$).
+*   Implement this first using a `for` loop.
+*   Implement this second using a vectorized approach (without an explicit loop).
+*   Use `system.time()` or `microbenchmark()` to compare the execution time of both versions for `n = 10000`.
+
+```{r}
+suppressMessages(library(microbenchmark))
+
+fSumSquaresUpToN <- function(iN) {
+  iSumSquares <- 0
+  for (i in 1:iN) {
+    iSumSquares <- iSumSquares + i^2
+  } 
+}
+
+fSumSquaresVector <- function(iN) {
+  return(sum((1:iN)^2))
+}
+
+microbenchmark(fSumSquaresVector(10000), fSumSquaresUpToN(10000))
+
+```
+
+## **(4)**
+
+*   Write a recursive R function `fRecursiveFactorial` to calculate the factorial of a non-negative integer `n`. Include basic error checking for negative inputs.
+
+```{r}
+fRecursiveFactorial <- function(n) {
+  if (n < 0) stop("Input must be non-negative")
+  if (n == 0) return(1)
+  else return(n * fRecursiveFactorial(n - 1))
+}
+fRecursiveFactorial(5)
+
+```
+
+## **(5)**
+
+*   Write a function `fApplyToMatrix` that takes a matrix and a function `FUN` as arguments.
+*   The function should apply `FUN` to each column of the matrix using `sapply` or `apply`.
+*   Test it by creating a 5x3 matrix of random numbers and applying the `mean` function to its columns.
+
+```{r}
+fApplyToMatrix <- function(mInput, FUN) {
+  return(apply(mInput, 2, FUN))
+}
+
+mA <- matrix(rnorm(15), 5, 3)
+fApplyToMatrix(mA, mean)
+```
+
+## **(6)**
+
+*   Explain the purpose of the ellipsis (`...`) argument in R functions. Provide an example of a simple function you write that uses `...` to pass arguments to an internal R function (e.g., `plot` or `mean`).
+
+It passes additional arguments.
+
+```{r}
+fCalculateMean <- function(vInput, ...) {
+  return(mean(vInput, ...))
+}
+vX <- c(1, 2, NA, 5)
+fCalculateMean(vX, na.rm = TRUE)
+
+myPlotWrapper <- function(x, y, ...) {
+plot(x, y, main = "My Plot Wrapper", ...)
+}
+myPlotWrapper(1:5, (1:5)^2, xlab = "X-Values", col = "blue")
+```
+
+## **(7)**
+
+*   Create two numeric vectors, `vA = 1:1000000` and `vB = rnorm(1000000)`.
+*   Compare the time it takes to calculate their element-wise product using:
+    *   A `for` loop.
+    *   The vectorized `*` operator.
+*   Use `microbenchmark` for the comparison.
+
+```{r}
+vA <- 1:1000000
+vB <- rnorm(1000000)
+
+fLoopApproach <- function(vA, vB) {
+  iProduct <- numeric(length(vA))
+  for (i in 1:length(vA)) {
+    iProduct[i] <- vA[i] * vB[i]
+  }
+}
+
+fVectorApproach <- function(vA, vB) {
+  return(vA * vB)
+}
+
+# microbenchmark(fLoopApproach(vA, vB), fVectorApproach(vA, vB))
+
+```
+
+## **(8)**
+
+*   You are given a list `lData` where each element is a numeric vector of varying lengths, possibly containing NAs.
+
+```{r}
+set.seed(123)
+lData <- list(rnorm(10), c(NA, rnorm(5)), rnorm(15, mean=5))
+```
+
+*   Write code using `lapply` to return a new list where each element is the mean of the corresponding vector in `lData`, after removing NAs.
+
+```{r}
+lDataClean <- lapply(lData, mean, na.rm = TRUE)
+lDataClean
+```
+
+## **(9)**
+
+*   Write a function `fMatrixRedimension` that first initializes an empty vector `vResult <- c()`.
+*   Then, in a loop that runs 10,000 times, it appends the loop index `i` to `vResult` using `vResult <- c(vResult, i)`.
+*   Write a second function `fMatrixPreallocate` that first initializes `vResult <- numeric(10000)`.
+*   Then, in a loop that runs 10,000 times, it assigns `vResult[i] <- i`.
+*   Compare the execution time of these two functions. Explain the difference.
+
+```{r}
+fMatrixRedimension <- function(iN) {
+  vResult <- c()
+  for (i in 1:iN) {
+    vResult <- c(vResult, i)
+  }
+}
+
+fMatrixPreallocate <- function(iN) {
+  vResult <- numeric(10000)
+  for (i in 1:iN) {
+    vResult[i] <- i
+  }
+}
+
+# microbenchmark(fMatrixRedimension(10000), fMatrixPreallocate(10000))
+```
+
+## **(10)**
+
+*   When might you prefer using `ifelse()` over a standard `if-else` structure within a loop? Provide a small example.
+
+Use `ifelse()` for vectorized conditions. Loop `if-else` for scalar/complex logic per iteration.
+
+```{r}
+x <- -2:2
+ifelse(x > 0, "positive", "negative")
+```
+
+# Exercise Set 3: Simulation
+
+## **(1)**
+
+*   **Simulating a Biased Die Roll:**
+    *   Write an R function `fSimulateBiasedDie` to simulate rolling a 6-sided die where the probability of rolling a '6' is 0.3, and the probabilities of rolling '1' through '5' are equal (each 0.14).
+    *   The function should take an integer `n_rolls` as input and return a vector of `n_rolls` simulated outcomes.
+    *   Use the discrete random variable simulation method (using `runif` and comparing to CDF).
+    *   Generate 10,000 rolls and plot a histogram of the results.
+
+```{r}
+fSimulateBiasedDie <- function(n_rolls) {
+  probs <- c(rep(0.14, 5), 0.3)
+  outcomes <- 1:6
+  CDF <- cumsum(probs)
+  
+  vRolls <- numeric(n_rolls)
+  
+  for (i in 1:n_rolls) {
+    u <- runif(1)
+    vRolls[i] <- outcomes[min(which(u <= CDF))]
+  }
+  return(vRolls)
+}
+
+vOutcomes <- fSimulateBiasedDie(10000)
+
+hist(vOutcomes, breaks = 0.5:6.5)
+```
+
+## **(2)**
+
+*   **Inverse Transform Sampling for a Custom Distribution:**
+    *   A random variable X has a probability density function (PDF) $f(x) = 3x^2$ for $0 \le x \le 1$, and $f(x)=0$ otherwise.
+    *   a) Find the cumulative distribution function (CDF), $F(x)$.
+    *   b) Find the inverse CDF, $F^{-1}(u)$.
+    *   c) Write an R function `fSimulateCustom` to generate `n` random samples from this distribution using the inverse transform method.
+    *   d) Generate 10,000 samples and plot a histogram. Superimpose the theoretical PDF on the histogram.
+
+The CDF is $F(x)=x^3$. So the inverse CDF is $F^{-1}(u)=u^{1/3}$.
+
+```{r}
+fSimulateCustom <- function(size) {
+  U <- runif(size)
+  return(U^(1/3))
+}
+
+set.seed(123)
+vX <- fSimulateCustom(10000)
+
+hist(vX, 
+     freq = FALSE,
+     breaks = 15,
+     col = "cornflowerblue", 
+     xlab = "",
+     ylab = "Density",
+     main = "",
+     xlim = c(0, 1))
+
+curve(3 * x^2,
+      from = 0,
+      to = 1,
+      col = "red",      
+      lwd = 2,
+      add = TRUE)
+
+```
+
+## **(3)**
+
+*   **Acceptance-Rejection Method for a Truncated Normal:**
+    *   You want to simulate from a standard normal distribution truncated to the interval [0, 2]. The PDF is $f(x) = \frac{\phi(x)}{\Phi(2)-\Phi(0)}$ for $0 \le x \le 2$, where $\phi$ is the standard normal PDF and $\Phi$ is the standard normal CDF.
+    *   Use a uniform distribution on [0, 2] as the proposal distribution $g(x) = 1/2$ for $0 \le x \le 2$.
+    *   a) Determine the constant $c$ such that $f(x) \le c \cdot g(x)$ for all $x \in [0, 2]$.
+    *   b) Write an R function `fSimulateTruncNormAR` using the acceptance-rejection method to generate `n` samples from this truncated normal distribution.
+    *   c) Generate 10,000 samples. Plot a histogram and superimpose the theoretical PDF.
+    *   d) What is the acceptance rate of your sampler?
+
+a)
+
+$$
+c = \frac{\phi(0)}{\Phi(2)-\Phi(0)} / \frac{1}{2-0} \approx 1.6716
+$$
+
+```{r}
+fTruncNormSim <- function(size) {
+  
+  c <- (dnorm(0) / (pnorm(2) - pnorm(0))) / 0.5
+  
+  U <- rep(NA, size)
+  Y <- rep(NA, size)
+  X <- rep(NA, size)
+  Unaccepted <- rep(TRUE, size)
+  
+  while (any(Unaccepted)) {
+    
+    UnacceptedCount <- sum(Unaccepted)
+    
+    U <- runif(UnacceptedCount, 0, 1)
+    Y <- runif(UnacceptedCount, 0, 2)
+    
+    Accepted_ThisTime <- Unaccepted[Unaccepted] & (U <= ((dnorm(Y) / (pnorm(2) - pnorm(0))) / runif(Y, 0, 2) / c))
+    
+    X[Unaccepted][Accepted_ThisTime] <- Y[Accepted_ThisTime]
+    Unaccepted[Unaccepted] <- !Accepted_ThisTime
+    
+  }
+  
+  return(X)
+  
+}
+
+set.seed(1)
+X <- fTruncNormSim(10000)
+hist(X, freq = FALSE, col = "cornflowerblue", xlim = c(0, 2), breaks = 50, main = "Truncated Normal (A-R)")
+
+curve(dnorm(x) / (pnorm(2) - pnorm(0)), add = TRUE, col = "red", from = 0, to = 2)
+```
+
+## **(4)**
+
+*   **Box-Muller Transform:**
+    *   a) Write an R function `fMyBoxMuller` that implements the Box-Muller algorithm to generate `n_pairs` of independent standard normal random variables. The function should return a list or a matrix with two columns/elements.
+    *   b) Generate 10,000 standard normal random variables (i.e., call your function to generate 5,000 pairs). Combine them into a single vector.
+    *   c) Plot a histogram of these 10,000 variables and superimpose the standard normal PDF.
+    *   d) Create a scatter plot of the pairs of normal variables generated. What pattern do you expect?
+
+```{r}
+fMyBoxMuller <- function(size = 1) {
+  U <- runif(size)
+  V <- runif(size)
+  X <- sqrt(-2*log(U)) * cos(2*pi*V)
+  Y <- sqrt(-2*log(U)) * sin(2*pi*V)
+  return(matrix(c(X,Y), ncol = 2))
+}
+
+mX <- fMyBoxMuller(5000)
+vX <- as.numeric(mX)
+
+hist(vX, 
+     freq = FALSE,
+     breaks = 15,
+     col = "cornflowerblue", 
+     xlab = "",
+     ylab = "Density",
+     main = "",
+     xlim = c(-2, 2))
+
+curve(dnorm(x),
+      from = -2,
+      to = 2,
+      col = "red",      
+      lwd = 2,
+      add = TRUE)
+
+# Expected: circular pattern centered at (0,0)
+plot(mX[, 1], mX[, 2], pch = ".")
+```
+
+## **(5)**
+
+*   **Monte Carlo Integration:**
+    *   a) Estimate the value of $\int_{0}^{1} e^{x^2} dx$ using Monte Carlo integration with 10,000 uniform random samples from [0, 1].
+    *   b) The `integrate()` function in R can compute this numerically. Compare your Monte Carlo estimate to the result from `integrate(function(x) exp(x^2), lower = 0, upper = 1)`.
+    *   c) How could you improve the accuracy of your Monte Carlo estimate?
+
+```{r}
+MonteCarlo.Integration <- function(f, n, a, b) {
+  U <- runif(n, min = a, max = b)
+  return( (b-a)*mean(f(U)) )
+}
+set.seed(10086)
+MonteCarlo.Integration(function(x) exp(x^2), 10000, 0, 1)
+
+integrate(function(x) exp(x^2), lower = 0, upper = 1)
+
+# Improve by increasing the number of samples.
+```
+
+## **(6)**
+
+*   **Simulating a Poisson Distribution:**
+    *   The CDF of a Poisson distribution with rate $\lambda$ is $F(k; \lambda) = \sum_{i=0}^{k} \frac{e^{-\lambda}\lambda^i}{i!}$.
+    *   Write an R function `fSimulatePoissonDiscrete` using the method for simulating discrete random variables (based on `runif` and the CDF) to generate `n` samples from a Poisson distribution with $\lambda = 3$.
+    *   (Hint: You can use `ppois` to get the CDF values, or implement the sum yourself).
+    *   Generate 1,000 samples and compare its histogram to the one generated by `rpois(1000, lambda = 3)`.
+
+```{r}
+fSimulatePoissonDiscrete <- function(F, size, ...) {
+  m <- 0
+  U <- runif(size)
+  X <- rep(NA, size)
+  X[F(0, ...) >= U] <- 0
+  while (any(F(m, ...) < U)) {
+    m <- m + 1
+    X[(F(m, ...) >= U) & (F(m - 1, ...) < U)] <- m
+  }
+  return(X)
+}
+
+fPoissonCDF <- function(size, lambda) {
+  dSum <- 0
+  for (i in 0:size) {
+    dSum <- dSum + (exp(-lambda) * lambda^i) / factorial(i)
+  }
+  return(dSum)
+}
+
+set.seed(10086)
+vX <- fSimulatePoissonDiscrete(fPoissonCDF, size = 1000, lambda = 3)
+
+par(mfrow=c(1,2))
+hist(vX, 
+     breaks = 0:max(vX),
+     col = "cornflowerblue", 
+     main = "Custom Poisson")
+hist(rpois(1000, lambda = 3), 
+     breaks = 0:max(vX),
+     col = "cornflowerblue", 
+     main = "R's rpois")
+par(mfrow=c(1,1))
+
+```
+
+## **(7)**
+
+*   **Seeding and Reproducibility:**
+    *   a) Generate a vector of 5 random numbers from a standard normal distribution.
+    *   b) Generate another vector of 5 random numbers from a standard normal distribution. Are they the same as in (a)?
+    *   c) Set the seed to 12345. Generate a vector of 5 random numbers from a standard normal distribution.
+    *   d) Set the seed to 12345 again. Generate another vector of 5 random numbers from a standard normal distribution. Are they the same as in (c)? Explain why.
+    *   e) How can you save and restore the RNG state in R? Demonstrate with an example.
+
+```{r}
+vRand1 <- rnorm(5)
+vRand2 <- rnorm(5)
+vRand1 - vRand2
+set.seed(12345)
+vRand1 <- rnorm(5)
+set.seed(12345)
+RNG.state <- .Random.seed
+vRand2 <- rnorm(5)
+vRand1 - vRand2
+.Random.seed <- RNG.state
+vRand3 <- rnorm(5)
+vRand1 - vRand3
+```
+
+# Exercise Set 4: Root-Finding
+
+## **(1)**
+
+*   **Loan Repayment Interest Rate:**
+    *   Recall the loan repayment problem where $f(r) = \frac{A}{P} - \frac{r(1+r)^N}{(1+r)^N - 1} = 0$.
+    *   Given a loan amount $P=200000$, $N=240$ months (20 years), and a monthly repayment $A=1500$.
+    *   a) Write an R function for $f(r)$ based on these parameters.
+    *   b) Plot $f(r)$ for $r \in [0.001, 0.02]$ to visually inspect for a root.
+    *   c) Implement the Bisection method to find the monthly interest rate $r$. Use an initial interval $[0.001, 0.01]$ and a tolerance of $10^{-7}$. Print the root and the number of iterations.
+    *   d) (Optional) If you have the `numDeriv` package, calculate the derivative $f'(r)$ numerically.
+
+```{r}
+fRepayment <- function(r, A, P, N) {
+  return(A/P - (r * (1+r)^N) / ((1+r)^N - 1))
+}
+vX <- seq(0.001, 0.02, by = 0.0001)
+plot(vX, fRepayment(vX, 1500, 200000, 240))
+
+bisection <- function(f, dX.l, dX.r, dTol = 10e-7, max.iter = 1000, ...) {
+  
+  #check inputs
+  if (dX.l >= dX.r) {
+    cat("error: x.l >= x.r \n")
+    return(NULL)
+  }
+  f.l <- f(dX.l, ...)
+  f.r <- f(dX.r, ...)
+  if (f.l == 0) {
+    return(dX.l)
+  } else if (f.r == 0) {
+    return(dX.r)
+  } else if (f.l*f.r > 0) {
+    cat("error: f(x.l)*f(x.r) > 0 \n")
+    return(NULL)
+  }
+  
+  # successively refine x.l and x.r
+  iter <- 0
+  while ((dX.r - dX.l) > dTol && (iter < max.iter)) {
+    dX.m <- (dX.l + dX.r)/2
+    f.m <- f(dX.m, ...)
+    if (f.m == 0) {
+      return(dX.m)
+    } else if (f.l*f.m < 0) {
+      dX.r <- dX.m
+      f.r <- f.m
+    } else {
+      dX.l <- dX.m
+      f.l <- f.m
+    }
+    iter <- iter + 1
+  }
+  cat("at iteration", iter, "the root lies between", dX.l, "and", dX.r, "\n")
+  # return approximate root
+  return((dX.l + dX.r)/2)
+}
+
+bisection(fRepayment, dX.l = 0.001 , dX.r = 0.01, dTol = 10e-7, A = 1500, P = 200000, N = 240)
+
+```
+
+## **(2)**
+
+*   **Newton-Raphson Method:**
+    *   Consider the function $f(x) = x^3 - 2x - 5$.
+    *   a) Analytically find the first derivative $f'(x)$.
+    *   b) Implement the Newton-Raphson method in R to find a root of $f(x)$. The function should take $f, f'$, an initial guess $x_0$, a tolerance, and max iterations as input.
+    *   c) Use your function to find a root starting with $x_0 = 2$. Set tolerance to $10^{-6}$ and max iterations to 100.
+    *   d) What happens if you start with $x_0 = 0$?
+
+Analytical derivative: $f'(x)=3x^2-2$
+
+```{r}
+f <- function(x) {
+  dOut = x^3 - 2 * x - 5
+  return(dOut)
+}
+
+f_prime <- function(x) {
+  dOut = 3 * x^2 - 2
+  return(dOut)
+}
+
+NR <- function(f, f_prime, dX0, dTol = 1e-9, max.iter = 1000, ...) {
+  dX <- dX0
+  fx <- f(dX, ...)
+  iter <- 0
+  while ((abs(fx) > dTol) && (iter < max.iter)) {
+    dX <- dX - f(dX, ...)/f_prime(dX, ...)
+    fx <- f(dX, ...)
+    iter <- iter + 1
+  }
+  if (abs(fx) > dTol) {
+    cat("Algorithm failed to converge\n")
+    return(NULL)
+  } else {
+    cat("Algorithm converged\n")
+    cat("At iteration ", iter, "value of x is: ", dX, "\n")
+    return(dX)
+  }
+}
+
+NR(f, f_prime, dTol = 10e-6, dX0 = 2, max.iter = 100)
+NR(f, f_prime, dTol = 10e-6, dX0 = 0, max.iter = 100) # Slower to converge. Could find a different root or may even diverge.
+```
+
+## **(3)**
+
+*   **Secant Method:**
+    *   Consider the same function $f(x) = x^3 - 2x - 5$.
+    *   a) Implement the Secant method in R to find a root of $f(x)$. The function should take $f$, two initial guesses $x_0, x_1$, a tolerance, and max iterations.
+    *   b) Use your function to find a root starting with $x_0 = 2, x_1 = 2.5$. Set tolerance to $10^{-6}$ and max iterations to 100.
+    *   c) Compare the number of iterations taken by Newton-Raphson and Secant method for this problem.
+
+```{r}
+f <- function(x) {
+  dOut = x^3 - 2 * x - 5
+  return(dOut)
+}
+fSecant <- function(f, dX0, dX1, dTol = 1e-9, max.iter = 1000, ...) {
+  iter <- 0
+  dX2 <- dX1
+  while ((abs(f(dX2, ...)) > dTol) && (iter < max.iter)) {
+    dX2 <- dX1 - f(dX1, ...) * ((dX0 - dX1) / (f(dX0, ...) - f(dX1, ...)))
+    dX0 <- dX1
+    dX1 <- dX2
+    iter <- iter + 1
+  }
+  if (abs(f(dX2, ...)) > dTol) {
+    cat("At iteration ", iter, "value of x is: ", dX1, "\n")
+    return(list(root = NULL, f.root = NULL, iter = iter, "Algorithm failed to converge. Maximum iterations reached."))
+  } else {
+    cat("At iteration ", iter, "value of x is: ", dX1, "\n")
+    return(list(root = dX2, f.root = f(dX2), iterations = iter, "Convergence reached."))
+  }
+}
+
+root <- fSecant(f, dX0 = 2, dX1 = 2.5, dTol = 10e-6, max.iter = 100)
+root # 1 more step than Newton-Raphson
+
+uniroot(f, interval = c(-3,3))
+
+vX <- seq(1, 3, 0.01)
+plot(vX, f(vX), type = "l")
+abline(h = 0, col = "red")
+abline(v = root["root"], col = "blue", lty = 2)
+```
+
+## **(4)**
+
+*   **Using `uniroot`:**
+    *   For the function $f(x) = \cos(x) - x$:
+    *   a) Plot the function over an interval (e.g., $[- \pi, \pi]$) to identify a bracketing interval for a root.
+    *   b) Use the `uniroot` function to find the root within your chosen interval.
+    *   c) Write your own simple Bisection method function and compare its result and number of iterations to `uniroot` for the same interval and a similar tolerance.
+
+```{r}
+f <- function(x) {
+  return(cos(x) - x)
+}
+
+vX <- seq(-pi, pi, 0.01)
+plot(vX, f(vX), type = "l")
+
+uniroot(f, interval = c(-1,2))
+
+# See exercise just before this one
+root <- fSecant(f, dX0 = -1, dX1 = 2, dTol = 10e-6, max.iter = 100)
+root
+
+```
+
+## **(5)**
+
+*   **Numerical Derivatives with `numDeriv`:**
+    *   Consider the function $g(x) = e^{\sin(x)} \cdot \ln(x^2+1)$ for $x > 0$.
+    *   a) If the `numDeriv` package is installed, use the `grad` function to numerically compute the derivative of $g(x)$ at $x=1$, $x=2$, and $x=3$.
+    *   b) (Challenge) Try to find the analytical derivative of $g(x)$ and compare its value at $x=2$ with the numerical estimate.
+
+```{r}
+g <- function(x) {
+  return(exp(sin(x)) * log(x^2 + 1))
+}
+suppressMessages(library(numDeriv))
+grad(g, 1)
+grad(g, 2)
+grad(g, 3)
+
+# Analytically
+gGrad <- function(x) {
+  return((exp(sin(x))*cos(x)*log(x^2+1) + exp(sin(x))*(2*x/(x^2+1))))
+}
+gGrad(2)
+```
+
+## **(6)**
+
+*   **Comparing Root-Finding Methods:**
+    *   Find a root for $h(x) = x \cdot e^x - 1 = 0$.
+    *   a) Plot the function to find a suitable starting interval/point.
+    *   b) Solve using your Bisection method implementation.
+    *   c) Solve using your Newton-Raphson method implementation (you'll need $h'(x)$).
+    *   d) Solve using your Secant method implementation.
+    *   e) Solve using `uniroot`.
+    *   f) Briefly compare the methods in terms of requirements (e.g., derivative, interval), convergence speed (number of iterations), and robustness for this specific problem.
+
+```{r}
+h <- function(x) {
+  return(x * exp(x) - 1)
+}
+vX <- seq(-2, 2, 0.01)
+plot(vX, h(vX))
+bisection(h, 0, 2)
+
+hGrad <- function(x) {
+  return(x * exp(x) + exp(x))
+}
+
+NR(h, hGrad, 1.5)
+fSecant(h, 0, 2)
+uniroot(h, c(0, 2))
+```
+
+# Exercise Set 5: Numerical Optimization (Univariate and Multivariate)
+
+## **(1)**
+
+*   **Univariate Optimization with Newton's Method:**
+    *   Consider the function $f(x) = x^4 - 14x^3 + 60x^2 - 70x$.
+    *   a) Find the first $f'(x)$ and second $f''(x)$ derivatives analytically.
+    *   b) Implement Newton's method for optimization to find a local minimum/maximum of $f(x)$. Your function should search for $x$ where $f'(x)=0$.
+    *   c) Try to find a local extremum starting from $x_0 = 0$. What do you find?
+    *   d) Try to find a local extremum starting from $x_0 = 6$. What do you find?
+    *   e) Use $f''(x)$ to classify the extrema found.
+
+Analytical derivatives: $f'(x)=4x^3-42x^2+120x-70$ and $f''(x)=12x^2-84x+120$.
+
+```{r}
+f <- function(x) {
+  return(x^4 - 14 * x^3 + 60 * x^2 - 70 * x)
+}
+
+fprime <- function(x) {
+  return(4 * x^3 - 42 * x^2 + 120 * x - 70)
+}
+
+fsecond <- function(x) {
+  return(12 * x^2 - 84 * x + 120)
+}
+
+NM <- function(f, f_prime, f_sec, dX0, dTol = 1e-9, n.max = 1000){
+  dX <- dX0
+  fx <- f(dX)
+  fpx <- f_prime(dX)
+  fsx <- f_sec(dX)
+  n <- 0
+  while ((abs(fpx) > dTol) && (n < n.max)) {
+    dX <- dX - fpx/fsx
+    fx <- f(dX)
+    fpx <- f_prime(dX)
+    fsx <- f_sec(dX)
+    n <- n + 1
+  }
+  if (n == n.max) {
+    cat('newton failed to converge\n')
+  } else {
+    cat("At iteration", n, "the value of x is:", dX, "\n")
+    return(dX)
+  }
+}
+x1 <- NM(f, fprime, fsecond, dX0 = 0)
+x2 <- NM(f, fprime, fsecond, dX0 = 3)
+x3 <- NM(f, fprime, fsecond, dX0 = 6)
+fsecond(x1) # local minimum
+fsecond(x2) # local maximum
+fsecond(x3) # local minimum
+vX <- seq(-2, 8, 0.1)
+plot(vX, f(vX), type = "l")
+```
+
+## **(2)**
+
+*   **Golden Section Search:**
+    *   Consider the function $g(x) = -(x-2)^2 + 5 \sin(x)$ on the interval $[0, 4]$.
+    *   a) Plot the function to visualize its behavior.
+    *   b) Implement the Golden Section Search algorithm to find the maximum of $g(x)$ within this interval. Set a tolerance of $10^{-5}$.
+    *   c) Compare your result with R's `optimize` function (remember to set `maximum = TRUE`).
+
+```{r}
+g <- function(x) {
+  return(-(x - 2)^2 + 5 * sin(x))
+}
+
+vX <- seq(0, 4, 0.1)
+plot(vX, g(vX), type = "l")
+
+gsection <- function(f, dX.l, dX.r, dX.m, dTol = 1e-9) {
+  
+  # golden ratio plus one
+  dGR1 <- 1 + (1 + sqrt(5))/2
+  
+  # successively refine x.l, x.r, and x.m
+  f.l <- f(dX.l)
+  f.r <- f(dX.r)
+  f.m <- f(dX.m)
+  while ((dX.r - dX.l) > dTol) { 
+    if ((dX.r - dX.m) > (dX.m - dX.l)) { # if the right segment is wider than the left 
+      dY <- dX.m + (dX.r - dX.m)/dGR1 # put Y into the right segment according to the golden ratio
+      f.y <- f(dY)
+      if (f.y >= f.m) {
+        dX.l <- dX.m
+        f.l <- f.m
+        dX.m <- dY
+        f.m <- f.y
+      } else {
+        dX.r <- dY
+        f.r <- f.y
+      }
+    } else { #if the left segment is wider than the right
+      dY <- dX.m - (dX.m - dX.l)/dGR1 # put Y into the left segment according to the golden ratio
+      f.y <- f(dY)
+      if (f.y >= f.m) {
+        dX.r <- dX.m
+        f.r <- f.m
+        dX.m <- dY
+        f.m <- f.y
+      } else {
+        dX.l <- dY
+        f.l <- f.y
+      }
+    }
+  }
+  return(dX.m)
+}
+gsection(g, dX.l = 0, dX.r = 4, dX.m = 2, dTol = 10e-5)
+optimize(g, interval = c(0, 4), maximum = TRUE)
+```
+
+## **(3)**
+
+*   **Multivariate Optimization: Steepest Ascent:**
+    *   Consider the function $h(x, y) = -(x-1)^2 - 2(y-2)^2 + xy$.
+    *   a) Analytically compute the gradient $\nabla h(x,y)$.
+    *   b) Implement the Steepest Ascent method. For line search, you can use a fixed small step size initially or implement a simple line search (e.g., by testing a few step sizes or adapting the Golden Section search for the 1D problem along the gradient direction).
+    *   c) Find the maximum starting from $(x_0, y_0) = (0,0)$. Set tolerance for gradient norm to $10^{-4}$.
+
+```{r}
+h <- function(vX) {
+  return(-(vX[1] - 1)^2 - 2 * (vX[2] - 2)^2 + vX[1] * vX[2])
+}
+
+hgrad <- function(vX) {
+  h1 <- -2 * (vX[1] - 1) + vX[2]
+  h2 <- -4 * (vX[2] - 2) + vX[1]
+  return(c(h1, h2))
+}
+
+# golden section algorithm from last week
+gsection <- function(f, dX.l, dX.r, dX.m, dTol = 1e-9) {
+  
+  # golden ratio plus one
+  dGR1 <- 1 + (1 + sqrt(5))/2
+  
+  # successively refine x.l, x.r, and x.m
+  f.l <- f(dX.l)
+  f.r <- f(dX.r)
+  f.m <- f(dX.m)
+  while ((dX.r - dX.l) > dTol) { 
+    if ((dX.r - dX.m) > (dX.m - dX.l)) { # if the right segment is wider than the left 
+      dY <- dX.m + (dX.r - dX.m)/dGR1 # put Y into the right segment according to the golden ratio
+      f.y <- f(dY)
+      if (f.y >= f.m) {
+        dX.l <- dX.m
+        f.l <- f.m
+        dX.m <- dY
+        f.m <- f.y
+      } else {
+        dX.r <- dY
+        f.r <- f.y
+      }
+    } else { #if the left segment is wider than the right
+      dY <- dX.m - (dX.m - dX.l)/dGR1 # put Y into the left segment according to the golden ratio
+      f.y <- f(dY)
+      if (f.y >= f.m) {
+        dX.r <- dX.m
+        f.r <- f.m
+        dX.m <- dY
+        f.m <- f.y
+      } else {
+        dX.l <- dY
+        f.l <- f.y
+      }
+    }
+  }
+  return(dX.m)
+}
+
+line.search <- function(f, vX, vG, dTol = 1e-9, dA.max = 2^5) {
+  # f is a real function that takes a vector of length d
+  # x and y are vectors of length d
+  # line.search uses gsection to find a >= 0 such that
+  # g(a) = f(x + a*y) has a local maximum at a,
+  # within a tolerance of tol
+  # if no local max is found then we use 0 or a.max for a
+  # the value returned is x + a*y
+  if (sum(abs(vG)) == 0){
+    return(vX) # +0*vG
+  } # g(a) constant
+  g <- function(dA){
+    return(f(vX + dA*vG)) 
+  }
+  # find a triple a.l < a.m < a.r such that
+  # g(a.l) <= g(a.m) and g(a.m) >= g(a.r)
+  
+  # choose a.l
+  dA.l <- 0
+  g.l <- g(dA.l)
+  # find a.m
+  dA.m <- 1
+  g.m <- g(dA.m)
+  while ((g.m < g.l) & (dA.m > dTol)) {
+    dA.m <- dA.m/2
+    g.m <- g(dA.m)
+  }
+  # if a suitable a.m was not found then use 0 for a, so just return vX as the next step
+  if ((dA.m <= dTol) & (g.m < g.l)){
+    return(vX)
+  } 
+  # find a.r
+  dA.r <- 2*dA.m
+  g.r <- g(dA.r)
+  while ((g.m < g.r) & (dA.r < dA.max)) {
+    dA.m <- dA.r
+    g.m <- g.r
+    dA.r <- 2*dA.m
+    g.r <- g(dA.r)
+  }
+  # if a suitable a.r was not found then use a.max for a
+  if ((dA.r >= dA.max) & (g.m < g.r)){
+    return(vX + dA.max*vG)
+  } 
+  # apply golden-section algorithm to g to find a
+  dA <- gsection(g, dA.l, dA.r, dA.m)
+  return(vX + dA*vG)
+}
+
+ascent <- function(f, grad.f, vX0, dTol = 1e-9, n.max = 100) {
+  vX.old <- vX0
+  vX <- line.search(f, vX0, grad.f(vX0))
+  n <- 1
+  while ((f(vX) - f(vX.old) > dTol) & (n < n.max)) {
+    vX.old <- vX
+    vX <- line.search(f, vX, grad.f(vX))
+    n <- n + 1
+  }
+  cat("at iteration", n, "the coordinates of x are", vX, "\n")
+  return(vX)
+}
+
+ascent(h, hgrad, vX0 = c(0, 0))
+```
+
+## **(4)**
+
+*   **Multivariate Optimization: Newton's Method in Higher Dimensions:**
+    *   For the same function $h(x, y) = -(x-1)^2 - 2(y-2)^2 + xy$ from Q3:
+    *   a) Analytically compute the Hessian matrix $H(x,y)$.
+    *   b) Implement Newton's method for multivariate optimization.
+    *   c) Find the maximum starting from $(x_0, y_0) = (0,0)$. Set tolerance for gradient norm to $10^{-4}$.
+    *   d) Compare the number of iterations with the Steepest Ascent method.
+
+```{r}
+hcomb <- function(vX) {
+  h <- -(vX[1] - 1)^2 - 2 * (vX[2] - 2)^2 + vX[1] * vX[2]
+  h1 <- -2 * (vX[1] - 1) + vX[2]
+  h2 <- -4 * (vX[2] - 2) + vX[1]
+  h11 <- -2
+  h12 <- 1
+  h22 <- -4
+  return(list(h, c(h1, h2), matrix(c(h11, h12, h12, h22), 2, 2)))
+}
+
+newton <- function(f3, vX0, dTol = 1e-9, n.max = 100) {
+  # Newton's method for optimisation, starting at x0
+  # f3 is a function that given x returns the list
+  # {f(x), grad f(x), Hessian f(x)}, for some f
+  vX <- vX0
+  f3.x <- f3(vX)
+  n <- 0
+  while ((max(abs(f3.x[[2]])) > dTol) & (n < n.max)) {
+    vX <- vX - solve(f3.x[[3]], f3.x[[2]])
+    #vX <- vX - solve(f3.x[[3]])%*%f3.x[[2]]
+    f3.x <- f3(vX)
+    cat("At iteration", n, "the coordinates of x are", vX, "\n")
+    n <- n + 1
+  }
+  if (n == n.max) {
+    cat('newton failed to converge\n')
+  } else {
+    return(vX)
+  }
+}
+
+n1 <- newton(hcomb, vX0 = c(0, 0))
+n1
+eigen(hcomb(n1)[[3]]) ## maximum
+```
+
+## **(5)**
+
+*   **Using `optim` in R:**
+    *   Consider the Rosenbrock function (often used for testing optimization algorithms):
+        $f(x,y) = (a-x)^2 + b(y-x^2)^2$. Let $a=1$ and $b=100$. We want to find its minimum.
+    *   a) Write an R function for the Rosenbrock function.
+    *   b) Use the `optim` function to find the minimum. Try the following methods:
+        *   "Nelder-Mead"
+        *   "BFGS"
+        *   "L-BFGS-B" (try with and without bounds, e.g., $x \in [-2, 2], y \in [-1, 3]$)
+    *   Start from an initial guess of $(-1.2, 1)$.
+    *   c) For the "BFGS" method, if you have the `numDeriv` package, provide the gradient numerically using `grad`. Does it converge faster or to a better point?
+
+```{r}
+suppressMessages(library(numDeriv))
+fRosenbrock <- function(vX) {
+  a <- 1
+  b <- 100
+  return((a-vX[1])^2 + b * (vX[2]-vX[1]^2)^2)
+}
+
+optim(c(-1.2, -1), fRosenbrock, method = "Nelder-Mead")$par
+optim(c(-1.2, -1), fRosenbrock, method = "BFGS")$par
+optim(c(-1.2, -1), fRosenbrock, method = "L-BFGS-B")$par
+optim(c(-1.2, -1), fRosenbrock, method = "L-BFGS-B", lower=c(-2,-1), upper=c(2,3))$par
+grad_rosen <- function(par) numDeriv::grad(fRosenbrock, par)
+optim(c(-1.2, -1), fRosenbrock, gr = grad_rosen, method = "BFGS")$par
+```
+
+## **(6)**
+
+*   **Optimization Pitfalls:**
+    *   Create a simple R function $f(x) = \cos(2\pi x) + 0.1x^2$.
+    *   a) Plot this function over $x \in [-3, 3]$.
+    *   b) Use `optimize()` to find the global minimum in this interval.
+    *   c) Now, use `optimize()` to find a local minimum in the interval $[-0.5, 0.5]$ and another in $[0.5, 1.5]$. Discuss how starting points or intervals affect finding local vs. global optima.
+
+```{r}
+f <- function(x) {
+  return(cos(2 * pi * x) + 0.1 * x^2)
+}
+
+vX <- seq(-3, 3, 0.01)
+plot(vX, f(vX), type = "l")
+
+optimize(f, interval = c(-3, 3))
+optimize(f, interval = c(-0.5, 0.5))
+optimize(f, interval = c(0.5, 1.5))
+```
+
+## **(7)**
+
+*   **Constrained Optimization via Reparameterization:**
+    *   You want to maximize $f(p) = p^2(1-p)^3$ subject to $0 < p < 1$.
+    *   a) Use the transformation $p = \frac{e^{\tilde{p}}}{1+e^{\tilde{p}}}$ to convert this into an unconstrained problem for $\tilde{p}$. Write the new function $g(\tilde{p}) = f(\lambda(\tilde{p}))$.
+    *   b) Use `optim` with "BFGS" to find the maximum of $g(\tilde{p})$.
+    *   c) Transform the optimal $\tilde{p}^*$ back to $p^*$ and report the maximum value $f(p^*)$.
+    *   d) (Optional) Analytically find the maximum and compare.
+
+```{r}
+f <- function(p) {
+  return(p^2 * (1 - p)^3)
+}
+
+g <- function(p_tilde) {
+  p <- exp(p_tilde) / (1 + exp(p_tilde))
+  return(f(p))
+}
+
+optim_res <- optim(0, g, method = "BFGS", , control=list(fnscale=-1))
+p_tilde <- optim_res$par
+p_optim <- exp(p_tilde) / (1 + exp(p_tilde))
+p_optim
+f(p_optim)
+```
+
+## **(8)**
+
+*   **Likelihood Maximization:**
+    *   Suppose you have $n=10$ observations $y = (1, 0, 1, 1, 0, 1, 0, 0, 1, 1)$ from a Bernoulli distribution with unknown probability $p$. The log-likelihood function is $L(p|y) = \sum y_i \log(p) + \sum (1-y_i) \log(1-p)$.
+    *   a) Write an R function for the negative log-likelihood (since `optim` minimizes).
+    *   b) Use `optim` with method "L-BFGS-B" and appropriate bounds for $p$ (e.g., $[0.001, 0.999]$) to find the Maximum Likelihood Estimate (MLE) of $p$.
+    *   c) Compare this to the analytical MLE, which is $\bar{y}$.
+
+```{r}
+neg_log <- function(p, y) {
+  dSum1 <- 0
+  dSum2 <- 0
+  for (i in 1:length(y)) {
+    dSum1 <- dSum1 - y[i] * log(p)
+    dSum2 <- dSum2 - (1 - y[i]) * log(1 - p)
+  }
+  return(dSum1 + dSum2)
+}
+
+neg_log_lik_bern <- function(p, data) {
+if (p <= 0 || p >= 1) return(Inf) # Bounds for log
+-sum(data * log(p) + (1 - data) * log(1 - p))
+}
+
+vY <- c(1, 0, 1, 1, 0, 1, 0, 0, 1, 1)
+optim(0.5, neg_log, y = vY, method = "L-BFGS-B", lower = 0.001, upper = 0.999)$par
+optim(0.5, neg_log_lik_bern, data = vY, method = "L-BFGS-B", lower = 0.001, upper = 0.999)$par
+# Analytical MLE
+mean(vY)
+```
+
+# Exercise Set 6: C++ with Rcpp and RcppArmadillo
+
+## **(1)**
+
+*   **Basic Rcpp Function:**
+    *   Write a C++ function using `Rcpp` (via `cppFunction` or `sourceCpp`) named `sum_greater_than_C` that takes a numeric vector `x` and a scalar `threshold` as input.
+    *   The function should return the sum of all elements in `x` that are strictly greater than `threshold`.
+    *   Test your C++ function in R and compare its output with an equivalent R implementation for `x = rnorm(1000)` and `threshold = 0`.
+
+```{r}
+suppressMessages(library(Rcpp))
+
+cppFunction('
+double sum_greater_than_C(NumericVector x, double threshold) {
+  double total = 0;
+  for (int i = 0; i < x.size(); i++) {
+    if (x[i] > threshold) {
+      total += x[i];
+    }
+  }
+  return total;
+}')
+
+vX <- rnorm(1000)
+threshold <- 0
+sum_greater_than_C(vX, threshold)
+sum(vX[vX>0])
+```
+
+## **(2)**
+
+*   **Fibonacci Sequence in C++:**
+    *   a) Write a recursive C++ function `fib_cpp(n)` to compute the n-th Fibonacci number.
+    *   b) Write an iterative (loop-based) C++ function `fib_iter_cpp(n)` to compute the n-th Fibonacci number.
+    *   c) Compare the execution speed of `fib_cpp(25)`, `fib_iter_cpp(25)`, and an R recursive Fibonacci function for $n=25$ using `microbenchmark`.
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(microbenchmark))
+
+cppFunction('
+int fib_cpp(int n) {
+  if (n <= 1) return(0);
+  return fib_cpp(n - 1) + fib_cpp(n - 2);
+}')
+
+cppFunction('
+int fib_iter_cpp(int n) {
+  if (n <= 1) return(0);
+  int a = 0, b = 1, temp;
+  for (int i = 2; i <= n; i++) {
+    temp = a + b;
+    a = b;
+    b = temp;
+  }
+  return b;
+}')
+
+fib_r <- function(n) {
+  if (n <= 1) {
+    return(0)
+  } else {
+    return(fib_r(n - 1) + fib_r(n - 2))
+  }
+}
+
+microbenchmark(fib_cpp(25), fib_iter_cpp(25), fib_r(25))
+
+```
+
+## **(3)**
+
+*   **RcppArmadillo: Matrix Operations:**
+    *   a) Create an R script that defines a C++ function `arma_matrix_ops` using `RcppArmadillo`.
+    *   This function should take two matrices, `mA` and `mB`, as input (use `arma::mat`).
+    *   It should return a list containing:
+        *   `mProd`: The standard matrix product $mA \times mB$.
+        *   `mInvA`: The inverse of `mA` (if possible, handle potential errors if not invertible, e.g. by trying and catching or checking determinant if simple).
+        *   `vEigenvalsA`: The eigenvalues of `mA` (use `arma::eig_sym` if symmetric, or `arma::eig_gen` if general; assume real eigenvalues for simplicity or return complex as string if needed).
+    *   b) In R, create two 3x3 matrices, test your function, and verify the product with R's `%*%`.
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+
+sourceCpp("extra_cpp.cpp")
+
+mA <- matrix(1:9, 3, 3)
+mB <- matrix(9:1, 3, 3)
+arma_matrix_ops(mA, mB)
+mA %*% mB
+```
+
+## **(4)**
+
+*   **Simulating GARCH(1,1) process in C++:**
+    *   The GARCH(1,1) process is defined by:
+        $r_t = \sigma_t \epsilon_t$, where $\epsilon_t \sim N(0,1)$
+        $\sigma_t^2 = \omega + \alpha r_{t-1}^2 + \beta \sigma_{t-1}^2$
+    *   Write a C++ function using `RcppArmadillo` named `simulate_garch_cpp` that takes parameters $\omega, \alpha, \beta$, number of time steps `T`, and an initial $\sigma_0^2$ as input.
+    *   The function should simulate and return a list containing two vectors: `vR` (the returns $r_t$) and `vSigma2` (the variances $\sigma_t^2$).
+    *   (Hint: Use `R::rnorm(0,1)` for $\epsilon_t$. Initialize $r_0$ using $\sigma_0$).
+    *   Test by simulating 1000 steps with $\omega=0.1, \alpha=0.05, \beta=0.9, \sigma_0^2=1$. Plot the simulated returns and variances.
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+
+sourceCpp("extra_cpp.cpp")
+
+iT <- 1000
+dOmega <- 0.1
+dAlpha <- 0.05
+dBeta <- 0.9
+dSigmaInit <- 1.0
+
+lSim <- simulate_garch_cpp(iT, dOmega, dAlpha, dBeta, dSigmaInit)
+
+plot(1:1000, lSim[["vSigma2"]], type = "l", lty = 1, xlab = "Time")
+lines(1:1000, lSim[["vR"]],col="green")
+```
+
+## **(5)**
+
+*   **Calling R functions from C++:**
+    *   a) Write a simple R function `my_r_summary <- function(x) list(mean=mean(x), sd=sd(x))`.
+    *   b) Write a C++ function `call_r_from_cpp` that takes a `NumericVector x` and an R `Function r_func` as input.
+    *   Inside the C++ function, call `r_func` with `x` and return the result.
+    *   c) Test this by calling `call_r_from_cpp(rnorm(100), my_r_summary)` from R.
+
+```{r}
+my_r_summary <- function(x) list(mean=mean(x), sd=sd(x))
+
+cppFunction('
+SEXP call_r_from_cpp(NumericVector x, Function r_func) {
+  return r_func(x);
+}')
+
+call_r_from_cpp(rnorm(100), my_r_summary)
+```
+
+## **(6)**
+
+*   **SourceCpp and Embedded R code:**
+    *   Create a `.cpp` file.
+    *   Inside it, define a simple C++ function `cpp_vector_scalar_mult` that takes an `arma::vec v` and a `double s` and returns their element-wise product `v * s`. Make sure to include `RcppArmadillo.h` and necessary `using namespace` directives, and the `[[Rcpp::export]]` tag.
+    *   In the same `.cpp` file, use the `/*** R ... */` block to write R code that:
+        *   Defines a sample vector and a scalar in R.
+        *   Calls your `cpp_vector_scalar_mult` function.
+        *   Prints the result.
+    *   Use `sourceCpp()` in an R script to compile and run the C++ function and the embedded R code.
+
+```{cpp}
+#| eval: false
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace arma;
+
+//[[Rcpp::export]]
+vec cpp_vector_scalar_mult(vec v, double s) {
+  return v * s;
+}
+
+/*** R
+vX <- 1:10
+dS <- 5
+res <- cpp_vector_scalar_mult(vX, dS)
+print(res)
+*/
+```
+
+# Exercise Set 7: Creating R Packages
+
+## **(1)**
+
+*   **Simple R Package:**
+    *   Create a new R package using RStudio named "MyUtils".
+    *   a) Inside the `R/` directory, create an R script file (e.g., `arithmetic.R`). Add a simple R function `fAddTwoNumbers(a, b)` that returns their sum.
+    *   b) Edit the `DESCRIPTION` file:
+        *   Give it a `Title`: "My First Utility Package".
+        *   Set yourself as the `Author` and `Maintainer`.
+        *   Add a brief `Description`.
+    *   c) Document your `fAddTwoNumbers` function. Create an `.Rd` file in the `man/` directory (e.g., `fAddTwoNumbers.Rd`). Include sections for `\name`, `\alias`, `\title`, `\description`, `\usage`, `\arguments`, `\value`, and a simple `\examples` block.
+    *   d) Install and restart your package (Ctrl+Shift+L or Build -> Install and Restart).
+    *   e) Test your function: `MyUtils::fAddTwoNumbers(5, 3)` and check its help page `?fAddTwoNumbers`.
+
+```{r}
+MyUtils::fAddTwoNumbers(5, 2)
+```
+
+## **(2)**
+
+*   **Package with C++ Function (Rcpp):**
+    *   Extend the "MyUtils" package (or create a new one "MyCppUtils").
+    *   a) In the `src/` directory, create a C++ file (e.g., `cpp_helpers.cpp`).
+    *   b) In this file, write a C++ function `fGeometricSumCpp(a, r, n)` that calculates the sum of the first `n` terms of a geometric series: $a + ar + ar^2 + ... + ar^{n-1}$. Use a loop. Ensure it's exported to R using `[[Rcpp::export]]` and includes `<Rcpp.h>`.
+    *   c) Modify the `DESCRIPTION` file:
+        *   Add `Rcpp` to `Imports`.
+        *   Add `Rcpp` to `LinkingTo`.
+    *   d) Add an R wrapper function in an `R/` script (e.g., `wrappers.R`) called `fGeometricSum(a, r, n)` that simply calls your C++ function `fGeometricSumCpp(a, r, n)`.
+    *   e) Document the R wrapper function `fGeometricSum` in the `man/` directory.
+    *   f) Install and restart. Test `MyCppUtils::fGeometricSum(1, 0.5, 10)`.
+
+```{r}
+
+```
+
+## **(3)**
+
+*   **Package with RcppArmadillo Function:**
+    *   Extend one of your previous packages (or create "MyArmaUtils").
+    *   a) In the `src/` directory, create/modify a C++ file.
+    *   b) Write a C++ function `fSolveSystemArma(mA, vB)` that takes an `arma::mat mA` and `arma::vec vB` and solves the linear system $mA \cdot x = vB$ for $x$ using `arma::solve()`. Return $x$. Export it. Make sure to include `<RcppArmadillo.h>` and the `[[Rcpp::depends(RcppArmadillo)]]` attribute.
+    *   c) Modify `DESCRIPTION`:
+        *   Ensure `Rcpp`, `RcppArmadillo` are in `Imports`.
+        *   Ensure `Rcpp`, `RcppArmadillo` are in `LinkingTo`.
+    *   d) Write an R wrapper for `fSolveSystemArma`.
+    *   e) Document the R wrapper.
+    *   f) Install, restart, and test with a sample 3x3 matrix and vector.
+
+## **(4)**
+
+*   **Package Structure and NAMESPACE:**
+    *   a) For any of the packages you've started, after installing and restarting (which RStudio often handles via `devtools::load_all()`), inspect the `NAMESPACE` file that RStudio/`roxygen2` (if used) might generate.
+    *   b) What is the purpose of the `NAMESPACE` file in an R package?
+    *   c) If you were not using `roxygen2` (which RStudio uses by default for new packages), how would you manually ensure your R functions and C++ functions (via their R wrappers) are exported for users of your package? (Hint: `export()` in `NAMESPACE`).
+
+## **(5)**
+
+*   **Building and Sharing (Conceptual):**
+    *   a) For your "MyUtils" package, use RStudio's "Build" pane to "Build Source Package". What is the file extension of the output?
+    *   b) If you wanted to share this package with someone who also has R development tools, which file would you send them?
+    *   c) If you wanted to submit this package to CRAN (hypothetically), what are some of the key checks and requirements CRAN would have? (Refer to lecture notes/Hadley Wickham's book concepts).
+
+# Exercise Set 8: Parallel Computing
+
+## **(1)**
+
+*   **Basic Parallel `lapply`:**
+    *   a) Create a list of 10 numeric vectors, each containing 1,000,000 random numbers from a $N(0,1)$ distribution.
+    *   b) Write a function `fSlowFunction(v)` that calculates `mean(log(abs(v) + 1))` and then pauses for 0.1 seconds using `Sys.sleep(0.1)`.
+    *   c) Use the standard `lapply` to apply `fSlowFunction` to your list of vectors. Time this operation using `system.time()`.
+    *   d) Now, use the `parallel` package. Detect the number of cores on your machine. Create a cluster using `max(1, detectCores() - 1)` cores.
+    *   e) Use `parLapply` from the `parallel` package to apply `fSlowFunction` to your list. Time this operation. Remember to export necessary objects/functions to the cluster if they are not in the base environment or loaded packages on workers.
+    *   f) Compare the execution times. Stop the cluster.
+
+```{r}
+listV <- list(
+  v1 = rnorm(1000000),
+  v2 = rnorm(1000000),
+  v3 = rnorm(1000000),
+  v4 = rnorm(1000000),
+  v5 = rnorm(1000000),
+  v6 = rnorm(1000000),
+  v7 = rnorm(1000000),
+  v8 = rnorm(1000000),
+  v9 = rnorm(1000000),
+  v10 = rnorm(1000000)
+)
+
+fSlowFunction <- function(v) {
+  Sys.sleep(0.1)
+  return(mean(log(abs(v) + 1)))
+}
+
+system.time({lapply(listV, fSlowFunction)})
+
+suppressMessages(library(parallel))
+cluster <- makeCluster(max(1, detectCores() - 1))
+
+system.time(parLapply(cluster, listV, fSlowFunction))
+stopCluster(cluster)
+```
+
+## **(2)**
+
+*   **Parallel Simulation and Aggregation:**
+    *   You want to run 1000 simulations. In each simulation, you:
+        1.  Generate 500 random numbers from an Exponential distribution with rate = 0.5.
+        2.  Calculate the mean of these 500 numbers.
+    *   a) Write an R function `fOneSim()` that performs one such simulation and returns the mean.
+    *   b) Use `lapply` or a `for` loop to run 1000 simulations and collect the means. Time it.
+    *   c) Use `parLapply` (or `mclapply` on non-Windows) to run these 1000 simulations in parallel. Time it and compare.
+    *   d) Plot a histogram of the 1000 means. What does the Central Limit Theorem suggest about the shape of this distribution?
+
+```{r}
+Exponential.Simulate <- function(lambda, size) {
+  U <- runif(size)
+  return(mean(-1/lambda * log(U)))
+}
+
+set.seed(10086)
+
+X <- Exponential.Simulate(0.5, 500)
+
+system.time(lResult <- lapply(1:500, function(x) Exponential.Simulate(0.5, 500)))
+
+suppressMessages(library(parallel))
+cluster <- makeCluster(max(1, detectCores() - 1))
+clusterExport(cluster, "Exponential.Simulate")
+system.time(means_par <- parLapply(cluster, 1:500, function(x) Exponential.Simulate(0.5, 500)))
+stopCluster(cluster)
+
+# CLT suggests distribution of sample means will be approximately normal
+hist(unlist(means_par))
+```
+
+## **(3)**
+
+*   **`parSapply` vs `sapply`:**
+    *   Consider the task of calculating `sqrt(i)` for `i` from 1 to 1,000,000, but make each calculation artificially slow by adding `Sys.sleep(0.00001)`.
+    *   a) Implement this using `sapply`. Time it.
+    *   b) Implement this using `parSapply`. Time it and compare. Remember cluster setup and shutdown.
+
+```{r}
+system.time(sapply(1:1000000, function(x) {sqrt(x); Sys.sleep(0.00001)}))
+
+suppressMessages(library(parallel))
+cluster <- makeCluster(max(1, detectCores() - 1))
+system.time(parLapply(cluster, 1:1000000, function(x) {sqrt(x); Sys.sleep(0.00001)}))
+stopCluster(cluster)
+```
+
+## **(4)**
+
+*   **Considerations for Parallelization:**
+    *   a) When is parallelization most beneficial? (Think about task granularity and communication overhead).
+    *   b) Give an example of a task that is "embarrassingly parallel" and one that is difficult or impossible to parallelize effectively.
+    *   c) What are some potential pitfalls or complexities when writing parallel code (e.g., random number generation in parallel, race conditions - though less of an issue with `parLapply`'s model)?
+    
+```{r}
+# A: Task granularity high, communication overhead low.
+# B: Embarassingly paralllel: Monte Carlo sims.
+#    Difficult: Highly sequential algorithms like some recursive functions.
+# C) RNG state per worker, data transfer, debugging
+```
+

@@ -1,0 +1,808 @@
+# Likelihood Exercises
+
+# Exercise Set 16: Advanced Econometric Likelihoods and Optimization
+
+## **(1) Probit Model Likelihood (Medium-Hard)**
+
+*   A Probit model for a binary outcome $y_i \in \{0,1\}$ is given by $P(y_i=1 | \mathbf{x}_i) = \Phi(\mathbf{x}_i'\boldsymbol{\beta})$, where $\Phi(\cdot)$ is the standard normal CDF, $\mathbf{x}_i$ is a vector of explanatory variables (including an intercept), and $\boldsymbol{\beta}$ is a vector of parameters.
+*   The log-likelihood for $n$ observations is $LL(\boldsymbol{\beta}) = \sum_{i=1}^n [y_i \log(\Phi(\mathbf{x}_i'\boldsymbol{\beta})) + (1-y_i) \log(1-\Phi(\mathbf{x}_i'\boldsymbol{\beta}))]$.
+*   Data:
+
+```{r}
+#| eval: false
+set.seed(123)
+N <- 200
+X1 <- rnorm(N)
+X2 <- runif(N)
+X_matrix <- cbind(1, X1, X2) # Design matrix with intercept
+beta_true <- c(-0.5, 1.2, -0.8)
+linear_predictor <- X_matrix %*% beta_true
+prob_y1 <- pnorm(linear_predictor)
+Y_binary <- rbinom(N, 1, prob_y1)
+```
+
+*   a) Write an R function `fProbitNegLogLik(vBeta, mX, vY)` that calculates the negative log-likelihood for the Probit model. `vBeta` is the parameter vector, `mX` is the design matrix, and `vY` is the binary outcome vector.
+*   b) Use `optim()` with method "BFGS" to find the MLEs for $\boldsymbol{\beta}$. Choose appropriate starting values (e.g., a vector of zeros).
+*   c) Compare your estimated $\boldsymbol{\beta}$ with the coefficients from `glm(Y_binary ~ X1 + X2, family = binomial(link = "probit"))`.
+*   d) (Hard) Analytically derive the gradient of the Probit log-likelihood with respect to $\boldsymbol{\beta}$. Recall that $\frac{d\Phi(z)}{dz} = \phi(z)$ (standard normal PDF). The gradient for one observation is $\frac{y_i - \Phi(\mathbf{x}_i'\boldsymbol{\beta})}{\Phi(\mathbf{x}_i'\boldsymbol{\beta})(1-\Phi(\mathbf{x}_i'\boldsymbol{\beta}))} \phi(\mathbf{x}_i'\boldsymbol{\beta}) \mathbf{x}_i$. Write an R function for this gradient (summed over observations) and use it in `optim()` via the `gr` argument. Does it converge faster or to a more precise solution?
+*   e) (C++) Implement the Probit negative log-likelihood calculation in C++ (e.g., `probit_neg_log_lik_cpp(arma::vec beta, arma::mat X, arma::vec Y)`). You can use `R::pnorm` and `R::dnorm` for $\Phi$ and $\phi$. Compare its speed to the R version for a single evaluation.
+
+```{r}
+#data
+set.seed(123)
+N <- 200
+X1 <- rnorm(N)
+X2 <- runif(N)
+X_matrix <- cbind(1, X1, X2) # matrix with intercept
+beta_true <- c(-0.5, 1.2, -0.8)
+linear_predictor <- X_matrix %*% beta_true
+prob_y1 <- pnorm(linear_predictor)
+Y_binary <- rbinom(N, 1, prob_y1)
+
+#a 
+fProbitNegLogLik <- function(vBeta, mX, vY) {
+  n <- length(vY)
+  dSum <- 0
+  for (i in 1:n) {
+    dSum <- dSum + vY[i] * log(pnorm(mX %*% vBeta))[i] + (1 - vY[i]) * log(1 - pnorm(mX %*% vBeta))[i]
+  }
+  return(-dSum)
+  # alternative
+  # return(-sum(vY * log(pnorm(mX %*% vBeta)) + (1 - vY) * log(1 - pnorm(mX %*% vBeta))))
+}
+
+#b
+optim(c(0, 0, 0), fProbitNegLogLik, mX = X_matrix, vY = Y_binary, method = "BFGS")$par
+
+#c
+glm(Y_binary ~ X1 + X2, family = binomial(link = "probit"))$coefficients
+
+#d
+fProbitGrad <- function(vBeta, mX, vY) {
+  n <- length(vY)
+  dSum <- 0
+  dProb <- pnorm(mX %*% vBeta)
+  for (i in 1:n) {
+    dSum <- dSum + (vY[i] - dProb[i]) / (dProb[i] * (1 - dProb)[i]) * dnorm(mX %*% vBeta)[i] * mX[i, ]
+  }
+  return(-dSum)
+}
+
+optim(c(0, 0, 0), fProbitNegLogLik, gr = fProbitGrad, mX = X_matrix, vY = Y_binary, method = "BFGS")$par
+```
+
+```{cpp}
+#| eval: false
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace arma;
+
+// [[Rcpp::export]]
+double probit_neg_log_lik_cpp(vec beta, mat X, vec Y) {
+  int n = Y.size();
+  double dSum = 0.0;
+  vec linear_term = X * beta;
+  vec dProb = zeros<vec>(X.n_rows);
+    
+  for (int i = 0; i < n; i++) {
+    dProb(i) = R::pnorm(linear_term(i), 0.0, 1.0, 1, 0);
+    dSum += Y[i] * log(dProb[i]) + (1 - Y[i]) * log(1 - dProb[i]);
+  }
+  return(-dSum);
+}
+```
+
+```{r}
+#e
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("likelihood_exercises.cpp")
+
+probit_neg_log_lik_cpp(beta_true, X_matrix, Y_binary)
+fProbitNegLogLik(beta_true, X_matrix, Y_binary)
+```
+
+## **(2) GARCH(1,1) Model Likelihood (Hard)**
+
+*   Recall the GARCH(1,1) model:
+    $r_t = \sigma_t \epsilon_t$, where $\epsilon_t \sim N(0,1)$ (iid)
+    $\sigma_t^2 = \omega + \alpha r_{t-1}^2 + \beta \sigma_{t-1}^2$
+*   Parameters are $\boldsymbol{\theta} = (\omega, \alpha, \beta)$. Constraints: $\omega > 0, \alpha \ge 0, \beta \ge 0$, and $\alpha + \beta < 1$ (for stationarity).
+*   The conditional log-likelihood for $r_t$ given past information (and $\sigma_t^2$) is $-\frac{1}{2} (\log(2\pi) + \log(\sigma_t^2) + \frac{r_t^2}{\sigma_t^2})$. The total log-likelihood is the sum over $t=1, \dots, T$.
+*   For $t=1$, an initial $\sigma_1^2$ is needed. Often, the unconditional variance $\sigma^2 = \frac{\omega}{1-\alpha-\beta}$ is used if the process is stationary, or simply $r_0^2$ is set to the sample variance of $r_t$ and $\sigma_1^2$ is calculated using the GARCH equation from $r_0^2$ and a starting $\sigma_0^2$ (e.g., also sample variance).
+*   Data: Use S&P 500 daily log-returns. You can download data using `quantmod` package if allowed, or use a pre-saved dataset. For this exercise, let's simulate some GARCH-like data:
+
+```{r}
+#| eval: false
+set.seed(456)
+T_garch <- 500
+omega_true <- 0.1; alpha_true <- 0.1; beta_true <- 0.85
+sigma2_garch <- numeric(T_garch)
+r_garch <- numeric(T_garch)
+sigma2_garch[1] <- omega_true / (1 - alpha_true - beta_true) # Unconditional variance
+r_garch[1] <- sqrt(sigma2_garch[1]) * rnorm(1)
+for(t_idx in 2:T_garch) {
+  sigma2_garch[t_idx] <- omega_true + alpha_true * r_garch[t_idx-1]^2 + beta_true * sigma2_garch[t_idx-1]
+  r_garch[t_idx] <- sqrt(sigma2_garch[t_idx]) * rnorm(1)
+}
+```
+
+*   a) Write an R function `fGARCH11NegLogLik(vParams, vReturns, sigma2_initial)` that computes the negative log-likelihood. `vParams` is `c(omega, alpha, beta)`. Handle the recursive calculation of $\sigma_t^2$.
+*   b) Reparameterize the parameters to enforce constraints:
+    *   $\omega = \exp(\tilde{\omega})$
+    *   $\alpha = \exp(\tilde{\alpha}) / (1 + \exp(\tilde{\alpha}) + \exp(\tilde{\beta}))$
+    *   $\beta = \exp(\tilde{\beta}) / (1 + \exp(\tilde{\alpha}) + \exp(\tilde{\beta}))$
+    (This ensures $\omega>0, \alpha>0, \beta>0, \alpha+\beta < 1$. A simpler common reparam is $\alpha=\exp(\tilde{\alpha})/(1+\exp(\tilde{\alpha}))$ and $\beta=\exp(\tilde{\beta})/(1+\exp(\tilde{\beta}))$, then check $\alpha+\beta<1$ inside LL and return large penalty if not met, or use `L-BFGS-B` on transformed $\alpha, \beta$ in [0,1] and $\omega>0$, with an additional check for sum < 1).
+    Modify your likelihood function to take reparameterized inputs $\tilde{\boldsymbol{\theta}} = (\tilde{\omega}, \tilde{\alpha}, \tilde{\beta})$.
+*   c) Use `optim()` with "BFGS" to find the MLEs of $\tilde{\boldsymbol{\theta}}$ using `r_garch` and an appropriate `sigma2_initial` (e.g., sample variance of `r_garch`).
+*   d) Transform the estimated $\tilde{\boldsymbol{\theta}}^*$ back to $\boldsymbol{\theta}^* = (\omega^*, \alpha^*, \beta^*)$. Compare with `omega_true, alpha_true, beta_true`.
+*   e) (Extremely Hard C++) Implement the GARCH(1,1) negative log-likelihood calculation in C++ using `RcppArmadillo`. This will involve a loop to calculate the $\sigma_t^2$ sequence. Compare its speed for a single evaluation against the R version.
+
+```{r}
+#data 
+
+set.seed(456)
+T_garch <- 500
+omega_true <- 0.1; alpha_true <- 0.1; beta_true <- 0.85
+sigma2_garch <- numeric(T_garch)
+r_garch <- numeric(T_garch)
+sigma2_garch[1] <- omega_true / (1 - alpha_true - beta_true) # unconditional variance
+r_garch[1] <- sqrt(sigma2_garch[1]) * rnorm(1)
+for (t_idx in 2:T_garch) {
+  sigma2_garch[t_idx] <- omega_true + alpha_true * r_garch[t_idx-1]^2 + beta_true * sigma2_garch[t_idx-1]
+  r_garch[t_idx] <- sqrt(sigma2_garch[t_idx]) * rnorm(1)
+}
+
+#a
+fGARCH11NegLogLik <- function(vParams, vReturns, sigma2_initial) {
+  dOmega <- vParams[1]
+  dAlpha <- vParams[2]
+  dBeta <- vParams[3]
+  
+  dSum <- 0
+  vSigma2 <- numeric(length(vReturns))
+  vSigma2[1] <- sigma2_initial
+  for (t in 2:length(vReturns)) {
+    vSigma2[t] <- dOmega + dAlpha * vReturns[t-1]^2 + dBeta * vSigma2[t-1]
+    dSum <- dSum - 0.5*(log(2*pi) + log(vSigma2[t]) + vReturns[t]^2 / vSigma2[t])
+  }
+  return(-dSum)
+}
+
+#b
+fGARCH11NegLogLikRepar <- function(vParams, vReturns, sigma2_initial) {
+  dOmega <- exp(vParams[1])
+  dAlpha <- exp(vParams[2]) / (1 + exp(vParams[2]) + exp(vParams[3]))
+  dBeta <- exp(vParams[3]) / (1 + exp(vParams[2]) + exp(vParams[3]))
+  
+  dSum <- 0
+  vSigma2 <- numeric(length(vReturns))
+  vSigma2[1] <- sigma2_initial
+  for (t in 2:length(vReturns)) {
+    vSigma2[t] <- dOmega + dAlpha * vReturns[t-1]^2 + dBeta * vSigma2[t-1]
+    dSum <- dSum - 0.5*(log(2*pi) + log(vSigma2[t]) + vReturns[t]^2 / vSigma2[t])
+  }
+  return(-dSum)
+}
+
+#c
+dPar_tilde <- optim(c(0, 0, 0), fGARCH11NegLogLikRepar, sigma2_initial = var(r_garch), vReturns = r_garch, method = "BFGS")$par
+
+
+#d
+dOmega_star <- exp(dPar_tilde[1])
+dAlpha_star <- exp(dPar_tilde[2]) / (1 + exp(dPar_tilde[2]) + exp(dPar_tilde[3]))
+dBeta_star <- exp(dPar_tilde[3]) / (1 + exp(dPar_tilde[2]) + exp(dPar_tilde[3]))
+
+print(paste0("Omega est: ", dOmega_star, " vs. true: ", omega_true))
+print(paste0("Alpha est: ", dAlpha_star, " vs. true: ", alpha_true))
+print(paste0("Beta est: ", dBeta_star, " vs. true: ", beta_true))
+
+```
+
+```{cpp}
+#| eval: false
+double fGARCH11NegLogLik_cpp(vec vParams, vec vReturns, double sigma2_initial) {
+  double dOmega = vParams[0];
+  double dAlpha = vParams[1];
+  double dBeta = vParams[2];
+  int n = vReturns.size();
+  
+  double dSum = 0;
+  vec vSigma2 = zeros<vec>(vReturns.size());
+  vSigma2[0] = sigma2_initial;
+  double dPi = atan(1)*4;
+  
+  for (int t = 1; t < n; t++) {
+    vSigma2[t] = dOmega + dAlpha * pow(vReturns[t-1], 2) + dBeta * vSigma2[t-1];
+    dSum = dSum - 0.5*(log(2*dPi) + log(vSigma2[t]) + pow(vReturns[t], 2) / vSigma2[t]);
+  }
+  return(-dSum);
+}
+
+```
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("likelihood_exercises.cpp")
+
+fGARCH11NegLogLik(c(omega_true, alpha_true, beta_true), r_garch, var(r_garch))
+fGARCH11NegLogLik_cpp(c(omega_true, alpha_true, beta_true), r_garch, var(r_garch))
+```
+
+## **(3) Heckman Selection Model Likelihood (Extremely Hard)**
+
+*   The Heckman model addresses sample selection bias. It involves two equations:
+    1.  Selection equation (Probit): $z_i^* = \mathbf{w}_i'\boldsymbol{\gamma} + u_i$, where $z_i=1$ if $z_i^* > 0$ (observed), $0$ otherwise. $u_i \sim N(0,1)$.
+    2.  Outcome equation (Linear regression, observed only if $z_i=1$): $y_i = \mathbf{x}_i'\boldsymbol{\beta} + \epsilon_i$, where $\epsilon_i \sim N(0, \sigma^2)$.
+    *   $u_i$ and $\epsilon_i$ are bivariate normal with correlation $\rho$. $corr(u_i, \epsilon_i) = \rho$.
+*   The log-likelihood for one observation $i$ (where $y_i$ is observed if $z_i=1$) is:
+    *   If $z_i=0$: $LL_i = \log(1 - \Phi(\mathbf{w}_i'\boldsymbol{\gamma}))$
+    *   If $z_i=1$: $LL_i = \log \left( \frac{1}{\sigma} \phi\left(\frac{y_i - \mathbf{x}_i'\boldsymbol{\beta}}{\sigma}\right) \Phi\left(\frac{\mathbf{w}_i'\boldsymbol{\gamma} + \frac{\rho}{\sigma}(y_i - \mathbf{x}_i'\boldsymbol{\beta})}{\sqrt{1-\rho^2}}\right) \right)$
+*   Parameters are $\boldsymbol{\theta} = (\boldsymbol{\gamma}', \boldsymbol{\beta}', \sigma, \rho)'$. Constraints: $\sigma > 0, -1 < \rho < 1$.
+*   Data: You would typically simulate this.
+
+```{r}
+#| eval: false
+set.seed(789)
+N_heck <- 300
+W1 <- rnorm(N_heck); W_matrix <- cbind(1, W1) # Selection vars
+X1 <- rnorm(N_heck); X_matrix_outcome <- cbind(1, X1) # Outcome vars
+gamma_true <- c(0.5, -1); beta_true <- c(1, 2); sigma_true <- 1.5; rho_true <- 0.6
+    
+# Simulate errors
+errors <- MASS::mvrnorm(N_heck, mu=c(0,0), Sigma=matrix(c(1, rho_true*sigma_true, rho_true*sigma_true, sigma_true^2),2,2))
+u_i <- errors[,1]
+epsilon_i <- errors[,2]
+    
+z_star <- W_matrix %*% gamma_true + u_i
+Z_select <- ifelse(z_star > 0, 1, 0)
+    
+Y_outcome <- X_matrix_outcome %*% beta_true + epsilon_i
+Y_observed <- ifelse(Z_select == 1, Y_outcome, NA) # Only observe Y if Z_select is 1
+df_heckman <- data.frame(Y_observed, X1, W1, Z_select)
+df_heckman_obs <- subset(df_heckman, Z_select == 1) # data for outcome eq.
+```
+
+*   a) Write an R function `fHeckmanNegLogLik(vParams, dfData, mSelectionVars, mOutcomeVars)` that calculates the total negative log-likelihood. `vParams` contains all parameters. `dfData` should contain the outcome $y$, the selection indicator $z$, and covariates. `mSelectionVars` and `mOutcomeVars` are column names/indices for $\mathbf{w}$ and $\mathbf{x}$.
+*   b) Implement reparameterizations for $\sigma = \exp(\tilde{\sigma})$ and $\rho = \tanh(\tilde{\rho}) = \frac{e^{\tilde{\rho}} - e^{-\tilde{\rho}}}{e^{\tilde{\rho}} + e^{-\tilde{\rho}}}$. Modify your likelihood function.
+*   c) Use `optim()` ("BFGS" or "Nelder-Mead" due to complexity) to estimate the reparameterized parameters using the simulated data. This is notoriously difficult to optimize; choose starting values carefully (e.g., from separate Probit and OLS on selected sample, $\tilde{\sigma}=\log(\text{sd-res-ols})$, $\tilde{\rho}=0$).
+*   d) Transform estimates back and compare to true values.
+*   (This problem is very challenging due to the complexity of the likelihood and potential for numerical instability. Focus on correctly writing the likelihood parts).
+
+```{r}
+#data
+set.seed(789)
+N_heck <- 300
+W1 <- rnorm(N_heck); W_matrix <- cbind(1, W1) # Selection vars
+X1 <- rnorm(N_heck); X_matrix_outcome <- cbind(1, X1) # Outcome vars
+gamma_true <- c(0.5, -1); beta_true <- c(1, 2); sigma_true <- 1.5; rho_true <- 0.6
+    
+# Simulate errors
+errors <- MASS::mvrnorm(N_heck, mu=c(0,0), Sigma=matrix(c(1, rho_true*sigma_true, rho_true*sigma_true, sigma_true^2),2,2))
+u_i <- errors[,1]
+epsilon_i <- errors[,2]
+    
+z_star <- W_matrix %*% gamma_true + u_i
+Z_select <- ifelse(z_star > 0, 1, 0)
+    
+Y_outcome <- X_matrix_outcome %*% beta_true + epsilon_i
+Y_observed <- ifelse(Z_select == 1, Y_outcome, NA) # Only observe Y if Z_select is 1
+df_heckman <- data.frame(Y_observed, X1, W1, Z_select)
+df_heckman_obs <- subset(df_heckman, Z_select == 1) # data for outcome eq.
+
+#a + b
+fHeckmanNegLogLik <- function(vParams, dfData, mSelectionVars, mOutcomeVars) {
+  #vParams contains all parameters.
+  #dfData should contain the outcome y, the selection indicator z, and covariates.
+  #mSelectionVars and mOutcomeVars are column names/indices for w and x.
+  vGamma <- vParams[1:2]
+  vBeta <- vParams[3:4]
+  dSigma <- exp(vParams[5])
+  dRho <- (exp(vParams[6]) - exp(-vParams[6])) / (exp(vParams[6]) + exp(-vParams[6]))
+  
+  vY <- dfData[, mOutcomeVars]
+  vZ <- dfData[, mSelectionVars]
+  vX <- cbind(1, dfData$X1)
+  vW <- cbind(1, dfData$W1)
+  dLlSum <- 0
+  for (i in 1:length(vY)) {
+    if (vZ[i] == 0) {
+      dLlSum <- dLlSum + log(1 - pnorm(vW %*% vGamma)[i])
+    } else {
+      dLlSum <- dLlSum + log(1 / dSigma * dnorm((vY[i] - (vX %*% vBeta)[i]) / dSigma) * pnorm(((vW %*% vGamma)[i] + dRho / dSigma * (vY[i] - (vX %*% vBeta)[i])) / sqrt(1 - dRho^2)))
+    }
+  }
+  return(-dLlSum)
+}
+
+# c
+vParams <- optim(c(c(0, 0), c(0, 0), 0, 0), fHeckmanNegLogLik, dfData = df_heckman, mSelectionVars = 4, mOutcomeVars = 1, method = "BFGS")$par
+
+# d
+gamma_star <- vParams[1:2]
+beta_star <- vParams[3:4]
+sigma_star <- exp(vParams[5])
+rho_star <- (exp(vParams[6]) - exp(-vParams[6])) / (exp(vParams[6]) + exp(-vParams[6]))
+
+print(paste0("Gamma est: ", gamma_star, " vs. true: ", gamma_true))
+print(paste0("Beta est: ", beta_star, " vs. true: ", beta_true))
+print(paste0("Sigma est: ", sigma_star, " vs. true: ", sigma_true))
+print(paste0("Rho est: ", rho_star, " vs. true. ", rho_true))
+
+```
+
+## **(4) Vector Autoregression (VAR) Likelihood (Multivariate Normal) (Hard)**
+
+*   Consider a VAR(1) model for two variables $y_{1t}, y_{2t}$:
+    $\mathbf{y}_t = \mathbf{c} + A \mathbf{y}_{t-1} + \boldsymbol{\epsilon}_t$, where $\mathbf{y}_t = \begin{pmatrix} y_{1t} \\ y_{2t} \end{pmatrix}$, $\mathbf{c} = \begin{pmatrix} c_1 \\ c_2 \end{pmatrix}$, $A = \begin{pmatrix} a_{11} & a_{12} \\ a_{21} & a_{22} \end{pmatrix}$, and $\boldsymbol{\epsilon}_t \sim N(\mathbf{0}, \Sigma)$, with $\Sigma = \begin{pmatrix} \sigma_{11} & \sigma_{12} \\ \sigma_{21} & \sigma_{22} \end{pmatrix}$ being symmetric positive definite.
+*   The conditional log-likelihood for one observation $\mathbf{y}_t$ given $\mathbf{y}_{t-1}$ is:
+    $LL_t = -\frac{k}{2}\log(2\pi) - \frac{1}{2}\log(|\Sigma|) - \frac{1}{2}(\mathbf{y}_t - \mathbf{c} - A \mathbf{y}_{t-1})'\Sigma^{-1}(\mathbf{y}_t - \mathbf{c} - A \mathbf{y}_{t-1})$, where $k=2$ (number of variables).
+*   Parameters: $\mathbf{c}$ (2 params), $A$ (4 params), and unique elements of $\Sigma$ (3 params: $\sigma_{11}, \sigma_{22}, \sigma_{12}$ as $\sigma_{21}=\sigma_{12}$). Total 9 parameters.
+*   Constraints: $\Sigma$ must be positive definite. (Often ensure by parameterizing Cholesky factor $L$ s.t. $\Sigma = LL'$).
+*   Data: Use `Canada` dataset from `vars` package, first two variables `e` and `prod`, differenced.
+
+```{r}
+#| eval: false
+library(vars)
+data(Canada)
+Canada_diff <- data.frame(apply(Canada[,c("e","prod")], 2, diff))
+Y_var_data <- as.matrix(Canada_diff)
+T_var <- nrow(Y_var_data) -1 # Number of observations for LL sum
+```
+
+    (Alternatively, simulate VAR data)
+*   a) Write an R function `fVAR1NegLogLik(vParams, mY)` for the negative log-likelihood. `vParams` needs to be carefully unpacked into $\mathbf{c}, A, \Sigma$.
+*   b) For $\Sigma$, parameterize its Cholesky factor $L = \begin{pmatrix} l_{11} & 0 \\ l_{21} & l_{22} \end{pmatrix}$. To ensure $l_{11}>0, l_{22}>0$, use $l_{11}=\exp(\tilde{l}_{11}), l_{22}=\exp(\tilde{l}_{22})$. $l_{21}$ is unconstrained. $\Sigma = LL'$. The parameters in `vParams` related to $\Sigma$ will be $(\tilde{l}_{11}, l_{21}, \tilde{l}_{22})$.
+*   c) Use `optim()` to estimate the reparameterized parameters. This will be slow and sensitive to starting values. (OLS estimates can be good starting values for $c$ and $A$).
+*   d) (Conceptual) How would you derive the gradient for this likelihood? (Matrix calculus needed).
+*   e) (C++ `RcppArmadillo`) Implement the VAR(1) negative log-likelihood calculation in C++. This would involve matrix operations for which Armadillo is well-suited (`arma::solve`, `arma::log_det`).
+
+```{r}
+# data
+suppressMessages(library(vars))
+data(Canada)
+Canada_diff <- data.frame(apply(Canada[,c("e","prod")], 2, diff))
+Y_var_data <- as.matrix(Canada_diff)
+T_var <- nrow(Y_var_data) -1 # Number of observations for LL sum
+
+# a + b
+fVAR1NegLogLik <- function(vParams, mY) {
+  vC <- vParams[1:2]
+  mA <- matrix(vParams[3:6], 2, 2)
+  mSigma <- matrix(c(exp(vParams[7]), vParams[8], 0, exp(vParams[9])), 2, 2)
+  mSigma <- mSigma %*% t(mSigma)
+  iK <- ncol(mY)
+  
+  dSum <- 0
+  for (t in 2:nrow(mY)) {
+    dSum <- dSum - iK / 2 * log(2 * pi) - 0.5 * log(det(mSigma)) - 0.5 * t(mY[t, ] - vC - mA %*% mY[t - 1, ]) %*% solve(mSigma) %*% (mY[t, ] - vC - mA %*% mY[t - 1, ])
+  }
+  return(-dSum)
+}
+
+# c
+start_c_var <- c(0,0)
+start_A_var <- as.vector(t(diag(0.5, 2))) 
+start_L_tilde_var <- c(log(1), 0, log(1))
+start_params_var <- c(start_c_var, start_A_var, start_L_tilde_var)
+optim_res_var <- optim(start_params_var, fVAR1NegLogLik, mY = Y_var_data, method = "L-BFGS-B", lower = c(rep(-Inf, 6), -30, -Inf, -30), upper = c(rep(Inf, 9)))
+optim_res_var$par
+
+```
+
+```{cpp}
+#| eval: false
+
+double fVAR1NegLogLik(vec vParams, mat mY) {
+  vec vC = zeros<vec>(2);
+  vC[0] = vParams[0];
+  vC[1] = vParams[1];
+  mat mA(2,2);
+  mA(0,0) = vParams[2];
+  mA(1,0) = vParams[3];
+  mA(0,1) = vParams[4];
+  mA(1,1) = vParams[5];
+  mat mSigma(2,2);
+  mSigma(0,0) = exp(vParams[6]);
+  mSigma(0,1) = 0;
+  mSigma(1,0) = vParams[7];
+  mSigma(1,1) = exp(vParams[8]);
+  mSigma = mSigma * mSigma.t();
+  double iK = mY.n_cols;
+  double dPi = atan(1)*4;
+  
+  double dSum = 0.0;
+  for (arma::uword t = 1; t < mY.n_rows; t++) {
+    vec u_t = mY.row(t).t() - vC - mA * mY.row(t-1).t();
+    dSum = dSum - iK / 2.0 * log(2.0 * dPi) - 0.5 * log(det(mSigma)) - 0.5 * as_scalar(trans(u_t) * mSigma.i() * (u_t));
+  }
+  
+  return(-dSum);
+}
+```
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("likelihood_exercises.cpp")
+```
+
+# Exercise Set 17: Integrated Econometric Modeling Problems
+
+## **(1) Logistic Regression: Full Implementation (Hard)**
+
+*   A Logistic model for a binary outcome $y_i \in \{0,1\}$ is $P(y_i=1 | \mathbf{x}_i) = \Lambda(\mathbf{x}_i'\boldsymbol{\beta}) = \frac{\exp(\mathbf{x}_i'\boldsymbol{\beta})}{1+\exp(\mathbf{x}_i'\boldsymbol{\beta})}$.
+*   The log-likelihood is $LL(\boldsymbol{\beta}) = \sum_{i=1}^n [y_i (\mathbf{x}_i'\boldsymbol{\beta}) - \log(1+\exp(\mathbf{x}_i'\boldsymbol{\beta}))]$.
+*   Data (same as Probit example):
+
+```{r}
+#| eval: false
+set.seed(123)
+N_log <- 200
+X1_log <- rnorm(N_log)
+X2_log <- runif(N_log)
+X_matrix_log <- cbind(1, X1_log, X2_log) 
+beta_true_log <- c(-0.5, 1.2, -0.8)
+linear_predictor_log <- X_matrix_log %*% beta_true_log
+prob_y1_log <- exp(linear_predictor_log) / (1 + exp(linear_predictor_log))
+Y_binary_log <- rbinom(N_log, 1, prob_y1_log)
+```
+
+*   **Tasks:**
+    *   a) **R Likelihood:** Write an R function `fLogisticNegLogLik(vBeta, mX, vY)` for the negative log-likelihood.
+    *   b) **R Gradient & Hessian:** Analytically derive the gradient vector and Hessian matrix of the log-likelihood.
+        *   Gradient: $\nabla LL(\boldsymbol{\beta}) = \sum_{i=1}^n (y_i - \Lambda(\mathbf{x}_i'\boldsymbol{\beta})) \mathbf{x}_i$.
+        *   Hessian: $H(\boldsymbol{\beta}) = -\sum_{i=1}^n \Lambda(\mathbf{x}_i'\boldsymbol{\beta})(1-\Lambda(\mathbf{x}_i'\boldsymbol{\beta})) \mathbf{x}_i \mathbf{x}_i'$.
+        Write R functions `fLogisticGradient(vBeta, mX, vY)` and `fLogisticHessian(vBeta, mX, vY)`. For the Hessian, return the negative of it if your Newton-Raphson is set up for maximization using $H^{-1}g$.
+    *   c) **R Newton-Raphson:** Implement the Newton-Raphson algorithm (for maximization) using your functions from (a)-(b) to find the MLEs for $\boldsymbol{\beta}$. Your Newton function should take the target function (negative LL for minimization, or LL for maximization), gradient, Hessian, starting values, tolerance, and max iterations. It should return a list with optimal parameters, function value, and convergence status.
+    *   d) **`optim()` Comparison:** Use `optim()` with method "BFGS" and your negative log-likelihood from (a) and gradient from (b) (negated if `optim` minimizes). Compare the results and number of iterations/evaluations with your Newton-Raphson.
+    *   e) **C++ Likelihood:** Implement `fLogisticNegLogLik` in C++ (`logistic_neg_log_lik_cpp`) using `RcppArmadillo`. Use `arma::log1p(exp(Xb))` for $\log(1+\exp(\mathbf{x}_i'\boldsymbol{\beta}))$ for numerical stability if $\mathbf{x}_i'\boldsymbol{\beta}$ is large. Compare speed of one evaluation.
+    *   f) **R Package:** Create a small R package named "MyLogistic" containing your R functions `fLogisticNegLogLik`, `fLogisticGradient`, `fLogisticHessian`, your Newton-Raphson solver, and the C++ likelihood function (with an R wrapper). Document the main estimation function (e.g., your Newton-Raphson solver). Ensure C++ dependencies are correctly specified in `DESCRIPTION`. Build and test the package.
+
+```{r}
+# data
+set.seed(123)
+N_log <- 200
+X1_log <- rnorm(N_log)
+X2_log <- runif(N_log)
+X_matrix_log <- cbind(1, X1_log, X2_log) 
+beta_true_log <- c(-0.5, 1.2, -0.8)
+linear_predictor_log <- X_matrix_log %*% beta_true_log
+prob_y1_log <- exp(linear_predictor_log) / (1 + exp(linear_predictor_log))
+Y_binary_log <- rbinom(N_log, 1, prob_y1_log)
+
+#a
+fLogisticLogLik <- function(vBeta, mX, vY) {
+  dSum <- 0
+  for (i in 1:length(vY)) {
+    dSum <- dSum + (vY[i] * (mX %*% vBeta)[i] - log(1 + exp(mX %*% vBeta)[i]))
+  }
+  return(dSum)
+  
+  #  alternatively
+  #return(-sum(vY * mX %*% vBeta - log(1 + exp(mX %*% vBeta))))
+}
+
+#b
+fLogisticGradient <- function(vBeta, mX, vY) {
+  dProb <- exp(mX %*% vBeta) / (1 + exp(mX %*% vBeta))
+  dSum <- numeric(length(vBeta))
+  for (i in 1:length(vY)) {
+    dSum <- dSum + (vY[i] - dProb[i]) * mX[i, ]
+  }
+  return(dSum)
+  
+  # alternatively
+  # return(t(mX) %*% (vY - dProb))
+}
+
+fLogisticHessian <- function(vBeta, mX, vY) {
+  dProb <- exp(mX %*% vBeta) / (1 + exp(mX %*% vBeta))
+  mHessianSum <- matrix(0, ncol(mX), ncol(mX))
+  for (i in 1:length(vY)) {
+    mHessianSum <- mHessianSum + dProb[i] * (1 - dProb[i]) * mX[i, ] %*% t(mX[i, ])
+  }
+  return(-mHessianSum)
+  
+  # alternatively
+  # return(- t(mX) %*% diag(as.numeric(dProb * (1 - dProb))) %*% mX)
+  # return(-crossprod(mX, mX * as.numeric(dProb * (1 - dProb))))
+}
+
+#c
+fNewton <- function(f, fScore, fHessian, vY, mX, add.constant = TRUE, init.vals = NULL, max.iter = 200, dTol = 1e-9) {
+  i <- 0
+  vB <- init.vals
+  
+  # Keep updating until stopping criterion or max iterations reached
+  while ((max(abs(fScore(vB, mX, vY))) > dTol) && (i < max.iter)) {
+    # Newton-Raphson updating
+    vB <- vB - solve(fHessian(vB, mX, vY), fScore(vB, mX, vY))
+    i <- i + 1
+    #cat("At iteration", n, "the value of the parameter is:", dParam, "\n")
+  }
+  
+  if (i == max.iter) {
+    return(list(
+      beta_hat = NULL, 
+      log_likelihood_opt = NULL, 
+      score_opt = NULL,
+      hessian_opt = NULL,
+      log_likelihood_null = NULL,
+      #predicted_probabilities = NULL,
+      iterations = i,  
+      msg = "Algorithm failed to converge. Maximum iterations reached.")
+    )
+  } else {
+    return(list(
+      beta_hat = vB, 
+      log_likelihood_opt = f(vB, mX, vY), 
+      score_opt = fScore(vB, mX, vY),
+      hessian_opt = fHessian(vB, mX, vY),
+      log_likelihood_null = f(vB, mX, vY),
+      #predicted_probabilities = exp(mX %*% vB) / (1 + exp(mX %*% vB)),
+      iterations = i,  
+      msg = "Algorithm converged")
+    )
+  }
+}
+
+fNewton(fLogisticLogLik, fLogisticGradient, fLogisticHessian, vY = Y_binary_log, mX = X_matrix_log, init.vals = c(0, 0, 0))
+
+#d
+optim(c(0, 0, 0), fLogisticLogLik, gr = fLogisticGradient, mX = X_matrix_log, vY = Y_binary_log, method = "BFGS", control=list(fnscale=-1))
+
+```
+
+```{cpp}
+#| eval: false
+double logistic_neg_log_lik_cpp(vec vBeta, mat mX, vec vY) {
+  double dSum = 0.0;
+  vec linear_term = mX * vBeta;
+  int n = vY.size();
+  for (int i = 0; i < n; i++) {
+    dSum += (vY(i) * linear_term(i)) - log(1 + exp(linear_term(i)));
+  }
+  return(dSum);
+}
+
+f(vB, mX, vY)
+
+```
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("likelihood_exercises.cpp")
+
+fLogisticLogLik(c(-0.313394, 1.609719, -0.590626), X_matrix_log, Y_binary_log)
+logistic_neg_log_lik_cpp(c(-0.313394, 1.609719, -0.590626), X_matrix_log, Y_binary_log)
+```
+
+## **(2) AR(1) Model with Student's t-errors (Extremely Hard)**
+
+*   Consider an AR(1) model: $y_t = \phi y_{t-1} + \epsilon_t$, where $\epsilon_t \sim \text{i.i.d. Standardized Student's t}(\nu)$.
+*   The PDF of a standardized Student's t-distribution with $\nu$ degrees of freedom is $f(\epsilon_t | \nu) = \frac{\Gamma((\nu+1)/2)}{\sqrt{\pi(\nu-2)}\Gamma(\nu/2)} \left(1 + \frac{\epsilon_t^2}{\nu-2}\right)^{-(\nu+1)/2}$. (Note: $\sigma$ (scale) is implicitly 1 here for the standardized version, or rather, scale is $\sqrt{(\nu-2)/\nu}$ times the scale of a non-standardized t to make variance 1. The formula given is for a t-dist scaled to have variance 1.)
+*   Parameters are $\boldsymbol{\theta} = (\phi, \nu)$. Constraints: $|\phi|<1$ (stationarity), $\nu > 2$ (for defined variance).
+*   The conditional log-likelihood for $y_t$ given $y_{t-1}$ is $\log f(y_t - \phi y_{t-1} | \nu)$. The total log-likelihood sums these over $t=2, \dots, T$ (conditioning on $y_1$).
+*   Data:
+
+```{r}
+#| eval: false
+set.seed(800)
+T_ar <- 300
+phi_true <- 0.7
+nu_true <- 5 # Degrees of freedom
+# Simulate standardized t errors (variance = 1)
+errors_t <- rt(T_ar, df = nu_true) * sqrt((nu_true - 2) / nu_true) 
+y_ar <- numeric(T_ar)
+y_ar[1] <- errors_t[1] / sqrt(1 - phi_true^2) # Start from unconditional variance
+for(t_idx in 2:T_ar) {
+  y_ar[t_idx] <- phi_true * y_ar[t_idx-1] + errors_t[t_idx]
+}
+```
+
+*   **Tasks:**
+    *   a) **R Likelihood:** Write an R function `fAR1tNegLogLik(vParams, vY)` for the negative log-likelihood. `vParams = c(phi, nu)`. Use `lgamma()` for $\log(\Gamma(\cdot))$.
+    *   b) **Reparameterization:**
+        *   $\phi = \tanh(\tilde{\phi})$ (ensures $|\phi|<1$)
+        *   $\nu = 2 + \exp(\tilde{\nu})$ (ensures $\nu>2$)
+        Modify your likelihood to take $\tilde{\boldsymbol{\theta}} = (\tilde{\phi}, \tilde{\nu})$.
+    *   c) **Numerical Derivatives:** Use `numDeriv::grad()` and `numDeriv::hessian()` (if allowed/available) to compute the gradient and Hessian of the *reparameterized* negative log-likelihood at a test point (e.g., $\tilde{\phi}=0, \tilde{\nu}=\log(3)$ which means $\phi=0, \nu=5$).
+    *   d) **Custom Newton-Raphson (on reparameterized LL):** Implement Newton-Raphson using the numerical derivatives from (c) to estimate $\tilde{\boldsymbol{\theta}}$. If numerical derivatives are too slow or unstable for the Hessian within the loop, you might use BFGS update for Hessian or just use `optim`.
+    *   e) **`optim()` with Numerical Gradient:** Use `optim()` with method "BFGS" and your *reparameterized* negative log-likelihood. Provide the gradient numerically using `numDeriv::grad()` in the `gr` argument of `optim`.
+    *   f) **Results:** Transform estimates back to $\phi^*, \nu^*$ and compare with true values.
+    *   g) **C++ Likelihood (Challenge):** Implement the core calculation $\log f(\epsilon_t | \nu)$ in C++. You will need `R::lgammafn` and `R::dt` (be careful with `R::dt`'s arguments, it might not be for standardized t directly, you might need to implement the PDF formula). Sum these in an outer C++ loop. Compare evaluation speed.
+    *   h) **Simulation Study (Conceptual):** How would you set up a small Monte Carlo simulation study to evaluate the performance (bias, RMSE) of your MLE estimator for $\phi$ and $\nu$ using, say, 100 replications of data like the one generated? (This part is about describing the loop and storage, not full implementation unless time allows). How could parallel processing help here?
+
+```{r}
+#data
+set.seed(800)
+T_ar <- 300
+phi_true <- 0.7
+nu_true <- 5 # Degrees of freedom
+# Simulate standardized t errors (variance = 1)
+errors_t <- rt(T_ar, df = nu_true) * sqrt((nu_true - 2) / nu_true) 
+y_ar <- numeric(T_ar)
+y_ar[1] <- errors_t[1] / sqrt(1 - phi_true^2) # Start from unconditional variance
+for(t_idx in 2:T_ar) {
+  y_ar[t_idx] <- phi_true * y_ar[t_idx-1] + errors_t[t_idx]
+}
+
+#a + b
+fAR1tNegLogLik <- function(vParams, vY) {
+  dPhi <- tanh(vParams[1])
+  dNu <- 2 + exp(vParams[2])
+  vEps <- numeric(length(vY))
+  
+  dSum <- 0
+  for (t in 2:length(vY)) {
+    vEps[t] <- vY[t] - dPhi * vY[t-1]
+    dSum <- dSum + lgamma((dNu+1)/2) - log(sqrt(pi * (dNu-2))) - lgamma(dNu/2) - (dNu + 1) / 2 * log(1 + vEps[t]^2/ (dNu - 2))
+  }
+  return(-dSum)
+}
+
+#c
+suppressMessages(library(numDeriv))
+fAR1tGrad <- function(f, vParams, ...) {
+  return(grad(f, vParams, ...))
+}
+fAR1tHess <- function(f, vParams, ...) {
+  return(hessian(f, vParams, ...))
+}
+
+fAR1tGrad(fAR1tNegLogLik, c(0, log(3)), vY = y_ar)
+fAR1tHess(fAR1tNegLogLik, c(0, log(3)), vY = y_ar)
+
+#d
+fNewton <- function(f, fScore, fHessian, init.vals = NULL, max.iter = 200, dTol = 1e-9, ...) {
+  i <- 0
+  vPars <- init.vals
+  
+  while ((max(abs(fScore(f, vPars, ...))) > dTol) && (i < max.iter)) {
+    vPars <- vPars - solve(fHessian(f, vPars, ...), fScore(f, vPars, ...))
+    i <- i + 1
+  }
+  
+  if (i == max.iter) {
+    return(list(
+      curr_params = vPars, 
+      curr_log_likelihood_opt = f(vPars, ...), 
+      curr_score_opt = fScore(f, vPars, ...),
+      curr_hessian_opt = fHessian(f, vPars, ...),
+      iterations = i,  
+      msg = "Algorithm failed to converge. Maximum iterations reached.")
+    )
+  } else {
+    return(list(
+      params = vPars, 
+      log_likelihood_opt = f(vPars, ...), 
+      score_opt = fScore(f, vPars, ...),
+      hessian_opt = fHessian(f, vPars, ...),
+      iterations = i,  
+      msg = "Algorithm converged")
+    )
+  }
+}
+
+fNewton(fAR1tNegLogLik, fAR1tGrad, fAR1tHess, vY = y_ar, init.vals = c(0.2, log(3)))
+vPars_temp <- fNewton(fAR1tNegLogLik, fAR1tGrad, fAR1tHess, vY = y_ar, init.vals = c(0.2, log(3)))$params
+
+dPhi_star <- tanh(vPars_temp[1])
+dNu_star <- 2 + exp(vPars_temp[2])
+
+print(paste0("Phi-est: ", dPhi_star, " vs true: ", phi_true))
+print(paste0("Nu-est: ", dNu_star, " vs true: ", nu_true))
+
+# e
+vPars_temp <- optim(c(0.2, log(3)), fn = fAR1tNegLogLik, gr = function(par, ...) { fAR1tGrad(fAR1tNegLogLik, par, ...) }, vY = y_ar, method = "BFGS")$par
+
+# f
+dPhi_star <- tanh(vPars_temp[1])
+dNu_star <- 2 + exp(vPars_temp[2])
+
+print(paste0("Phi-est: ", dPhi_star, " vs true: ", phi_true))
+print(paste0("Nu-est: ", dNu_star, " vs true: ", nu_true))
+```
+
+## **(3) Zero-Inflated Poisson (ZIP) Regression Likelihood (Extremely Hard)**
+
+*   A ZIP model assumes that zero outcomes $y_i=0$ can come from two sources:
+    1.  A "certain zero" state (e.g., never uses a service), with probability $\pi_i$.
+    2.  A Poisson count process that happens to produce a zero, with probability $(1-\pi_i) \cdot P(Count=0|\lambda_i)$.
+*   The probability mass function is:
+    $P(y_i=k) = \pi_i \cdot I(k=0) + (1-\pi_i) \cdot \frac{e^{-\lambda_i}\lambda_i^k}{k!}$ for $k=0,1,2,\dots$
+    where $I(k=0)$ is an indicator function (1 if $k=0$, 0 otherwise).
+*   Often, $\pi_i$ and $\lambda_i$ are modeled with covariates:
+    *   $\text{logit}(\pi_i) = \mathbf{w}_i'\boldsymbol{\gamma}$ (Logistic regression for zero-inflation probability)
+    *   $\log(\lambda_i) = \mathbf{x}_i'\boldsymbol{\beta}$ (Log-linear model for Poisson mean)
+*   Parameters: $\boldsymbol{\theta} = (\boldsymbol{\gamma}', \boldsymbol{\beta}')$.
+*   Data Simulation:
+
+```{r}
+#| eval: false
+set.seed(999)
+N_zip <- 250
+W1_zip <- rnorm(N_zip); W_matrix_zip <- cbind(1, W1_zip) # For pi
+X1_zip <- runif(N_zip); X_matrix_zip_lambda <- cbind(1, X1_zip) # For lambda
+    
+gamma_true_zip <- c(-1, 0.8) # logit(pi) params
+beta_true_zip <- c(0.5, 1.5)   # log(lambda) params
+    
+logit_pi_vals <- W_matrix_zip %*% gamma_true_zip
+pi_vals <- exp(logit_pi_vals) / (1 + exp(logit_pi_vals))
+    
+log_lambda_vals <- X_matrix_zip_lambda %*% beta_true_zip
+lambda_vals <- exp(log_lambda_vals)
+    
+Y_zip <- numeric(N_zip)
+for(i_zip in 1:N_zip) {
+  if (runif(1) < pi_vals[i_zip]) {
+    Y_zip[i_zip] <- 0 # Certain zero
+  } else {
+    Y_zip[i_zip] <- rpois(1, lambda_vals[i_zip]) # From Poisson
+  }
+}
+# hist(Y_zip, breaks=-0.5:(max(Y_zip)+0.5)) # Lots of zeros?
+```
+
+*   **Tasks:**
+    *   a) **R Likelihood:** Write an R function `fZIPNegLogLik(vParams, vY, mW, mX)` for the negative log-likelihood. `vParams` will contain both $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$. You need to unpack them carefully.
+    *   b) **Optimization:** Use `optim()` ("BFGS" or "Nelder-Mead") to find the MLEs for $\boldsymbol{\gamma}$ and $\boldsymbol{\beta}$. This is complex; good starting values are crucial (e.g., $\boldsymbol{\gamma}$ from a logit model predicting $y_i=0$ vs $y_i>0$, and $\boldsymbol{\beta}$ from a Poisson regression on $y_i[y_i>0]$).
+    *   c) **C++ Likelihood (Point calculation):** Implement a C++ function `zip_log_lik_point_cpp(int yi, double logit_pi_i, double log_lambda_i)` that calculates the log-likelihood for a single observation $y_i$, given its specific $\text{logit}(\pi_i)$ and $\log(\lambda_i)$. Use `R::pnorm` (for logit to prob), `R::dpois`.
+    *   d) **Full C++ Likelihood (Loop):** Write a C++ function `fZIPNegLogLikCpp(arma::vec vGamma, arma::vec vBeta, arma::ivec vY, arma::mat mW, arma::mat mX)` that calculates the total negative log-likelihood by iterating through observations and calling a C++ point likelihood (or calculating directly). This will require computing $\mathbf{w}_i'\boldsymbol{\gamma}$ and $\mathbf{x}_i'\boldsymbol{\beta}$ for each $i$.
+    *   e) **Comparison:** Compare the speed of a single evaluation of your R and C++ full likelihood functions.
+    *   f) **Package (Conceptual):** If you were to package this, what would be the main user-facing R function? What arguments would it take? What would it return? How would you handle the C++ code?
+
+```{r}
+#data
+set.seed(999)
+N_zip <- 250
+W1_zip <- rnorm(N_zip); W_matrix_zip <- cbind(1, W1_zip) # For pi
+X1_zip <- runif(N_zip); X_matrix_zip_lambda <- cbind(1, X1_zip) # For lambda
+    
+gamma_true_zip <- c(-1, 0.8) # logit(pi) params
+beta_true_zip <- c(0.5, 1.5)   # log(lambda) params
+    
+logit_pi_vals <- W_matrix_zip %*% gamma_true_zip
+pi_vals <- exp(logit_pi_vals) / (1 + exp(logit_pi_vals))
+    
+log_lambda_vals <- X_matrix_zip_lambda %*% beta_true_zip
+lambda_vals <- exp(log_lambda_vals)
+    
+Y_zip <- numeric(N_zip)
+for(i_zip in 1:N_zip) {
+  if (runif(1) < pi_vals[i_zip]) {
+    Y_zip[i_zip] <- 0 # Certain zero
+  } else {
+    Y_zip[i_zip] <- rpois(1, lambda_vals[i_zip]) # From Poisson
+  }
+}
+
+#a
+fZIPNegLogLik <- function(vParams, vY, mW, mX) {
+  vGamma <- vParams[1:ncol(mW)]
+  vBeta <- vParams[(ncol(mW) + 1):(ncol(mW) + ncol(mX))]
+  
+  logit_pi_i <- mW %*% vGamma
+  pi_i <- plogis(logit_pi_i)
+  log_lambda_i <- mX %*% vBeta
+  lambda_i <- exp(log_lambda_i)
+  
+  dSum <- 0
+  for (i in 1:length(vY)) {
+    if (vY[i] == 0) {
+      dSum <- dSum + log(pi_i[i] + (1 - pi_i[i]) * ((exp(-lambda_i[i]) * lambda_i[i]^vY[i]) / factorial(vY[i])))
+    } else {
+      dSum <- dSum + log((1 - pi_i[i]) * ((exp(-lambda_i[i]) * lambda_i[i]^vY[i]) / factorial(vY[i])))
+    }
+  }
+  return(-dSum)
+}
+
+optim(c(0, 0, 0, 0), fZIPNegLogLik, vY = Y_zip, mW = W_matrix_zip, mX = X_matrix_zip_lambda, method = "BFGS")
+```

@@ -1,0 +1,63 @@
+project:
+  type: book
+  output-dir: _book
+
+book:
+  title: "Notes for 3611: Programming in Quantitative Economics"
+  author: "C. Dolleris"
+  
+  date: "05.29.2025"
+  chapters:
+    - index.qmd
+    
+    - part: lectures.qmd
+      chapters:
+        - intro.qmd
+        - getting_started_with_r.qmd
+        - basic_programming.qmd
+        - programming_w_functions.qmd
+        - efficiency_and_parallel_computing.qmd
+        - introduction_to_simulation.qmd
+        - rootfinding.qmd
+        - numericaloptimization1.qmd
+        - numericaloptimization2.qmd
+        - constrainedandpitfalls.qmd
+        - cpp.qmd
+        - packages.qmd
+        
+    - part: problemsets.qmd
+      chapters:
+        - problemset1.qmd
+        - problemset2.qmd
+        - problemset3.qmd
+        - problemset4.qmd
+        - problemset5.qmd
+        - problemset6.qmd
+        - exam2020.qmd
+        - exam2021.qmd
+        - exam2021re.qmd
+        - exam2022.qmd
+        - exam2022re.qmd
+        - exam2023.qmd
+        - exam2023re.qmd
+        - exam2024.qmd
+        - exam2024retake.qmd
+        - extra_exercises.qmd
+        - advanced_exercises.qmd
+        - extra_extra_exercises.qmd
+        - likelihood_exercises.qmd
+
+format:
+  html:
+    theme: 
+      - cosmo
+      - programminginquantecon.scss
+    code-link: true
+  pdf:
+    documentclass: scrreprt
+
+knitr:
+  opts_chunk: 
+    collapse: true
+    comment: "#>" 
+

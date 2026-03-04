@@ -1,0 +1,278 @@
+# Ordinary exam 2023
+
+## Problem 1:
+
+Begin by setting the seed to 123.
+
+1.  Use the inversion method to simulate data from two gamma distributions Gamma($k_1, \theta_1$) and Gamma($k_2, \theta_2$) with the parameters
+    $(k_1, \theta_1) = (2,1)$, and $(k_2, \theta_2) = (1,2)$,
+    where $k_1$ and $k_2$ are shape parameters and $\theta_1$ and $\theta_2$ are scale parameters.
+    (Hint: You may use R's built-in inverse cumulative distribution function (quantile function) `qgamma()`.)
+    We wish to simulate $N=100$ samples each of length $T=1000$.
+    Store your gamma random variables in the matrices `mG1` and `mG2` each of size $T \times N$.
+
+Solution:
+
+```{r}
+set.seed(123)
+
+Gamma.Simulate <- function(iK, dTheta, iSamples, iLength) {
+
+  U <- runif(iSamples * iLength)
+  vOut <- qgamma(U, shape = iK, scale = dTheta)
+  return(matrix(vOut, nrow = iLength, ncol = iSamples))
+  
+}
+
+mG1 <- Gamma.Simulate(iK = 2, dTheta = 1, iSamples = 100, iLength = 1000)
+mG2 <- Gamma.Simulate(iK = 1, dTheta = 2, iSamples = 100, iLength = 1000)
+```
+
+2.  Define a new random variable
+    $L(k_1, \theta_1, k_2, \theta_2) = \text{Gamma}(k_1, \theta_1) - \text{Gamma}(k_2, \theta_2)$.
+    Use this representation and the matrices `mG1` and `mG2` generated in question 1 to generate $N=100$ samples each of length $T=1000$ of random variables $L(k_1, \theta_1, k_2, \theta_2)$.
+    Store these random variables in a vector `mL` of size $T \times N$.
+
+Solution:
+
+```{r}
+mL <- mG1 - mG2
+```
+
+3.  The skewness of the random variable $L(k_1, \theta_1, k_2, \theta_2)$ is given by
+    $$ \text{sk} = \frac{2k_1\theta_1^3 - 2k_2\theta_2^3}{(k_1\theta_1^2 + k_2\theta_2^2)^{3/2}} $$
+    and the empirical skewness of a vector $\mathbf{X}$ is given by
+    $$ \hat{\text{sk}} = \frac{\frac{1}{T}\sum_{i=1}^T (X_i - \bar{X})^3}{\left[\frac{1}{T}\sum_{i=1}^T (X_i - \bar{X})^2\right]^{3/2}}, \quad \bar{X} = \frac{1}{T}\sum_{i=1}^T X_i. $$
+    Write a function, `fn_estimateSkewness`, which provides estimates $\hat{\text{sk}}$ for each column in `mL` by calculating its empirical skewness and then subtract $\text{sk}$ calculated with the formulas above, i.e., calculate $\hat{\text{sk}} - \text{sk}$ for each column in `mL`.
+    Save the resulting 100 estimates in a vector `vDiffSk`.
+
+Solution:
+
+```{r}
+fn_estimateSkewness <- function(mInput) {
+  fn_CalcSkew <- function(vX) {
+    dNum <- mean((vX - mean(vX))^3)
+    dDenom <- mean((vX - mean(vX))^2)^(3/2)
+    return(dNum / dDenom)
+  }
+  return(apply(mInput, 2, fn_CalcSkew))
+}
+
+iK1 <- 2
+iK2 <- 1
+dTheta1 <- 1
+dTheta2 <- 2
+
+vSkHat <- fn_estimateSkewness(mL)
+vSkAct <- (2 * iK1 * dTheta1^3 - 2 * iK2 * dTheta2^3) / (iK1 * dTheta1^2 + iK2 * dTheta2^2)^(3/2)
+
+vDiffSk <- vSkHat - vSkAct
+```
+
+4.  Create a histogram of the estimates contained in the vector `vDiffSk`. Let the title of the plot be "Distribution of error" and set the label on the x-axis to "Estimates of error".
+    Add a density plot to the histogram you have just created. Assume the error $\hat{\text{sk}} - \text{sk}$ is Gaussian and use the empirical mean and standard deviation of the vector `vDiffSk` as parameters of the density. Superimpose the density plot on the histogram with `lines()`.
+
+Solution:
+
+```{r}
+hist(vDiffSk, 
+     freq = FALSE,
+     breaks = 41,
+     col = "cornflowerblue", 
+     xlab = "Estimates of error",
+     main = "Distribution of error",
+     xlim = c(-1.5, 1.5))
+
+vX <- seq(-1.5, 1.5, 0.05)
+lines(vX, dnorm(vX, mean = mean(vDiffSk), sd = sd(vDiffSk)), type = "l", col = "red", lwd = 2)
+
+legend("topright",
+       legend = c("histogram", "density"),
+       col = c("cornflowerblue", "red"),
+       lwd = 2)
+```
+
+## Problem 2: (Constrained) Optimization, C++, and Packaging
+
+Note: This problem is best solved in order from 1 - 6.
+
+In this problem, you will work with the `Y.R` and `X.R` files provided with the exam. They contain data which you will use to estimate a Poisson generalized linear model by maximum likelihood. The model is as follows:
+$$ y_i \sim \text{Pois}(\lambda_i), \quad \lambda_i = \exp(\mathbf{x}_i'\boldsymbol{\theta}), \quad i=1,\dots,500. $$
+The file `Y.R` contains the dependent variables $y_i$ stacked in an integer vector, and `X.R` contains the regressors stacked in a $500 \times 5$ matrix.
+
+1.  Load the data files `Y.R` and `X.R` into your R workspace using `readRDS()`.
+
+Solution:
+
+```{r}
+set.seed(123)
+genData <- function() {
+  n <- 500  # Number of observations
+  p <- 5    # Number of regressors (including intercept)
+
+  # Define the true parameter vector theta.
+  # We set theta_1 > 0 to make the hypothesis test H0: theta_1 <= 0 meaningful.
+  theta_true <- c(0.8, -1.2, 0.5, 0.1, 2.0)
+
+  # Create the regressor matrix X
+  # First column is the intercept
+  X <- matrix(rnorm(n * (p - 1)), nrow = n, ncol = p - 1)
+  X <- cbind(1, X) 
+  colnames(X) <- paste0("X", 1:p)
+
+  # Calculate the linear predictor and the mean lambda
+  # eta = X * theta
+  eta <- X %*% theta_true
+  # lambda = exp(eta)
+  lambda <- exp(eta)
+
+  # Generate the dependent variable Y from the Poisson distribution
+  Y <- rpois(n, lambda)
+  return(list(X = X, Y = Y))
+}
+
+X <- genData()$X
+Y <- genData()$Y
+
+```
+
+  You want to find the maximum likelihood estimator of $\boldsymbol{\theta}$, using the average log-likelihood and average score functions:
+    $$ \ell(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X}) = \frac{1}{n} \sum_{i=1}^n y_i (\mathbf{x}_i'\boldsymbol{\theta}) - \exp(\mathbf{x}_i'\boldsymbol{\theta}) - \ln(y_i!), $$
+    $$ s(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X}) = \frac{1}{n} \sum_{i=1}^n (y_i - \exp(\mathbf{x}_i'\boldsymbol{\theta}))\mathbf{x}_i. $$
+
+2.  Create a C++ script, and write a C++ function called `factorial_cpp` which computes the factorial of an integer. It should accept a single integer `iN` as an input, and return `iN!`. The function should check whether the input is negative; if it is, it should generate an informative error message regarding this issue.
+
+Solution:
+
+```{cpp}
+#| eval: false
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+
+using namespace arma;
+using namespace Rcpp;
+
+// [[Rcpp::export]]
+double factorial_cpp(int iN) {
+  if (iN < 0) {
+    Rcpp::stop("Input to factorial must be a non-negative integer.");
+  }
+  if (iN == 0) {
+    return 1.0;
+  }
+  double result = 1.0;
+  for (int i = 1; i <= iN; ++i) {
+    result *= i;
+  }
+  return result;
+}
+```
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("exam2023cpp.cpp")
+```
+
+3.  Write two C++ functions `fLnL_cpp` and `fScore_cpp` which accept as arguments the vector $\boldsymbol{\theta}$, integer vector $\mathbf{y}$, and matrix $\mathbf{X}$. They should return $\ell(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X})$ and $s(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X})$ respectively. In your R script, include a `sourceCpp()` command which compiles the C++ script and adds these functions to your environment.
+    *Remark: If you cannot solve question 2, you may skip the $-\ln(y_i!)$ term in the `fLnL_cpp` function.*
+
+Solution:
+
+```{cpp}
+#| eval: false
+// [[Rcpp::export]]
+double fLnL_cpp(vec vParams, vec vY, mat mX) {
+  double dSum = 0.0;
+  int iN = mX.n_rows;
+  
+  for (int i = 0; i < iN; i++) {
+    //dSum = dSum + vY[i] * as_scalar(mX.row(i) * vParams) - exp(as_scalar(mX.row(i) * vParams)) - log(factorial_cpp(vY[i]));
+    dSum = dSum + vY[i] * as_scalar(mX.row(i) * vParams) - exp(as_scalar(mX.row(i) * vParams)) - lgamma(vY[i] + 1.0);
+  }
+  
+  return(dSum / iN);
+}
+
+// [[Rcpp::export]]
+vec fScore_2_cpp(vec vParams, vec vY, mat mX){
+  vec vP = exp(mX*vParams);
+  vec vScore = trans(mX)*(vY - vP) / vY.n_elem;
+  
+  return vScore;
+}
+
+// [[Rcpp::export]]
+vec fScore_cpp(vec vParams, vec vY, mat mX){
+  
+  int n_obs = mX.n_rows; // Number of observations
+  int p = mX.n_cols;     // Number of parameters
+  
+  vec vOut = zeros<vec>(p);
+  
+  for (int i = 0; i < n_obs; i++) {
+    vOut += (vY[i] - exp(as_scalar(mX.row(i) * vParams))) * mX.row(i).t();
+  }
+  
+  return vOut / n_obs;
+}
+```
+
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("exam2023cpp.cpp")
+```
+
+4.  Maximize the average log-likelihood with the BFGS algorithm, using the `optim()` function. You should provide your `fScore_cpp` function as an input to the `gr` argument, and you may use a vector of zeroes as the initial guess. Report the maximum likelihood estimator of $\boldsymbol{\theta}$ and the average log-likelihood evaluated at that point.
+    *Remark: If you cannot fully solve question 3, in this question and all subsequent questions, you can earn partial points by implementing `fLnL_cpp` in R instead of C++, and using `gr=NULL` in the `optim()` function instead of providing the score directly.*
+
+Solution:
+
+```{r}
+optim_res <- optim(c(0,0,0,0,0), fLnL_cpp, fScore_2_cpp, vY = Y, mX = X, method = "BFGS", control=list(fnscale=-1))
+optim_res
+```
+
+You want to test the following hypothesis about the first element of $\boldsymbol{\theta}$:
+$$ H_0: \theta_1 \le 0 \quad \text{vs.} \quad H_1: \theta_1 > 0. $$
+One way to perform this test is with a likelihood ratio test, using the test statistic
+$$ LR = -2 \left[ \max_{\boldsymbol{\theta} \in (-\infty, 0] \times \mathbb{R}^4} \{\ell(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X})\} - \max_{\boldsymbol{\theta} \in \mathbb{R}^5} \{\ell(\boldsymbol{\theta} | \mathbf{y}, \mathbf{X})\} \right]. $$
+The first term is obtained by maximizing the log-likelihood subject to the constraint that $\theta_1 \le 0$, and the second term is the unconstrained maximum which you found in question 4.
+
+5.  Write an R function `LR_stat` which computes the likelihood ratio test statistic above, and does the following:
+    (a) The arguments should be $\mathbf{y}$, and $\mathbf{X}$, and vectors of initial guesses for the constrained and unconstrained maximization, with vectors of 0 as default.
+    (b) It should check whether $\mathbf{y}$ is an integer vector. If not, it should stop and generate an informative error message regarding this issue.
+    (c) The constrained maximization should be solved using the `optim()` function with argument `method="L-BFGS-B"` and appropriately chosen arguments `lower` and `upper`. You should provide your `fScore_cpp` function as an input to the `gr` argument.
+    (d) The unconstrained maximization should be solved as in question 4.
+    (e) The output should be a list containing the likelihood ratio test statistic, the maximum likelihood estimator from the unconstrained maximization, and a message (or two) giving information about the convergence of both maximization problems.
+    Run this function and report its outputs.
+
+Solution:
+
+```{r}
+LR_stat <- function(vY, mX, vInitGuessesCon = rep(0, ncol(mX)), vInitGuessesUncon = rep(0, ncol(mX))) {
+  if (all(vY == floor(vY)) == FALSE) {
+    stop("y is not an integer vector. Stopping...")
+  }
+  
+  # unconstrained max
+  fitUnconMax <- optim(vInitGuessesUncon, fLnL_cpp, fScore_2_cpp, vY = Y, mX = X, method = "BFGS", control=list(fnscale=-1))
+  
+  # constrained max
+  fitConMax <- optim(vInitGuessesCon, fLnL_cpp, fScore_2_cpp, vY = Y, mX = X, method = "L-BFGS-B", lower = -Inf, upper = c(0, rep(Inf, length(vInitGuessesCon) - 1)), control=list(fnscale=-1))
+  
+  return(list(
+    LR_test_stat = -2 * (fitConMax$value - fitUnconMax$value),
+    MLE_estimator_uncon = fitUnconMax$par,
+    convergence_messages = c(
+      unconstrained = paste0("Convergence code:", fitUnconMax$convergence, "-", fitUnconMax$message),
+      constrained = paste0("Convergence code:", fitConMax$convergence, "-", fitConMax$message))))
+}
+
+LR_stat(vY = Y, mX = X)
+```
+
+6.  Create an R package that contains the functions from questions 2, 3, and 5. Edit the title description to "This is my exam package". Export the package as a bundled development version (with file extension `.tar.gz`), and include it as part of your exam submission.
+    *Remark: If you cannot solve 2, 3, or 5, create a package that contains an R and a C++ function with single scalar inputs that always return the number 2023.*

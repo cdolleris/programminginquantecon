@@ -1,0 +1,168 @@
+# Exercise set 4
+
+## **(1)**
+
+*Write an R function that finds the root of a scalar function using the secant method. The function should also have two starting value inputs, optional inputs for secondary arguments of the input function, and not run indefinitely. It should return a list with the following elements:*
+
+  (a) *the root*
+  (b) *the function value at the root*
+  (c) *the number of iterations used*
+  (d) *a short description which stopping criterion was used and whether convergence as achieved*
+
+*You can validate your results using* `uniroot()` *with function:*
+
+$$
+f(x)=-2.6(x-0.1)+2.5(x-0.1)^4
+$$
+
+*where the root is in the interval* $[-1,1]$*. Use appropriate starting values.*
+
+Solution:
+
+```{r}
+f <- function(dX) {
+  dOut <- -2.6 * (dX - 0.1) + 2.5 * (dX - 0.1)^4
+  return(dOut)
+}
+
+fSecant <- function(f, dX0, dX1, dTol = 1e-9, max.iter = 1000, ...) {
+  iter <- 0
+  dX2 <- dX1
+  while ((abs(f(dX2, ...)) > dTol) && (iter < max.iter)) {
+    dX2 <- dX1 - f(dX1, ...) * ((dX0 - dX1) / (f(dX0, ...) - f(dX1, ...)))
+    dX0 <- dX1
+    dX1 <- dX2
+    iter <- iter + 1
+    cat("At iteration ", iter, "value of x is: ", dX1, "\n")
+  }
+  if (abs(f(dX2, ...)) > dTol) {
+    return(list(root = NULL, f.root = NULL, iter = iter, "Algorithm failed to converge. Maximum iterations reached."))
+  } else {
+    return(list(root = dX2, f.root = f(dX2), iterations = iter, "Convergence reached."))
+  }
+}
+
+root <- fSecant(f, dX0 = -0.5, dX1 = 0.5)
+root
+uniroot(f, interval = c(-1,1))
+
+vX <- seq(-1, 1, 0.01)
+plot(vX, f(vX), type = "l")
+abline(h = 0, col = "red")
+abline(v = root["root"], col = "blue", lty = 2)
+```
+
+## **(2)**
+
+You would like to obtain information about the (in)equality of the income distribution in population of people living in Denmark. For that you would like to estimate the standard deviation $\sigma$ of the distribution of yearly income $y_i^*$. You observe independent income data $y_i$ for a sample $i = 1, ..., n$. However, the observed data $y_i$ has been modified to match data protection standards. In particular it has first been demeaned and then all units with income over $c = 1.250.000$ DKK have been removed. This gives us the truncation mechanism:
+
+$$y_i = \begin{cases} y_i^* - E[y_i^*] & \text{if } y_i^* \le c \\ - & \text{else} \end{cases}$$
+
+To estimate the standard deviation, you assume that the true income $y_i^*$ is normally distributed. This implies that the observed income $y_i$ follows a truncated mean-zero normal distribution with density $f(y)$:
+
+$$f(y; \sigma, c) = \frac{1}{\sigma} \frac{\phi(y/\sigma)}{\Phi(c/\sigma)}, \quad -\infty < y \le c,$$
+
+where
+
+$$\phi(z) = \frac{1}{\sqrt{2\pi}} \exp\left(-\frac{1}{2}z^2\right)$$
+$$\Phi(x) = \int_{-\infty}^x \phi(z) dz,$$
+
+i.e. $\phi(\cdot)$ and $\Phi(\cdot)$ are the standard normal PDF and CDF respectively. To estimate $\sigma$, we can setup the log-likelihood function
+
+$$\ln L(\sigma; \mathbf{y}, c) = \sum_{i=1}^n \ln(f(y_i; \sigma, c)),$$
+
+which has first derivative ("Score")
+
+$$S(\sigma; \mathbf{y}, c) = \frac{-n}{\sigma} + \frac{1}{\sigma^3} \sum_{i=1}^n y_i^2 + \frac{cn}{\sigma} f(c; \sigma, c)$$
+
+and second derivative ("Hessian")
+
+$$H(\sigma^2) = \frac{n}{\sigma^2} - \frac{3}{\sigma^4} \sum_{i=1}^n y_i^2 + \left(\frac{c^3 n}{\sigma^4} - \frac{2cn}{\sigma^2}\right) f(c; \sigma, c) + \frac{c^2 n}{\sigma^2} f(c; \sigma, c)^2.$$
+
+We want to find the estimate $\hat{\sigma}$ which maximizes the log-likelihood function.
+
+*Write an R function* `fTrunc()` *that finds the maximum likelihood estimator for* $\sigma$ *using a Gauss-Newton algorithm. It should take the following inputs:*
+
+(a) *A numerical vector* $Y$ *of length* $n$ *containing the dependent variable.*
+(b) *A vector of starting values for the maximization with default being the sample standard deviation of* $Y$.
+(c) *The number of maximum iterations for the optimization with default set to 200.*
+(d) *A tolerance level for the stopping criterion with default set to 1e-16.*
+
+*The overall function should return a list with the following components:*
+
+(a) *The estimated parameter* $\hat{\sigma}$*.*
+(b) *The log-likelihood, Score and Hessian at the optimum.*
+(c) *A character containing information about convergence and stopping condition of the optimization.*
+
+*Load the data* `QPE_income1.R` *into R using* `readRDS()` *and estimate* $\hat{\sigma}$*. The solution should be 509699.8.*
+
+*Try out a range of different starting values above and below the default. Plot the Score and Hessian along a grid of different* $\sigma$ *values. What do you observe?*
+
+Solution:
+
+```{r}
+f <- function(vY, dSigma, dC) {
+  return((1 / dSigma) * ((dnorm(vY / dSigma)) / (pnorm(dC / dSigma))))
+}
+
+fScore <- function(vY, dSigma, f, dC) {
+  return(((-1 * length(vY)) / dSigma) + (1 / dSigma^3) * (sum(vY^2)) + ((dC * length(vY)) / (dSigma)) * f(dC, dSigma, dC))
+}
+
+fHessian <- function(vY, dSigma, f, dC) {
+  return(length(vY) / dSigma^2 - (3 / dSigma^4) * sum(vY^2) + (dC^3 * length(vY) / dSigma^4 - 2 * dC * length(vY) / dSigma^2) * f(dC, dSigma, dC) + (dC^2 * length(vY) / dSigma^2) * f(dC, dSigma, dC)^2)
+}
+
+fTrunc <- function(f, fScore, fHessian, vY, start.val = sqrt(var(vY)), n.max = 200, dTol = 1e-16, ...) {
+  
+  n <- 0
+  dParam <- start.val
+  
+  # Keep updating until stopping criterion or max iterations reached
+  while ((abs(fScore(vY, dParam, f, ...)) > dTol) && (n < n.max)) {
+    # Newton-Raphson updating
+    dParam <- dParam - fScore(vY, dParam, f, ...) / fHessian(vY, dParam, f, ...)
+    n <- n + 1
+    #cat("At iteration", n, "the value of the parameter is:", dParam, "\n")
+  }
+  
+  if (n == n.max) {
+    return(list(
+      param = NULL, 
+      log.likelihood = NULL, 
+      score = NULL,
+      hessian = NULL,
+      iter = n, 
+      msg = "Algorithm failed to converge. Maximum iterations reached.")
+    )
+  } else {
+    return(list(
+      param = dParam, 
+      log.likelihood = sum(log(f(vY, dParam, ...))), 
+      score = fScore(vY, dParam, f, ...),
+      hessian = fHessian(vY, dParam, f, ...),
+      iter = n, 
+      msg = "Algorithm converged")
+    )
+  }
+  
+}
+
+vX <- readRDS("QPE_income1.R")
+results <- fTrunc(f, fScore, fHessian, vX, dC = 1250000)
+results
+
+# Plot Score and Hessian
+sigmaVals <- seq(400000, 600000, length.out = 200)
+scoreVals <- sapply(sigmaVals, function(sigma) fScore(vX, sigma, f, dC = 1250000))
+hessianVals <- sapply(sigmaVals, function(sigma) fHessian(vX, sigma, f, dC = 1250000))
+
+# Plot Score
+plot(sigmaVals, scoreVals, type = "l", main = "Score Function", xlab = "Sigma", ylab = "Score")
+abline(h = 0, col = "red")
+
+# Plot Hessian
+plot(sigmaVals, hessianVals, type = "l", main = "Hessian Function", xlab = "Sigma", ylab = "Hessian")
+abline(h = 0, col = "red")
+```
+

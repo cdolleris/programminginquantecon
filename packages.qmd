@@ -1,0 +1,287 @@
+# Creating R packages with RStudio
+
+Book reference: <https://r-pkgs.had.co.nz>
+
+## Introduction
+
+In R, the fundamental unit of shareable code is the package. A package bundles together code, data, documentation, and tests, and is easy to share with others.
+
+As of now, there are over 2200 packages available on the Comprehensive R Archive Network, or CRAN, the public clearing house for R packages.
+
+This huge variety of packages is one of the reasons that R is so successful: the chances are that someone has already solved a problem that you're working on, and you can benefit form their work by downloading their package.
+
+## Why a package?
+
+Why write a package? One compelling reason is if you have code that you want to share with others. Bundling your code into a package makes it easy for other people to use it, because like you, they already know how to use packages. If your codei s in a package, any R user can easily download it, install it, and learn how to use it.
+
+Furthermore, organizing code in a package makes your life easier because packages come with conventions. These conventions are helpful because:
+
+* They save you time - you don't need to think about the best way to organise ap roject, you can just follow a template.
+* Standardised conventions lead to standardised tools - if you buy into R's package conventions, you get many tools for free.
+
+## Setting up
+
+Install the folowing packages:
+
+```{r}
+#| eval: false
+install.packages(c("Rcpp", "RcppArmadillO", "devtools"))
+```
+
+Before we start, we need to install `Rtools.exe` from <https://cran.r-project.org/bin/windows/Rtools/index.html>.
+
+Rtools includes all the programs we require in order to compile our code.
+
+Now, in RStudio, navigate to "File" -> "New Project..." -> "New Directory" -> "R Package using RcppArmadillo".
+
+## Code in Packages
+
+The first principle of using a package is that all R code goes in the R folder of the source package on your computer. Here is where we put all the .R files containing our functions organized in a sensible way. Assume to have the following function:
+
+```{r}
+MySumFunction <- function(a, b) {
+  c <- a + b
+  return(c)
+}
+```
+
+In the file `Utilities.R` inside the R folder of your package. To load you package with your function you can press `Ctrl + Shift + L`.
+
+```{r}
+MySumFunction(5, 7)
+```
+
+C++ code has to placed inside the `src` folder of your package.
+
+A new C++ file contains this by default:
+
+```{cpp}
+#| eval: false
+#include <Rcpp.h>
+using namespace Rcpp;
+
+
+// [[Rcpp::export]]
+NumericVector timesTwo(NumericVector x) {
+  return x * 2;
+}
+
+
+// You can include R code blocks in C++ files processed with sourceCpp
+// (useful for testing and development). The R code will be automatically
+// run after the compilation.
+//
+
+/*** R
+timesTwo(42)
+*/
+```
+
+Note that it includes Rcpp and uses the Rcpp namespace. IF we want ot use armadillo and all its functionalities we need to modify as follows.
+
+```{cpp}
+#| eval: false
+#include <RcppArmadillo.h>
+
+using namespace arma;
+using namespace Rcpp;
+```
+
+Note that we have only included `RcppArmadillo.h`, this is because `Rcpp.h` is automatically loaded by `#include <RcppArmadillo.h>`. Indeed, we are still able to use the Rcpp namespace.
+
+Let's define the following function after the namespace definition:
+
+```{cpp}
+#| eval: false
+#include <RcppArmadillo.h>
+
+using namespace arma;
+using namespace Rcpp;
+
+//[[Rcpp::export]]
+arma::vec SumOfTwoVec_C(arma::vec vX, arma::vec vY) {
+  arma::vec vZ = vX + vY;
+  return vZ;
+}
+```
+
+Now you can save the script as, say, `utilities_c.cpp` in the `src` folder of your package.
+
+Running `Ctrl+Shift+L`, RStudio automatically compiles the C++ functions and export to R those that are signed with the `//[[Rcpp::export]]` flag.
+
+Now the package is loaded and its functions can be used.
+
+## Object documentation
+
+Documentation is one of the most important aspects of a good package. Without it, users will not know how to use your package.
+
+* Learn about object documentation, as accessed by ? or help().
+* Write .Rd files in the man/ directory. These files use a custom syntax, loosely based on LaTeX, and are rendered to HTML, plain text and pdf for viewing.
+* The .Rd files can be used for documentation of each function and the package itself.
+
+### Documentation for -package
+
+The main MyName-package.Rd contains this code by default:
+
+```{latex}
+#| eval: false
+\name{packageexample-package}
+\alias{packageexample-package}
+\alias{packageexample}
+\docType{package}
+\title{
+\packageTitle{packageexample}
+}
+\description{
+\packageDescription{packageexample}
+}
+\details{
+
+The DESCRIPTION file:
+\packageDESCRIPTION{packageexample}
+\packageIndices{packageexample}
+~~ An overview of how to use the package, including the most important functions ~~
+}
+\author{
+\packageAuthor{packageexample}
+
+Maintainer: \packageMaintainer{packageexample}
+}
+\references{
+~~ Literature or other references for background information ~~
+}
+~~ Optionally other standard keywords, one per line, from file KEYWORDS in the R documentation directory ~~
+\keyword{ package }
+\seealso{
+~~ Optional links to other man pages, e.g. ~~
+~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+}
+\examples{
+~~ simple examples of the most important functions ~~
+}
+```
+
+The function documentation contains this code by default:
+
+```{latex}
+#| eval: false
+\name{RcppArmadillo-Functions}
+\alias{rcpparma_hello_world}
+\alias{rcpparma_innerproduct}
+\alias{rcpparma_outerproduct}
+\alias{rcpparma_bothproducts}
+\title{Set of functions in example RcppArmadillo package}
+\description{
+  These four functions are created when
+  \code{RcppArmadillo.package.skeleton()} is invoked to create a
+  skeleton packages.
+}
+\usage{
+rcpparma_hello_world()
+rcpparma_outerproduct(x)
+rcpparma_innerproduct(x)
+rcpparma_bothproducts(x)
+}
+\arguments{
+  \item{x}{a numeric vector}
+}
+\value{
+  \code{rcpparma_hello_world()} does not return a value, but displays a
+  message to the console.
+
+  \code{rcpparma_outerproduct()} returns a numeric matrix computed as the
+  outer (vector) product of \code{x}.
+
+  \code{rcpparma_innerproduct()} returns a double computer as the inner
+  (vector) product of \code{x}.
+
+  \code{rcpparma_bothproducts()} returns a list with both the outer and
+  inner products.
+  
+}
+\details{
+  These are example functions which should be largely
+  self-explanatory. Their main benefit is to demonstrate how to write a
+  function using the Armadillo C++ classes, and to have to such a
+  function accessible from R.
+}
+\references{
+  See the documentation for Armadillo, and RcppArmadillo, for more details.
+}
+\examples{
+  x <- sqrt(1:4)
+  rcpparma_innerproduct(x)
+  rcpparma_outerproduct(x)
+}
+\author{Dirk Eddelbuettel}
+```
+
+## Description
+
+The job of the description file is to store important metadata about your package. When you first start writing packages, you'll mostly use these metadata to record what packages are needed to run your package.
+
+However, as time goes by and you start sharing your package with others, the metadata file becomes increasingly important because it specifies who can use it (the license) and whom to contact (you!) if there are any problems.
+
+Dependencies: What does your package need? Packages that must be loaded along with your package need to be listed in the `Imports` section of `DESCRIPTION`.
+
+```{yaml}
+#| eval: false
+Package: packageexample
+Type: Package
+Title: What the package does (short line)
+Version: 1.0
+Date: 2025-05-16
+Author: Who wrote it
+Maintainer: Who to complain to <yourfault@somewhere.net>
+Description: More about what it does (maybe more than one line)
+License: What license is it under?
+Imports: Rcpp (>= 1.0.13-1)
+LinkingTo: Rcpp, RcppArmadillo
+```
+
+## Different types of R packages
+
+*Source packages*: This is the development version of a package that lives on your computer. A source package is just a directory with components subfolders like R, and files like `DESCRIPTION`, and so on.
+
+*Bundled packages*: This is a package that's been compressed into a single file. By convention (from Linux), package bundles in R use the extension `.tar.gz`. This means that multiple files have been reduced to a single file (`.tar`) and the ncompressed using (`.gz`). RStudio creates these files with `Build -> More -> Build Source Package`. (Yes, this is inconsistent with the previous point).
+
+*Binary packages*: This is the type of package you want to distribute to users who don't have package development tools. Binary packages are platform specific: you can't install a Windows binary package on a Mac or vice versa. Also, while Mac binary packages end in `.tgz`, Windows binary packages end in `.zip`.
+
+## Beyond the basics
+
+*GitHub*: <https://github.com/>
+
+* Great place to share your packages (or other code) with others online.
+* Multiple people working on a project.
+* Version control.
+* Directly connect RStudio to GitHub.
+* Push/Pull versions between GitHub and your computer.
+* <https://happygitwithr.com/>
+
+*CRAN*: <https://cran.r-project.org/>
+
+* As close as it gets to making an "official" R package.
+* Team of volunteers in Vienna do quality control.
+* Many checks you should do before submitting a package.
+* Correct formatting, documentation, checking on many different OS's.
+* `devtools` package helps a lot with this.
+* Section 23 of Wickham's book: <https://r-pkgs.org/release.html>
+
+## Coding Style and Swirl
+
+*Style*: You should get in the habit of writing R code with good and consistent style. Good style is important because while your code only has one author, it'll usually have multiple readers. Therefore, use:
+
+* Wickham (<https://adv-r.had.co.nz/Style.html>) for a style guide.
+* Hungarian notation.
+
+*Swirl*:
+The `swirl` package is good for learning R. It asks you questions and gives you a prompt where you can type your answer.
+
+```{r}
+#| eval: false
+devtools::load_all(".")
+install.packages("swirl")
+library(swirl)
+swirl()
+```
+

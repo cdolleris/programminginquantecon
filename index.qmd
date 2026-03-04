@@ -1,0 +1,4 @@
+# Preface {.unnumbered}
+
+This is a collection of notes for the course **"Programming in Quantitative Economics"**.
+

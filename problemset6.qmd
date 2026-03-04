@@ -1,0 +1,123 @@
+# Exercise set 6
+
+*In this problem, you are supposed to debug a C++ version of the function used in Exercise Set 5 for logistic regression. It is supposed to take the same inputs, but with a mandatory starting value input vector for the optimization and only have outputs (a) - (d).*
+
+  (1) *Open the function* `fLogitCpp()` *that can be sourced via* `sourceCpp()`
+  (2) *Make comments on where to debug the code. You may consider the following questions:*
+    - *Were all objects declared?*
+    - *Are all objects declared the correct type?*
+    - *Are the correct functions used?*
+    - *Are the input and outputs correct?*
+    - *Is the algorithmic structure correct?*
+    - Hint: There are 8 bugs overall.
+  (3) *Debug the code and compare the solutions to the* `fLogit()` *function from Exercise Set 5.*
+
+Solution:
+
+The original function including comments on where to debug has been added below:
+
+```{cpp}
+#| eval: false
+//[[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
+using namespace Rcpp;
+using namespace arma;
+
+//initialize auxiliary functions: prb, LL, score, hessian
+
+// mX should be initialized with mat
+vec fP(vec vBeta, mX){
+  return(1 / (1 + exp( -mX * vBeta )));
+}
+// vP should be initialized with vec, and also it should return a double
+vec fLnL(vec vBeta, vec vY, mat mX){
+  vP = fP(vBeta,mX);
+  vec vLnL = mean( vY % log(vP) + (ones<vec>(vY.n_elem) - vY) * log(ones<vec>(vP.n_elem) - vP), 0); //should be a %, not a *
+  return vLnL;
+}
+// vScore is not divided by the number of rows in mX
+vec fScore(vec vBeta, vec vY, mat mX){
+  vec vP = fP(vBeta,mX);
+  vec vScore = trans(mX)*(vY - vP);
+  
+  return vScore;
+}
+//
+mat fHessian(vec vBeta, vec vY, mat mX){
+  int iN = vY.n_elem;
+  vec vP = fP(vBeta,mX);
+  mat mP = zeros<mat>(iN,iN);
+  
+  mP.diag(0) = vP % (ones<vec>(iN) - vP);
+  mat mHessian = -trans(mX)*mP*mX / iN;
+  
+  return mHessian;
+}
+
+//[[Rcpp::export]]
+List fLogitCpp(vec vY, mat mX, vec vBeta0, // vBeta should be initialized with default values
+               bool constant = true, 
+               double dTol = 1e-9, 
+               bool imax = 200){ // this should be an int
+  
+  List lOut;
+  int iN = vY.n_elem;
+  
+  if (constant == true){
+    vec vOnes = zeros<vec>(iN); // this should be ones
+    vBeta0 = join_cols(zeros<vec>(1),vBeta0);
+    mX = join_rows(vOnes,mX);
+    //Rcout << "Note: A constant has been added to data matrix mX" << std::endl;
+  }
+  
+  vec vBeta = vBeta0;
+  vec vScore = fScore(vBeta,vY,mX);
+  mat mHessian = fHessian(vBeta,vY,mX);
+  
+  int i = 0;
+  while ((max(abs(vScore)) < dTol) & (i < imax)) { // first sign should be flipped
+    //Rcout << i << "\n";
+    vBeta = vBeta - solve(fHessian(vBeta,vY,mX),fScore(vBeta,vY,mX));
+    vScore = fScore(vBeta,vY,mX);
+    mHessian = fHessian(vBeta0,vY,mX); // this should be vBeta
+    
+    i++;
+  }
+  if (i == imax){
+    Rcout << "newton failed to converge" << std::endl;
+    return lOut;
+  } else {
+   // Rcout << "Convergence achieved after " << i << " iterations" << std::endl
+   //       << "due to max(abs(score)) <" << dTol << std::endl;
+    lOut["coefficients"] = vBeta;
+    lOut["logLik0"] = fLnL(zeros<vec>(vBeta.n_elem),vY,mX);
+    lOut["logLik"] = fLnL(vBeta,vY,mX);
+    lOut["score"] = vScore;
+    lOut["hessian"] = mHessian;
+    lOut["phat"] = fP(vBeta,mX);
+    
+    return lOut;
+  }
+}
+
+```
+
+Comparing the solutions:
+
+```{r}
+suppressMessages(library(Rcpp))
+suppressMessages(library(RcppArmadillo))
+sourceCpp("fLogitCpp.cpp")
+
+set.seed(123)
+n <- 2000
+p <- 10
+mX <- matrix(rnorm(n*p), n, p)
+vB.actual <- matrix(1:p, p, 1)
+vY.star <- mX %*% vB.actual + rnorm(2000, 0, 1)
+vY.actual <- vY.star > 0
+
+vResults <- fLogitCpp(vY.actual, mX, vBeta = rep(0, ncol(mX)))
+vResults$coefficients
+```
+
